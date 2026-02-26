@@ -1,0 +1,13 @@
+{
+  "frontend/src/index.css": "Global styles with OKLCH dark theme, neon blue/purple color tokens, custom Orbitron/Rajdhani fonts, game-specific CSS classes for cells, glow effects, win animations, and keyframe definitions.",
+  "frontend/tailwind.config.js": "Extended Tailwind config with Orbitron/Rajdhani font families, neon blue/purple color tokens, and custom neon glow box-shadow utilities.",
+  "frontend/src/hooks/useGameLogic.ts": "Custom hook managing the core Tic Tac Toe game state including board, current player, win/draw detection, winning cell tracking, move placement, and game reset.",
+  "frontend/src/hooks/useScoreboard.ts": "Custom hook managing session-only win scores for Player X and Player O with increment and reset functions (no persistence).",
+  "frontend/src/components/Scoreboard.tsx": "Scoreboard component displaying win counts for both players with active-player highlighting using neon blue/purple glow effects.",
+  "frontend/src/components/GameBoard.tsx": "3x3 game grid component with clickable cells, winning cell highlight animations, cell mark animations, status banner, and restart button.",
+  "frontend/src/pages/Home.tsx": "Landing page with animated title, neon glow effects, Single Player and Two Player mode selection buttons, and how-to-play instructions.",
+  "frontend/src/pages/SinglePlayer.tsx": "Single Player game page integrating GameBoard and Scoreboard, with random computer AI moves triggered after a 600ms delay following the human's turn.",
+  "frontend/src/pages/TwoPlayer.tsx": "Two Player game page integrating GameBoard and Scoreboard, allowing two humans to alternate turns on the same device with full win/draw detection.",
+  "frontend/src/App.tsx": "Main app component setting up TanStack Router with routes for Home (/), SinglePlayer (/single-player), and TwoPlayer (/two-player).",
+  "frontend/src/hooks/useQueries.ts": "Placeholder file for React Query hooks; no backend queries are needed since all game state is managed client-side."
+}

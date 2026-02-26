@@ -1,0 +1,117 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-create-a-home-page-with-the-title-ultimate-tic-tac-toe-and-two-mode-selection-buttons-single-player-play-vs-computer-and-two-player-play-with-friend",
+      "featureTitle": "Create a Home page with the title 'Ultimate Tic Tac Toe' and two mode-selection buttons: 'Single Player (Play vs Computer)' and 'Two Player (Play with Friend)'.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/Home.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-a-3x3-tic-tac-toe-game-grid-with-win-and-draw-detection-a-restart-button-and-visual-highlighting-of-winning-cells-with-smooth-animations",
+      "featureTitle": "Implement a 3x3 Tic Tac Toe game grid with win and draw detection, a Restart button, and visual highlighting of winning cells with smooth animations.",
+      "files": [
+        "frontend/src/components/GameBoard.tsx",
+        "frontend/src/hooks/useGameLogic.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-single-player-mode-where-the-computer-automatically-makes-random-moves-as-player-o-after-the-human-player-x-places-a-mark",
+      "featureTitle": "Implement Single Player mode where the computer automatically makes random moves as Player O after the human Player X places a mark.",
+      "files": [
+        "frontend/src/pages/SinglePlayer.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-two-player-mode-allowing-two-human-players-to-take-turns-on-the-same-device-alternating-between-player-x-and-player-o",
+      "featureTitle": "Implement Two Player mode allowing two human players to take turns on the same device, alternating between Player X and Player O.",
+      "files": [
+        "frontend/src/pages/TwoPlayer.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-a-session-only-scoreboard-tracking-wins-for-player-x-and-player-o-or-computer-in-single-player-mode-scores-accumulate-across-rounds-within-the-session-and-reset-on-page-refresh",
+      "featureTitle": "Display a session-only scoreboard tracking wins for Player X and Player O (or Computer in Single Player mode). Scores accumulate across rounds within the session and reset on page refresh.",
+      "files": [
+        "frontend/src/components/Scoreboard.tsx",
+        "frontend/src/hooks/useScoreboard.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-apply-a-modern-dark-theme-with-neon-blue-and-purple-glow-effects-smooth-hover-effects-on-interactive-elements-and-a-fully-mobile-responsive-layout",
+      "featureTitle": "Apply a modern dark theme with neon blue and purple glow effects, smooth hover effects on interactive elements, and a fully mobile-responsive layout.",
+      "files": [
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

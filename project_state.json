@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Ultimate Tic Tac Toe game built with React + TypeScript. Features home page with Single Player (random AI) and Two Player modes, 3x3 grid with win/draw detection, session-only scoreboard, highlighted winning cells, dark theme with neon blue/purple glow effects, smooth animations, and mobile responsive design.",
+  "architectural_notes": [
+    "React + TypeScript only (no plain HTML/CSS/JS files)",
+    "Session-only scoreboard — no localStorage persistence",
+    "Single Player AI uses random move selection (no minimax)"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-create-a-home-page-with-the-title-ultimate-tic-tac-toe-and-two-mode-selection-buttons-single-player-play-vs-computer-and-two-player-play-with-friend",
+      "title": "Create a Home page with the title 'Ultimate Tic Tac Toe' and two mode-selection buttons: 'Single Player (Play vs Computer)' and 'Two Player (Play with Friend)'.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-3x3-tic-tac-toe-game-grid-with-win-and-draw-detection-a-restart-button-and-visual-highlighting-of-winning-cells-with-smooth-animations",
+      "title": "Implement a 3x3 Tic Tac Toe game grid with win and draw detection, a Restart button, and visual highlighting of winning cells with smooth animations.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-single-player-mode-where-the-computer-automatically-makes-random-moves-as-player-o-after-the-human-player-x-places-a-mark",
+      "title": "Implement Single Player mode where the computer automatically makes random moves as Player O after the human Player X places a mark.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-two-player-mode-allowing-two-human-players-to-take-turns-on-the-same-device-alternating-between-player-x-and-player-o",
+      "title": "Implement Two Player mode allowing two human players to take turns on the same device, alternating between Player X and Player O.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-a-session-only-scoreboard-tracking-wins-for-player-x-and-player-o-or-computer-in-single-player-mode-scores-accumulate-across-rounds-within-the-session-and-reset-on-page-refresh",
+      "title": "Display a session-only scoreboard tracking wins for Player X and Player O (or Computer in Single Player mode). Scores accumulate across rounds within the session and reset on page refresh.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-modern-dark-theme-with-neon-blue-and-purple-glow-effects-smooth-hover-effects-on-interactive-elements-and-a-fully-mobile-responsive-layout",
+      "title": "Apply a modern dark theme with neon blue and purple glow effects, smooth hover effects on interactive elements, and a fully mobile-responsive layout.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [],
+  "gameProjectType": "2d",
+  "projectName": "Ultimate Tic Tac Toe",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

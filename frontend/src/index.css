@@ -1,0 +1,273 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+    --background: 0.1 0.01 265;
+    --foreground: 0.95 0.02 265;
+    --card: 0.14 0.02 265;
+    --card-foreground: 0.95 0.02 265;
+    --popover: 0.14 0.02 265;
+    --popover-foreground: 0.95 0.02 265;
+    --primary: 0.72 0.22 200;
+    --primary-foreground: 0.08 0.01 265;
+    --secondary: 0.65 0.28 295;
+    --secondary-foreground: 0.95 0.02 265;
+    --muted: 0.18 0.02 265;
+    --muted-foreground: 0.6 0.05 265;
+    --accent: 0.65 0.28 295;
+    --accent-foreground: 0.95 0.02 265;
+    --destructive: 0.65 0.25 25;
+    --destructive-foreground: 0.95 0.02 265;
+    --border: 0.25 0.04 265;
+    --input: 0.2 0.03 265;
+    --ring: 0.72 0.22 200;
+    --chart-1: 0.72 0.22 200;
+    --chart-2: 0.65 0.28 295;
+    --chart-3: 0.75 0.18 160;
+    --chart-4: 0.7 0.2 50;
+    --chart-5: 0.65 0.25 25;
+    --sidebar: 0.12 0.02 265;
+    --sidebar-foreground: 0.95 0.02 265;
+    --sidebar-primary: 0.72 0.22 200;
+    --sidebar-primary-foreground: 0.08 0.01 265;
+    --sidebar-accent: 0.18 0.02 265;
+    --sidebar-accent-foreground: 0.95 0.02 265;
+    --sidebar-border: 0.25 0.04 265;
+    --sidebar-ring: 0.72 0.22 200;
+
+    /* Neon colors */
+    --neon-blue: oklch(0.72 0.22 200);
+    --neon-purple: oklch(0.65 0.28 295);
+    --neon-blue-glow: 0 0 10px oklch(0.72 0.22 200 / 0.8), 0 0 30px oklch(0.72 0.22 200 / 0.4), 0 0 60px oklch(0.72 0.22 200 / 0.2);
+    --neon-purple-glow: 0 0 10px oklch(0.65 0.28 295 / 0.8), 0 0 30px oklch(0.65 0.28 295 / 0.4), 0 0 60px oklch(0.65 0.28 295 / 0.2);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    background: oklch(0.08 0.015 265);
+    overflow-x: hidden;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .neon-text-blue {
+    color: oklch(0.85 0.22 200);
+    text-shadow: 0 0 10px oklch(0.72 0.22 200 / 0.9), 0 0 30px oklch(0.72 0.22 200 / 0.5), 0 0 60px oklch(0.72 0.22 200 / 0.3);
+  }
+
+  .neon-text-purple {
+    color: oklch(0.8 0.28 295);
+    text-shadow: 0 0 10px oklch(0.65 0.28 295 / 0.9), 0 0 30px oklch(0.65 0.28 295 / 0.5), 0 0 60px oklch(0.65 0.28 295 / 0.3);
+  }
+
+  .neon-border-blue {
+    border-color: oklch(0.72 0.22 200);
+    box-shadow: 0 0 8px oklch(0.72 0.22 200 / 0.6), inset 0 0 8px oklch(0.72 0.22 200 / 0.1);
+  }
+
+  .neon-border-purple {
+    border-color: oklch(0.65 0.28 295);
+    box-shadow: 0 0 8px oklch(0.65 0.28 295 / 0.6), inset 0 0 8px oklch(0.65 0.28 295 / 0.1);
+  }
+
+  .neon-btn-blue {
+    background: transparent;
+    border: 2px solid oklch(0.72 0.22 200);
+    color: oklch(0.85 0.22 200);
+    text-shadow: 0 0 8px oklch(0.72 0.22 200 / 0.8);
+    box-shadow: 0 0 10px oklch(0.72 0.22 200 / 0.3), inset 0 0 10px oklch(0.72 0.22 200 / 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .neon-btn-blue:hover {
+    background: oklch(0.72 0.22 200 / 0.15);
+    box-shadow: 0 0 20px oklch(0.72 0.22 200 / 0.6), 0 0 40px oklch(0.72 0.22 200 / 0.3), inset 0 0 20px oklch(0.72 0.22 200 / 0.1);
+    transform: translateY(-2px);
+  }
+
+  .neon-btn-purple {
+    background: transparent;
+    border: 2px solid oklch(0.65 0.28 295);
+    color: oklch(0.8 0.28 295);
+    text-shadow: 0 0 8px oklch(0.65 0.28 295 / 0.8);
+    box-shadow: 0 0 10px oklch(0.65 0.28 295 / 0.3), inset 0 0 10px oklch(0.65 0.28 295 / 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .neon-btn-purple:hover {
+    background: oklch(0.65 0.28 295 / 0.15);
+    box-shadow: 0 0 20px oklch(0.65 0.28 295 / 0.6), 0 0 40px oklch(0.65 0.28 295 / 0.3), inset 0 0 20px oklch(0.65 0.28 295 / 0.1);
+    transform: translateY(-2px);
+  }
+
+  .game-cell {
+    background: oklch(0.12 0.02 265);
+    border: 1px solid oklch(0.25 0.04 265);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .game-cell:hover:not(.occupied) {
+    background: oklch(0.16 0.03 265);
+    border-color: oklch(0.72 0.22 200 / 0.5);
+    box-shadow: 0 0 15px oklch(0.72 0.22 200 / 0.2), inset 0 0 15px oklch(0.72 0.22 200 / 0.05);
+  }
+
+  .game-cell.occupied {
+    cursor: default;
+  }
+
+  .game-cell.winning {
+    background: oklch(0.15 0.04 265);
+    animation: winPulse 1s ease-in-out infinite alternate;
+  }
+
+  .cell-x {
+    color: oklch(0.85 0.22 200);
+    text-shadow: 0 0 15px oklch(0.72 0.22 200 / 0.9), 0 0 30px oklch(0.72 0.22 200 / 0.5);
+    animation: markAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .cell-o {
+    color: oklch(0.8 0.28 295);
+    text-shadow: 0 0 15px oklch(0.65 0.28 295 / 0.9), 0 0 30px oklch(0.65 0.28 295 / 0.5);
+    animation: markAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .winning .cell-x {
+    text-shadow: 0 0 20px oklch(0.72 0.22 200), 0 0 40px oklch(0.72 0.22 200 / 0.8), 0 0 80px oklch(0.72 0.22 200 / 0.4);
+  }
+
+  .winning .cell-o {
+    text-shadow: 0 0 20px oklch(0.65 0.28 295), 0 0 40px oklch(0.65 0.28 295 / 0.8), 0 0 80px oklch(0.65 0.28 295 / 0.4);
+  }
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 8px;
+    background: oklch(0.1 0.015 265);
+    border-radius: 12px;
+    border: 1px solid oklch(0.25 0.04 265);
+    box-shadow: 0 0 30px oklch(0.72 0.22 200 / 0.1), 0 0 60px oklch(0.65 0.28 295 / 0.05);
+  }
+
+  .status-banner {
+    background: oklch(0.12 0.02 265);
+    border: 1px solid oklch(0.25 0.04 265);
+    border-radius: 8px;
+    padding: 12px 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .status-banner.winner-x {
+    border-color: oklch(0.72 0.22 200 / 0.8);
+    box-shadow: 0 0 20px oklch(0.72 0.22 200 / 0.3);
+    animation: statusPulse 0.5s ease-out;
+  }
+
+  .status-banner.winner-o {
+    border-color: oklch(0.65 0.28 295 / 0.8);
+    box-shadow: 0 0 20px oklch(0.65 0.28 295 / 0.3);
+    animation: statusPulse 0.5s ease-out;
+  }
+
+  .status-banner.draw {
+    border-color: oklch(0.7 0.15 60 / 0.8);
+    box-shadow: 0 0 20px oklch(0.7 0.15 60 / 0.3);
+    animation: statusPulse 0.5s ease-out;
+  }
+
+  .score-card {
+    background: oklch(0.12 0.02 265);
+    border-radius: 10px;
+    padding: 16px 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .score-card.active {
+    box-shadow: 0 0 15px oklch(0.72 0.22 200 / 0.3);
+    border-color: oklch(0.72 0.22 200 / 0.5);
+  }
+
+  .bg-grid-pattern {
+    background-image: 
+      linear-gradient(oklch(0.72 0.22 200 / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(0.72 0.22 200 / 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}
+
+@keyframes markAppear {
+  0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes winPulse {
+  0% { background: oklch(0.15 0.04 265); }
+  100% { background: oklch(0.18 0.06 265); }
+}
+
+@keyframes statusPulse {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes titleGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px oklch(0.72 0.22 200 / 0.8), 0 0 30px oklch(0.72 0.22 200 / 0.4), 0 0 60px oklch(0.72 0.22 200 / 0.2);
+  }
+  50% {
+    text-shadow: 0 0 20px oklch(0.72 0.22 200), 0 0 50px oklch(0.72 0.22 200 / 0.7), 0 0 100px oklch(0.72 0.22 200 / 0.4), 0 0 10px oklch(0.65 0.28 295 / 0.5);
+  }
+}
+
+.animate-float-up {
+  animation: floatUp 0.6s ease-out forwards;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+.animate-title-glow {
+  animation: titleGlow 3s ease-in-out infinite;
+}
+
+.font-orbitron {
+  font-family: 'Orbitron', sans-serif;
+}
+
+.font-rajdhani {
+  font-family: 'Rajdhani', sans-serif;
+}

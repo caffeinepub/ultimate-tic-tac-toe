@@ -1,0 +1,131 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Ultimate Tic Tac Toe Game",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Create Home page with title and two mode-selection buttons",
+      "acceptanceCriteria": [
+        "Home page displays the title 'Ultimate Tic Tac Toe'",
+        "Two buttons are visible: 'Single Player' and 'Two Player'",
+        "Clicking each button navigates to the respective game mode"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/Home.tsx",
+          "operation": "create",
+          "description": "Create Home page component displaying 'Ultimate Tic Tac Toe' title and two buttons: 'Single Player (Play vs Computer)' and 'Two Player (Play with Friend)'. Each button navigates to /single-player and /two-player routes respectively. Apply dark theme styling with neon glow effects on hover."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add routes for Home (/), SinglePlayer (/single-player), and TwoPlayer (/two-player). Set Home as the default landing route."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Implement 3x3 Tic Tac Toe grid with win/draw detection, restart button, and winning cell animations",
+      "acceptanceCriteria": [
+        "3x3 grid renders and accepts player moves",
+        "Winning combination cells are visually highlighted",
+        "Draw state is detected and announced when all cells are filled with no winner",
+        "Restart button resets the board and current-game state",
+        "Cell placement and winning highlight have smooth CSS transitions/animations"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/GameBoard.tsx",
+          "operation": "create",
+          "description": "Create GameBoard component rendering a 3x3 grid of clickable cells. Implement win detection logic for all rows, columns, and diagonals. Implement draw detection when all cells are filled with no winner. Apply CSS classes to highlight winning cells with neon glow animations. Include a Restart button that resets the board state. Use smooth CSS transitions for cell interactions and winning highlights."
+        },
+        {
+          "path": "frontend/src/hooks/useGameLogic.ts",
+          "operation": "create",
+          "description": "Create custom hook managing game state: board array, current player, winner, draw status, and winning cells. Provide functions for placing marks, detecting wins/draws, and resetting the game. Return state and handlers for use in GameBoard component."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Implement Single Player mode with random computer AI moves",
+      "acceptanceCriteria": [
+        "After the human places a mark, the computer selects a random available cell and places its mark",
+        "Computer does not move on a already-occupied cell",
+        "Win/draw detection works correctly for both human and computer moves"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/SinglePlayer.tsx",
+          "operation": "create",
+          "description": "Create SinglePlayer page integrating GameBoard and Scoreboard components. Implement logic so that after the human (Player X) places a mark, the computer (Player O) automatically selects a random available cell and places its mark. Ensure the computer only moves on empty cells. Display current turn indicator and game result messages. Apply dark theme with neon styling."
+        },
+        {
+          "path": "frontend/src/hooks/useComputerMove.ts",
+          "operation": "create",
+          "description": "Create custom hook that triggers a random computer move after a delay when it is the computer's turn. Select a random index from available (empty) cells and return it for placement. Ensure the hook does not trigger if the game is already won or drawn."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Implement Two Player mode with alternating turns for two humans",
+      "acceptanceCriteria": [
+        "Players alternate turns between X and O",
+        "Current player's turn is clearly indicated on screen",
+        "Win/draw detection works correctly for both players"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/TwoPlayer.tsx",
+          "operation": "create",
+          "description": "Create TwoPlayer page integrating GameBoard and Scoreboard components. Allow two human players to alternate turns on the same device. Display current player indicator (Player X or Player O). Display game result messages when a player wins or the game ends in a draw. Apply dark theme with neon styling."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Display session-only scoreboard tracking wins for Player X and Player O or Computer",
+      "acceptanceCriteria": [
+        "Scoreboard shows win counts for both players/computer",
+        "Scores increment correctly after each game concludes",
+        "Scores reset to zero on page refresh (no localStorage persistence)"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Scoreboard.tsx",
+          "operation": "create",
+          "description": "Create Scoreboard component displaying win counts for Player X and Player O (or Computer in Single Player mode). Accept props for player labels and score values. Render scores in a styled card with neon accents. Do not persist scores to localStorage or backend; maintain scores only in React state within the session."
+        },
+        {
+          "path": "frontend/src/hooks/useScoreboard.ts",
+          "operation": "create",
+          "description": "Create custom hook managing session-only score state for Player X and Player O. Provide functions to increment scores when a game concludes with a winner. Do not use localStorage or any persistence mechanism. Return current scores and increment handlers."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Apply modern dark theme with neon blue/purple glow effects and mobile-responsive layout",
+      "acceptanceCriteria": [
+        "Background is dark (near-black or very dark gray)",
+        "Interactive elements (buttons, grid cells) display neon blue and/or purple glow on hover and focus",
+        "Layout adapts cleanly to mobile screen sizes (320px and up)",
+        "Hover transitions are smooth (CSS transition applied)"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add global dark theme styles with near-black background. Define CSS custom properties for neon blue and purple colors. Add smooth transition rules for interactive elements. Ensure typography and spacing support mobile-responsive design."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Extend Tailwind theme with custom neon blue and purple colors. Add box-shadow utilities for glow effects. Configure responsive breakpoints to support mobile layouts (320px and up)."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "kind": "build_request",
+  "title": "Ultimate Tic Tac Toe Game",
+  "projectName": "Ultimate Tic Tac Toe",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Create a Home page with the title 'Ultimate Tic Tac Toe' and two mode-selection buttons: 'Single Player (Play vs Computer)' and 'Two Player (Play with Friend)'.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Home page with: Title: 'Ultimate Tic Tac Toe', Two buttons: Single Player (Play vs Computer), Two Player (Play with Friend)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Home page displays the title 'Ultimate Tic Tac Toe'",
+        "Two buttons are visible: 'Single Player' and 'Two Player'",
+        "Clicking each button navigates to the respective game mode"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement a 3x3 Tic Tac Toe game grid with win and draw detection, a Restart button, and visual highlighting of winning cells with smooth animations.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "3x3 grid",
+          "Detect win, draw",
+          "Restart button",
+          "Highlight winning cells",
+          "Smooth animations"
+        ]
+      },
+      "acceptanceCriteria": [
+        "3x3 grid renders and accepts player moves",
+        "Winning combination cells are visually highlighted",
+        "Draw state is detected and announced when all cells are filled with no winner",
+        "Restart button resets the board and current-game state",
+        "Cell placement and winning highlight have smooth CSS transitions/animations"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement Single Player mode where the computer automatically makes random moves as Player O after the human Player X places a mark.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2",
+          "msg-4"
+        ],
+        "quotes": [
+          "Computer should make automatic moves",
+          "Basic AI (random move is fine)",
+          "Single Player mode with random AI moves"
+        ]
+      },
+      "acceptanceCriteria": [
+        "After the human places a mark, the computer selects a random available cell and places its mark",
+        "Computer does not move on a already-occupied cell",
+        "Win/draw detection works correctly for both human and computer moves"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Implement Two Player mode allowing two human players to take turns on the same device, alternating between Player X and Player O.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Same device multiplayer"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Players alternate turns between X and O",
+        "Current player's turn is clearly indicated on screen",
+        "Win/draw detection works correctly for both players"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Display a session-only scoreboard tracking wins for Player X and Player O (or Computer in Single Player mode). Scores accumulate across rounds within the session and reset on page refresh.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2",
+          "msg-4"
+        ],
+        "quotes": [
+          "Scoreboard (Player X, Player O / Computer)",
+          "Session-only scoreboard (resets on page refresh)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Scoreboard shows win counts for both players/computer",
+        "Scores increment correctly after each game concludes",
+        "Scores reset to zero on page refresh (no localStorage persistence)"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Apply a modern dark theme with neon blue and purple glow effects, smooth hover effects on interactive elements, and a fully mobile-responsive layout.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Modern dark theme",
+          "Neon blue and purple glow effects",
+          "Mobile responsive",
+          "Clean UI",
+          "Smooth hover effects"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Background is dark (near-black or very dark gray)",
+        "Interactive elements (buttons, grid cells) display neon blue and/or purple glow on hover and focus",
+        "Layout adapts cleanly to mobile screen sizes (320px and up)",
+        "Hover transitions are smooth (CSS transition applied)"
+      ]
+    }
+  ],
+  "constraints": [
+    "Scoreboard must be session-only — do not persist scores to localStorage or any backend storage.",
+    "AI must use random move selection only — no minimax or advanced algorithms."
+  ],
+  "nonGoals": [
+    "Persistent score storage across sessions",
+    "Advanced AI (minimax or optimal play)",
+    "Online multiplayer",
+    "User accounts or authentication"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
