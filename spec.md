@@ -1,23 +1,17 @@
 # Specification
 
 ## Summary
-**Goal:** Add animations, sound effects, and visual improvements to the Snake and Ladder game, Traffic Car Game, and Snake Game.
+**Goal:** Add global sound effects with mute toggle, and difficulty selector screens with game-specific difficulty logic to the Ultimate Gaming Arena.
 
 **Planned changes:**
+- Create a global sound manager hook using HTML5 Audio API with sounds for click, win, game over, score increment, and special events; mute state persists in localStorage
+- Add a mute/unmute toggle button (neon speaker icon) to all game pages and the Home page header/navbar
+- Build a reusable `DifficultySelector` component (Easy / Medium / Hard) styled in the dark neon theme that appears before each applicable game starts
+- Integrate the difficulty selector into Tic Tac Toe (SinglePlayer), Snake, and Traffic Car games
+- Upgrade SinglePlayer Tic Tac Toe AI: Easy = random moves, Medium = mixed random/Minimax, Hard = full Minimax (unbeatable)
+- Upgrade Snake game speed: Easy = ~200ms tick, Medium = ~130ms tick, Hard = ~70ms tick
+- Upgrade Traffic Car game: Easy = slow/sparse traffic, Medium = current default, Hard = fast/dense traffic
+- Display the selected difficulty label during gameplay for all three games
+- Play appropriate sound effects on game events (food eaten, collision, win, game over, score milestones) across all games
 
-### Snake and Ladder (/snake-ladder)
-- Add a spinning/tumbling CSS keyframe dice roll animation (~0.8–1 second) when Roll Dice is pressed; board logic waits until animation completes
-- Animate player token movement square by square with smooth easing after each dice roll; snake/ladder logic fires only after movement finishes
-- Add a downward sliding animation when a token lands on a snake head, transitioning to the tail cell before the turn ends
-- Add an upward climbing animation when a token lands on a ladder base, transitioning to the top cell before the turn ends
-- Add a full-screen confetti burst effect using CSS/JS when a player reaches square 100 and wins
-- Add a neon pulsing glow turn indicator that highlights the active player and switches after each turn
-- Add Web Audio API programmatic sound effects: percussive rattle on dice roll, descending tone on snake slide, ascending tone on ladder climb, triumphant fanfare on win
-
-### Traffic Car Game (/traffic)
-- Redesign the player car with a more realistic multi-layered canvas illustration: visible roof, hood, body, side windows, windshield, glowing headlights, wheels on both sides, and a distinct color scheme — hitbox dimensions unchanged
-
-### Snake Game (/snake)
-- Redesign the snake with a realistic segmented appearance: distinct head with eyes and directional tongue, gradient-colored rounded body segments that taper toward a pointed tail, head oriented to face movement direction — all via canvas draw calls, no changes to game logic
-
-**User-visible outcome:** The Snake and Ladder game has rich animations and sound effects for dice rolls, token movement, snake slides, ladder climbs, and wins with confetti. The Traffic Car Game features a more realistic-looking player car, and the Snake Game displays a visually detailed serpentine snake, all while preserving existing game logic and collision detection.
+**User-visible outcome:** Players are prompted to choose a difficulty before starting Tic Tac Toe (SinglePlayer), Snake, or Traffic Car, and experience matching AI/speed/traffic behavior along with sound feedback throughout all games. A mute button is always accessible to silence all sounds.

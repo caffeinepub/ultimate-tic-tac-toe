@@ -1,261 +1,59 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 15,
-  "summary": "Multi-game platform 'Ultimate Gaming Arena' built with React + TypeScript. Features a home page with game categories (Strategy, Arcade, Casual, 2 Player) and game selection cards. Games: Tic Tac Toe (Strategy), Snake Game (Arcade), Rock Paper Scissors (Casual), Memory Card Match (Casual), Traffic Car Game (Arcade), Snake and Ladder 2-Player (2 Player). Each game has its own page, restart button, score tracking, and a Back to Home button. Global leaderboard page shows all-time high scores per game. Dark neon theme with smooth animations and mobile responsive design. Scores persist via localStorage across sessions.",
+  "projectStateVersion": 3,
+  "summary": "Ultimate Gaming Arena — a multi-game web app featuring Tic Tac Toe, Snake, and Traffic Car games with a dark neon theme. Current upgrade: adding HTML5 sound effects (click, win, game over, scoring, special events) with a global mute/unmute toggle, difficulty selector screens before each game, and per-game difficulty levels (Easy/Medium/Hard with game-specific behaviors).",
   "architectural_notes": [
-    "React + TypeScript only (no plain HTML/CSS/JS files)",
-    "Single Player AI uses random move selection (no minimax)",
-    "Scores persisted via localStorage for all games (replaces session-only behavior)",
-    "Each game is a separate route/component; shared dark neon CSS theme applied globally"
+    "Dark neon theme must remain consistent across all games and new UI elements",
+    "Use HTML5 Audio API for all sound effects"
   ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-create-a-home-page-with-the-title-ultimate-tic-tac-toe-and-two-mode-selection-buttons-single-player-play-vs-computer-and-two-player-play-with-friend",
-      "title": "Create a Home page with the title 'Ultimate Tic Tac Toe' and two mode-selection buttons: 'Single Player (Play vs Computer)' and 'Two Player (Play with Friend)'.",
+      "id": "feature-create-a-global-sound-manager-module-e-g-frontend-src-hooks-usesoundmanager-ts-that-uses-html5-audio-api-to-play-distinct-sound-effects-for-click-button-press-win-game-over-score-increment-and-special-events-expose-a-global-mute-unmute-toggle-that-persists-its-state-in-localstorage",
+      "title": "Create a global sound manager module (e.g., frontend/src/hooks/useSoundManager.ts) that uses HTML5 Audio API to play distinct sound effects for: click/button press, win, game over, score increment, and special events. Expose a global mute/unmute toggle that persists its state in localStorage.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-a-3x3-tic-tac-toe-game-grid-with-win-and-draw-detection-a-restart-button-and-visual-highlighting-of-winning-cells-with-smooth-animations",
-      "title": "Implement a 3x3 Tic Tac Toe game grid with win and draw detection, a Restart button, and visual highlighting of winning cells with smooth animations.",
+      "id": "feature-create-a-reusable-difficultyselector-component-styled-in-the-dark-neon-theme-that-presents-easy-medium-hard-options-and-a-game-title-this-screen-must-appear-before-each-game-starts-for-tic-tac-toe-singleplayer-snake-and-traffic-car-the-selected-difficulty-is-passed-to-the-game-logic",
+      "title": "Create a reusable DifficultySelector component styled in the dark neon theme that presents Easy / Medium / Hard options and a game title. This screen must appear before each game starts for Tic Tac Toe (SinglePlayer), Snake, and Traffic Car. The selected difficulty is passed to the game logic.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-single-player-mode-where-the-computer-automatically-makes-random-moves-as-player-o-after-the-human-player-x-places-a-mark",
-      "title": "Implement Single Player mode where the computer automatically makes random moves as Player O after the human Player X places a mark.",
+      "id": "feature-upgrade-singleplayer-tic-tac-toe-frontend-src-pages-singleplayer-tsx-with-three-ai-difficulty-modes-easy-uses-fully-random-moves-medium-randomly-mixes-random-and-optimal-moves-e-g-50-50-hard-uses-minimax-algorithm-for-unbeatable-ai-the-difficulty-is-set-from-the-difficultyselector-screen",
+      "title": "Upgrade SinglePlayer Tic Tac Toe (frontend/src/pages/SinglePlayer.tsx) with three AI difficulty modes: Easy uses fully random moves; Medium randomly mixes random and optimal moves (e.g., 50/50); Hard uses Minimax algorithm for unbeatable AI. The difficulty is set from the DifficultySelector screen.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-two-player-mode-allowing-two-human-players-to-take-turns-on-the-same-device-alternating-between-player-x-and-player-o",
-      "title": "Implement Two Player mode allowing two human players to take turns on the same device, alternating between Player X and Player O.",
+      "id": "feature-upgrade-the-snake-game-frontend-src-pages-snakegame-tsx-with-three-speed-based-difficulty-modes-easy-uses-slow-tick-interval-200ms-medium-uses-normal-130ms-hard-uses-fast-70ms-difficulty-is-set-from-the-difficultyselector-screen",
+      "title": "Upgrade the Snake game (frontend/src/pages/SnakeGame.tsx) with three speed-based difficulty modes: Easy uses slow tick interval (~200ms), Medium uses normal (~130ms), Hard uses fast (~70ms). Difficulty is set from the DifficultySelector screen.",
       "reqIds": [
         "REQ-4"
       ],
       "version": 1
     },
     {
-      "id": "feature-display-a-session-only-scoreboard-tracking-wins-for-player-x-and-player-o-or-computer-in-single-player-mode-scores-accumulate-across-rounds-within-the-session-and-reset-on-page-refresh",
-      "title": "Display a session-only scoreboard tracking wins for Player X and Player O (or Computer in Single Player mode). Scores accumulate across rounds within the session and reset on page refresh.",
+      "id": "feature-upgrade-the-traffic-car-game-frontend-src-pages-trafficcargame-tsx-with-three-difficulty-modes-easy-uses-slow-traffic-speed-and-fewer-cars-medium-uses-normal-speed-and-car-density-hard-uses-fast-speed-with-more-simultaneous-cars-difficulty-is-set-from-the-difficultyselector-screen",
+      "title": "Upgrade the Traffic Car game (frontend/src/pages/TrafficCarGame.tsx) with three difficulty modes: Easy uses slow traffic speed and fewer cars; Medium uses normal speed and car density; Hard uses fast speed with more simultaneous cars. Difficulty is set from the DifficultySelector screen.",
       "reqIds": [
         "REQ-5"
       ],
       "version": 1
     },
     {
-      "id": "feature-apply-a-modern-dark-theme-with-neon-blue-and-purple-glow-effects-smooth-hover-effects-on-interactive-elements-and-a-fully-mobile-responsive-layout",
-      "title": "Apply a modern dark theme with neon blue and purple glow effects, smooth hover effects on interactive elements, and a fully mobile-responsive layout.",
+      "id": "feature-integrate-the-global-mute-unmute-toggle-button-into-all-game-pages-and-the-home-page-header-navbar-area-styled-consistently-with-the-dark-neon-theme-e-g-a-speaker-icon-with-neon-glow",
+      "title": "Integrate the global mute/unmute toggle button into all game pages and the Home page header/navbar area, styled consistently with the dark neon theme (e.g., a speaker icon with neon glow).",
       "reqIds": [
         "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-redesign-the-home-page-with-the-title-ultimate-gaming-arena-replace-the-two-mode-selection-buttons-with-a-grid-of-game-selection-cards-one-for-each-of-the-four-games-tic-tac-toe-snake-game-rock-paper-scissors-and-memory-card-match-each-card-must-display-the-game-title-a-short-description-and-a-play-button-that-navigates-to-the-game-s-dedicated-route-maintain-the-existing-neon-dark-theme-with-hover-glow-effects-and-mobile-responsive-layout",
-      "title": "Redesign the Home page with the title 'Ultimate Gaming Arena'. Replace the two mode-selection buttons with a grid of game selection cards — one for each of the four games: Tic Tac Toe, Snake Game, Rock Paper Scissors, and Memory Card Match. Each card must display the game title, a short description, and a 'Play' button that navigates to the game's dedicated route. Maintain the existing neon dark theme with hover glow effects and mobile-responsive layout.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-snake-game-at-route-snake-the-snake-moves-continuously-and-the-player-steers-it-using-arrow-keys-or-on-screen-d-pad-for-mobile-speed-increases-incrementally-as-the-snake-grows-by-eating-food-the-game-ends-when-the-snake-hits-the-wall-or-itself-include-a-score-display-score-number-of-food-items-eaten-a-high-score-display-a-restart-button-and-persist-the-high-score-to-localstorage",
-      "title": "Add a Snake Game at route /snake. The snake moves continuously and the player steers it using arrow keys (or on-screen D-pad for mobile). Speed increases incrementally as the snake grows by eating food. The game ends when the snake hits the wall or itself. Include a score display (score = number of food items eaten), a high score display, a Restart button, and persist the high score to localStorage.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-rock-paper-scissors-game-at-route-rps-the-player-picks-rock-paper-or-scissors-the-computer-picks-randomly-display-the-result-win-lose-draw-for-each-round-track-and-display-win-counts-for-the-player-and-the-computer-persist-scores-to-localstorage-include-a-restart-button-that-resets-scores",
-      "title": "Add a Rock Paper Scissors game at route /rps. The player picks Rock, Paper, or Scissors; the computer picks randomly. Display the result (win/lose/draw) for each round. Track and display win counts for the player and the computer. Persist scores to localStorage. Include a Restart button that resets scores.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-memory-card-match-game-at-route-memory-display-a-4x4-grid-of-16-face-down-cards-8-matching-pairs-cards-use-gaming-themed-emoji-icons-the-player-flips-two-cards-at-a-time-matched-pairs-stay-face-up-track-and-display-the-number-of-moves-taken-when-all-pairs-are-matched-show-a-win-message-with-the-move-count-persist-the-best-lowest-move-count-to-localstorage-include-a-restart-button-that-shuffles-and-resets-the-board",
-      "title": "Add a Memory Card Match game at route /memory. Display a 4x4 grid of 16 face-down cards (8 matching pairs). Cards use gaming-themed emoji icons: 🎮 🕹️ ⭐ 🏆 🎯 🎲 🃏 💎. The player flips two cards at a time; matched pairs stay face-up. Track and display the number of moves taken. When all pairs are matched, show a win message with the move count. Persist the best (lowest) move count to localStorage. Include a Restart button that shuffles and resets the board.",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-migrate-existing-tic-tac-toe-scoreboard-from-session-only-state-to-localstorage-persistence-so-scores-accumulate-across-browser-sessions-scores-for-player-x-and-player-o-or-computer-in-single-player-mode-should-be-loaded-from-localstorage-on-mount-and-saved-on-every-score-update-a-restart-button-should-reset-scores-in-both-state-and-localstorage",
-      "title": "Migrate existing Tic Tac Toe scoreboard from session-only state to localStorage persistence, so scores accumulate across browser sessions. Scores for Player X and Player O (or Computer in Single Player mode) should be loaded from localStorage on mount and saved on every score update. A Restart button should reset scores in both state and localStorage.",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-redesign-the-home-page-to-organize-all-six-games-into-four-named-category-sections-strategy-games-tic-tac-toe-arcade-games-snake-game-traffic-car-game-casual-games-rock-paper-scissors-memory-card-match-and-2-player-games-snake-and-ladder-each-category-must-have-a-visible-section-heading-game-cards-retain-their-existing-title-description-and-play-button-layout-with-neon-dark-theme-styling",
-      "title": "Redesign the Home page to organize all six games into four named category sections: 'Strategy Games' (Tic Tac Toe), 'Arcade Games' (Snake Game, Traffic Car Game), 'Casual Games' (Rock Paper Scissors, Memory Card Match), and '2 Player Games' (Snake and Ladder). Each category must have a visible section heading. Game cards retain their existing title, description, and Play button layout with neon dark theme styling.",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-traffic-car-game-at-route-traffic-the-player-controls-a-car-using-arrow-keys-left-right-or-on-screen-left-right-buttons-for-mobile-incoming-traffic-cars-scroll-down-the-screen-toward-the-player-the-score-increases-over-time-time-based-increments-every-second-the-player-survives-the-game-ends-when-the-player-s-car-collides-with-a-traffic-car-include-a-score-display-a-restart-button-and-persist-the-high-score-to-localstorage-a-back-to-home-button-must-be-visible-on-the-game-page",
-      "title": "Add a Traffic Car Game at route /traffic. The player controls a car using arrow keys (left/right) or on-screen left/right buttons for mobile. Incoming traffic cars scroll down the screen toward the player. The score increases over time (time-based: increments every second the player survives). The game ends when the player's car collides with a traffic car. Include a score display, a restart button, and persist the high score to localStorage. A Back to Home button must be visible on the game page.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-snake-and-ladder-2-player-game-at-route-snake-ladder-display-a-classic-1-100-numbered-board-with-snakes-and-ladders-drawn-marked-on-it-two-players-take-turns-rolling-a-dice-via-a-roll-dice-button-each-player-s-token-moves-forward-by-the-dice-value-landing-on-a-ladder-moves-the-token-up-landing-on-a-snake-moves-it-down-the-turn-alternates-automatically-after-each-roll-the-first-player-to-reach-square-100-wins-and-a-winner-announcement-is-displayed-include-a-restart-button-that-resets-both-tokens-to-square-1-a-back-to-home-button-must-be-visible-on-the-game-page",
-      "title": "Add a Snake and Ladder 2-Player game at route /snake-ladder. Display a classic 1–100 numbered board with snakes and ladders drawn/marked on it. Two players take turns rolling a dice (via a Roll Dice button). Each player's token moves forward by the dice value; landing on a ladder moves the token up, landing on a snake moves it down. The turn alternates automatically after each roll. The first player to reach square 100 wins and a winner announcement is displayed. Include a Restart button that resets both tokens to square 1. A Back to Home button must be visible on the game page.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-global-leaderboard-page-at-route-leaderboard-the-page-reads-each-game-s-high-score-from-localstorage-and-displays-them-in-a-single-ranked-list-or-per-game-cards-games-to-include-tic-tac-toe-player-x-wins-player-o-wins-snake-game-high-score-rock-paper-scissors-player-wins-memory-card-match-best-move-count-traffic-car-game-high-score-snake-and-ladder-wins-per-player-if-tracked-include-a-back-to-home-button-apply-the-dark-neon-theme-consistently",
-      "title": "Add a Global Leaderboard page at route /leaderboard. The page reads each game's high score from localStorage and displays them in a single ranked list or per-game cards. Games to include: Tic Tac Toe (Player X wins / Player O wins), Snake Game (high score), Rock Paper Scissors (player wins), Memory Card Match (best move count), Traffic Car Game (high score), Snake and Ladder (wins per player if tracked). Include a Back to Home button. Apply the dark neon theme consistently.",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-back-to-home-button-on-every-existing-game-page-singleplayer-single-twoplayer-two-snakegame-snake-rockpaperscissors-rps-and-memorycardmatch-memory-the-button-must-navigate-to-and-be-styled-consistently-with-the-dark-neon-theme",
-      "title": "Add a 'Back to Home' button on every existing game page: SinglePlayer (/single), TwoPlayer (/two), SnakeGame (/snake), RockPaperScissors (/rps), and MemoryCardMatch (/memory). The button must navigate to / and be styled consistently with the dark neon theme.",
-      "reqIds": [
-        "REQ-16"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-register-the-two-new-game-routes-traffic-and-snake-ladder-in-the-tanstack-router-configuration-app-tsx-so-they-render-the-trafficcargame-and-snakeandladder-page-components-respectively",
-      "title": "Register the two new game routes /traffic and /snake-ladder in the TanStack Router configuration (App.tsx) so they render the TrafficCarGame and SnakeAndLadder page components respectively.",
-      "reqIds": [
-        "REQ-17"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-smooth-road-scrolling-animation-in-the-traffic-car-game-using-requestanimationframe-lane-markings-and-road-surface-must-animate-continuously-downward-to-simulate-forward-motion-with-scroll-speed-tied-to-the-current-game-speed",
-      "title": "Implement smooth road scrolling animation in the Traffic Car Game using requestAnimationFrame. Lane markings and road surface must animate continuously downward to simulate forward motion, with scroll speed tied to the current game speed.",
-      "reqIds": [
-        "REQ-18"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-gradually-increasing-game-speed-in-the-traffic-car-game-over-time-both-the-incoming-traffic-car-scroll-speed-and-the-road-scrolling-rate-must-accelerate-incrementally-as-the-player-survives-longer",
-      "title": "Implement gradually increasing game speed in the Traffic Car Game over time. Both the incoming traffic car scroll speed and the road scrolling rate must accelerate incrementally as the player survives longer.",
-      "reqIds": [
-        "REQ-19"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-looping-car-engine-background-sound-to-the-traffic-car-game-using-the-web-audio-api-programmatically-generated-no-external-audio-files-the-engine-sound-must-play-while-the-game-is-active-and-stop-when-the-game-is-over",
-      "title": "Add a looping car engine background sound to the Traffic Car Game using the Web Audio API (programmatically generated — no external audio files). The engine sound must play while the game is active and stop when the game is over.",
-      "reqIds": [
-        "REQ-20"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-an-explosion-animation-and-screen-shake-effect-when-the-player-s-car-collides-with-a-traffic-car-the-explosion-must-be-a-css-keyframe-burst-centered-on-the-crash-point-the-screen-shake-must-apply-a-rapid-jitter-animation-to-the-game-container-for-a-brief-duration-after-collision",
-      "title": "Add an explosion animation and screen shake effect when the player's car collides with a traffic car. The explosion must be a CSS keyframe burst centered on the crash point. The screen shake must apply a rapid jitter animation to the game container for a brief duration after collision.",
-      "reqIds": [
-        "REQ-21"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-particle-spark-effects-that-radiate-outward-from-the-crash-point-when-the-player-s-car-collides-with-a-traffic-car-sparks-must-be-multiple-small-elements-flying-in-random-directions-with-fade-out-animation",
-      "title": "Add particle spark effects that radiate outward from the crash point when the player's car collides with a traffic car. Sparks must be multiple small elements flying in random directions with fade-out animation.",
-      "reqIds": [
-        "REQ-22"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-score-pop-animation-in-the-traffic-car-game-each-time-the-score-increments-the-score-display-must-animate-with-a-scale-up-and-fade-effect-to-draw-attention-to-the-new-value",
-      "title": "Add a score pop animation in the Traffic Car Game. Each time the score increments, the score display must animate with a scale-up and fade effect to draw attention to the new value.",
-      "reqIds": [
-        "REQ-23"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-neon-glowing-trail-effect-behind-the-player-s-car-in-the-traffic-car-game-the-trail-must-consist-of-fading-neon-colored-elements-or-canvas-draws-that-follow-the-car-s-path-and-dissipate-over-a-short-distance",
-      "title": "Add a neon glowing trail effect behind the player's car in the Traffic Car Game. The trail must consist of fading neon-colored elements or canvas draws that follow the car's path and dissipate over a short distance.",
-      "reqIds": [
-        "REQ-24"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-background-moving-lights-effect-in-the-traffic-car-game-to-convey-speed-and-motion-ambient-streaking-light-blobs-or-lines-must-scroll-downward-in-the-background-behind-the-road-with-varying-opacity-and-speed",
-      "title": "Add a background moving lights effect in the Traffic Car Game to convey speed and motion. Ambient streaking light blobs or lines must scroll downward in the background behind the road, with varying opacity and speed.",
-      "reqIds": [
-        "REQ-25"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-hand-shake-animation-to-the-rock-paper-scissors-game-at-rps-when-the-player-selects-a-choice-both-the-player-s-and-computer-s-choice-display-areas-must-animate-with-a-rapid-up-down-shaking-motion-css-keyframe-translate-for-approximately-1-second-before-the-choices-are-revealed-building-anticipation-before-the-result",
-      "title": "Add a hand shake animation to the Rock Paper Scissors game at /rps. When the player selects a choice, both the player's and computer's choice display areas must animate with a rapid up-down shaking motion (CSS keyframe translate) for approximately 1 second before the choices are revealed, building anticipation before the result.",
-      "reqIds": [
-        "REQ-32"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-dramatic-reveal-animation-to-the-rock-paper-scissors-game-at-rps-after-the-hand-shake-animation-completes-each-choice-player-and-computer-must-animate-into-view-with-a-zoom-in-scale-up-combined-with-a-fade-in-effect-and-the-result-text-win-lose-draw-must-appear-with-a-staggered-entrance-animation",
-      "title": "Add a dramatic reveal animation to the Rock Paper Scissors game at /rps. After the hand shake animation completes, each choice (player and computer) must animate into view with a zoom-in scale-up combined with a fade-in effect, and the result text (Win/Lose/Draw) must appear with a staggered entrance animation.",
-      "reqIds": [
-        "REQ-33"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-glowing-burst-effect-on-the-rock-paper-scissors-game-at-rps-when-the-player-wins-a-round-a-radial-neon-colored-green-glow-burst-of-particles-or-expanding-ring-elements-must-emanate-from-the-player-s-choice-area-at-the-moment-the-win-result-is-shown",
-      "title": "Add a glowing burst effect on the Rock Paper Scissors game at /rps when the player wins a round. A radial neon-colored (green glow) burst of particles or expanding ring elements must emanate from the player's choice area at the moment the win result is shown.",
-      "reqIds": [
-        "REQ-34"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-score-number-bounce-animation-to-the-rock-paper-scissors-game-at-rps-each-time-the-player-win-count-or-computer-win-count-increments-the-corresponding-score-number-must-animate-with-a-scale-up-bounce-scale-1-then-settle-back-to-1-to-draw-attention-to-the-new-value",
-      "title": "Add a score number bounce animation to the Rock Paper Scissors game at /rps. Each time the player win count or computer win count increments, the corresponding score number must animate with a scale-up bounce (scale > 1 then settle back to 1) to draw attention to the new value.",
-      "reqIds": [
-        "REQ-35"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-background-pulse-effect-on-the-rock-paper-scissors-game-page-at-rps-when-the-player-wins-a-round-the-page-background-or-game-container-must-flash-pulse-with-a-neon-green-glow-expanding-radial-gradient-or-box-shadow-pulse-for-a-brief-moment-synchronized-with-the-win-result-reveal",
-      "title": "Add a background pulse effect on the Rock Paper Scissors game page at /rps when the player wins a round. The page background or game container must flash/pulse with a neon green glow (expanding radial gradient or box-shadow pulse) for a brief moment synchronized with the win result reveal.",
-      "reqIds": [
-        "REQ-36"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-web-audio-api-sound-effects-programmatically-generated-no-external-audio-files-to-the-rock-paper-scissors-game-at-rps-play-a-distinct-sound-for-player-win-triumphant-ascending-tone-player-loss-descending-tone-and-draw-neutral-short-tone-sounds-must-play-in-sync-with-the-result-reveal",
-      "title": "Add Web Audio API sound effects (programmatically generated, no external audio files) to the Rock Paper Scissors game at /rps. Play a distinct sound for: player win (triumphant ascending tone), player loss (descending tone), and draw (neutral short tone). Sounds must play in sync with the result reveal.",
-      "reqIds": [
-        "REQ-37"
       ],
       "version": 1
     }
@@ -263,223 +61,37 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Redesign home page as 'Ultimate Gaming Arena' with game selection cards (title, description, play button) for all 4 games",
+      "summary": "Add HTML5 sound effects (click, win, game over, scoring, special events) with global mute/unmute toggle across all games",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Add Snake game with increasing speed as snake grows and localStorage score tracking",
+      "summary": "Add difficulty selector screen (Easy/Medium/Hard) before each game, styled in dark neon theme",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Add Rock Paper Scissors game with restart button and localStorage score tracking",
+      "summary": "Tic Tac Toe difficulty levels: Easy (random AI), Medium (mixed strategy), Hard (Minimax AI)",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-4",
-      "summary": "Add Memory Card Match game with gaming-themed emoji icons, restart button, and localStorage score tracking",
+      "summary": "Snake difficulty levels: Easy (slow speed), Medium (normal speed), Hard (fast speed)",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-5",
-      "summary": "Migrate all game scores to localStorage for cross-session persistence",
+      "summary": "Traffic Car difficulty levels: Easy (slow traffic), Medium (normal), Hard (fast + more cars)",
       "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Add game categories on home page: Strategy, Arcade, Casual, 2 Player — with existing and new games organized into categories",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Add Traffic Car Game (Arcade): arrow key + mobile left/right controls, time-based scoring, incoming traffic cars, collision detection, restart button, localStorage score",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Add Snake and Ladder 2-Player game: 1-100 board, dice roll, snakes and ladders logic, turn-based system, winner announcement, restart option",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Add Global Leaderboard page showing all-time high scores per game pulled from localStorage",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Add Back to Home button on every game page",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-11",
-      "summary": "Upgrade Traffic Car Game with: smooth road scrolling, increasing speed over time, engine sound loop (Web Audio API), explosion + screen shake on crash, particle sparks on crash, score pop animation, neon trail behind player car, background moving lights effect",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-12",
-      "summary": "Upgrade all games to arcade-quality with: smooth animations, particle systems, screen shake, sound layering (Web Audio API), score animations, dynamic lighting effects, responsive controls, and no static transitions",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-13",
-      "summary": "Upgrade SnakeGame (/snake) with arcade-quality effects: add Web Audio API sound layering (eat sound, game-over sound, background ambient hum), particle burst effect when food is eaten, screen shake on game-over collision with wall or self, neon glow trail behind the snake head that fades across the last 4–6 segments, score pop animation (scale-up + fade) each time the score increments, and smooth CSS/canvas transitions for all state changes (no abrupt redraws).",
-      "reqIds": [
-        "REQ-26"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-14",
-      "summary": "Upgrade RockPaperScissors (/rps) with arcade-quality effects: add animated choice reveal (each option card flips or zooms in with a CSS transition when selected), particle confetti burst on win, screen shake on loss, Web Audio API sounds for win/lose/draw outcomes, score pop animation on win count increment, and dynamic neon glow pulses on the result text (win = green glow, lose = red glow, draw = yellow glow). Replace all instant state changes with smooth animated transitions.",
-      "reqIds": [
-        "REQ-27"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-15",
-      "summary": "Upgrade MemoryCardMatch (/memory) with arcade-quality effects: add a smooth 3D CSS flip animation for card reveal and hide (rotateY 0→180deg), particle burst when a matching pair is found, screen shake when a mismatch occurs, Web Audio API sounds for card flip, match success, mismatch, and game completion, score/move-count pop animation on each increment, neon glow highlight pulsing on matched cards, and a dynamic victory animation (cascade glow across all matched cards) when all pairs are found.",
-      "reqIds": [
-        "REQ-28"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-16",
-      "summary": "Upgrade SinglePlayer Tic Tac Toe (/single) and TwoPlayer Tic Tac Toe (/two) with arcade-quality effects: add smooth CSS scale + fade animation for each X or O mark placed on the board, particle burst on winning-cell highlight, screen shake when a game ends in a draw, Web Audio API sounds for mark placement, win, and draw, score pop animation on each score increment, neon glow pulse on winning cells, and animated transitions between game states (playing → winner → reset). Replace all instant resets with smooth fade-out/fade-in transitions.",
-      "reqIds": [
-        "REQ-29"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-17",
-      "summary": "Upgrade SnakeAndLadder (/snake-ladder) with arcade-quality effects: add smooth animated token movement (token slides cell-by-cell along the path with easing), particle burst when a player lands on a ladder (ascent effect), particle burst + screen shake when a player lands on a snake (descent effect), Web Audio API sounds for dice roll, ladder climb, snake slide, and winner announcement, score/turn indicator animates with a flash transition on turn change, neon glow on the active player's token, and an animated winner overlay with cascading neon effects.",
-      "reqIds": [
-        "REQ-30"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-18",
-      "summary": "Upgrade the Home page (/) and Leaderboard (/leaderboard) with arcade-quality transitions: replace instant route navigation with a neon fade-out/fade-in page transition animation (CSS opacity + scale), add hover particle spark effects on game card Play buttons, animate score values on the Leaderboard with a count-up number animation when the page loads, and ensure all card hover effects use smooth easing transitions with neon glow intensification.",
-      "reqIds": [
-        "REQ-31"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-19",
-      "summary": "Upgrade RockPaperScissors (/rps): hand shake animation before reveal, dramatic reveal animation, glowing burst on win, score number bounce animation, background pulse on victory, sound effects for win/lose/draw",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-20",
-      "summary": "Upgrade Snake & Ladder: spinning dice animation, square-by-square token movement, snake sliding animation, ladder climbing animation, confetti win effect, glowing turn indicator, Web Audio API sounds (dice, snake, ladder, win)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-21",
-      "summary": "Upgrade Traffic Car Game: redesign player car with realistic detailed CSS art (body, windows, wheels, headlights)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-22",
-      "summary": "Upgrade Snake Game: redesign snake with realistic segmented body (distinct head with eyes, scaled/gradient body segments, tail taper)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-23",
-      "summary": "Add a spinning/tumbling dice roll animation to the Snake and Ladder game at /snake-ladder. When the Roll Dice button is pressed, the dice element must visually spin (CSS keyframe rotation or 3D tumble) for approximately 0.8–1 second before settling on the rolled value.",
-      "reqIds": [
-        "REQ-38"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-24",
-      "summary": "Animate player token movement square by square in the Snake and Ladder game at /snake-ladder. When a player rolls the dice, their token must visually move one cell at a time along the board path with smooth easing between each step.",
-      "reqIds": [
-        "REQ-39"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-25",
-      "summary": "Add a sliding down animation to the Snake and Ladder game at /snake-ladder when a player lands on a snake head. The token must visually animate downward from the snake's head position to the snake's tail position before the turn ends.",
-      "reqIds": [
-        "REQ-40"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-26",
-      "summary": "Add a climbing up animation to the Snake and Ladder game at /snake-ladder when a player lands on a ladder bottom. The token must visually animate upward from the ladder's base cell to the ladder's top cell before the turn ends.",
-      "reqIds": [
-        "REQ-41"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-27",
-      "summary": "Add a confetti burst effect to the Snake and Ladder game at /snake-ladder when a player wins. When a player's token reaches square 100, a full-screen confetti animation must play over the winner announcement overlay.",
-      "reqIds": [
-        "REQ-42"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-28",
-      "summary": "Add a glowing turn indicator to the Snake and Ladder game at /snake-ladder. The current player's name or token label must be highlighted with a neon pulsing glow effect to clearly show whose turn it is. The glow must switch to the other player immediately after a turn ends.",
-      "reqIds": [
-        "REQ-43"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-29",
-      "summary": "Add Web Audio API sound effects (programmatically generated, no external audio files) to the Snake and Ladder game at /snake-ladder. Play distinct sounds for: dice roll (short percussive rattle), snake slide (descending pitch tone), ladder climb (ascending pitch tone), and winner fanfare (triumphant ascending chord sequence).",
-      "reqIds": [
-        "REQ-44"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-30",
-      "summary": "Redesign the player car in the Traffic Car Game at /traffic to look more realistic and detailed. Replace the current basic shape with a multi-layered CSS/canvas car illustration that includes: a car body with visible roof and hood sections, side windows, front windshield, headlights with a glow effect, visible wheels on both sides, and a distinct color scheme that stands out on the road.",
-      "reqIds": [
-        "REQ-45"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-31",
-      "summary": "Redesign the snake in the Snake Game at /snake to look more realistic and detailed. Replace the current basic rectangle segments with a segmented snake that includes: a distinct head shape with two visible eyes and a tongue, gradient-colored body segments that taper slightly toward the tail, a curved/rounded segment style to give a lifelike serpentine appearance, and a pointed or tapered tail segment.",
-      "reqIds": [
-        "REQ-46"
-      ],
       "status": "pending"
     }
   ],
   "gameProjectType": "2d",
-  "projectName": "Ultimate Tic Tac Toe",
+  "projectName": "Ultimate Gaming Arena",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

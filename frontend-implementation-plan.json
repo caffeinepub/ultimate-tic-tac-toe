@@ -1,192 +1,155 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Snake & Ladder Upgrades + Realistic Player Car & Snake Visuals",
+  "title": "Ultimate Gaming Arena — Sound Effects, Difficulty Levels & Selector Screens",
   "requirements": [
     {
-      "id": "REQ-38",
-      "summary": "Add spinning/tumbling dice roll animation to Snake and Ladder game",
+      "id": "REQ-1",
+      "summary": "Create a global sound manager module that plays distinct sound effects for click/button press, win, game over, score increment, and special events using HTML5 Audio API with a persistent mute/unmute toggle",
       "acceptanceCriteria": [
-        "Pressing Roll Dice triggers a visible spinning animation on the dice element.",
-        "The animation lasts approximately 0.8–1 second before the final value is shown.",
-        "The board and turn logic do not advance until the animation completes.",
-        "The animation uses CSS keyframes or JS-driven transforms with no external assets."
+        "Distinct sounds play for click, win, game over, score, and special events across all games.",
+        "A mute/unmute toggle button is visible and functional in all game pages.",
+        "Mute state persists across page refreshes via localStorage.",
+        "No sound plays when muted."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/SnakeAndLadder.tsx",
+          "path": "frontend/src/hooks/useSoundManager.ts",
+          "operation": "create",
+          "description": "Create a global sound manager hook using HTML5 Audio API to manage five distinct sound effects (click, win, game over, score, special event). Implement mute/unmute state persisted in localStorage and expose play functions for each sound type plus a toggle function."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Create a reusable DifficultySelector component styled in the dark neon theme that presents Easy/Medium/Hard options and appears before Tic Tac Toe (SinglePlayer), Snake, and Traffic Car games start",
+      "acceptanceCriteria": [
+        "A full-screen or overlay difficulty selector appears when navigating to Tic Tac Toe (SinglePlayer), Snake, and Traffic Car pages before gameplay begins.",
+        "Selector shows Easy, Medium, and Hard options with neon styling consistent with the rest of the app.",
+        "Selecting a difficulty dismisses the selector and starts the game at the chosen difficulty.",
+        "Returning to the selector (e.g., restart) re-shows the difficulty screen."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/DifficultySelector.tsx",
+          "operation": "create",
+          "description": "Create a reusable DifficultySelector component that renders a full-screen overlay with game title and three neon-styled buttons (Easy, Medium, Hard). Accept onSelect callback prop that receives the chosen difficulty string. Use neon-btn and neon-text classes from index.css for consistent dark neon theme styling."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Upgrade SinglePlayer Tic Tac Toe with three AI difficulty modes (Easy: random moves, Medium: mixed random/optimal, Hard: Minimax algorithm) controlled by the DifficultySelector screen",
+      "acceptanceCriteria": [
+        "Easy AI makes fully random valid moves.",
+        "Medium AI alternates or randomly mixes random and Minimax moves.",
+        "Hard AI uses Minimax and never loses.",
+        "Difficulty label is shown during gameplay (e.g., badge or subtitle).",
+        "Win/lose/draw sound effects play on respective outcomes."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/SinglePlayer.tsx",
           "operation": "modify",
-          "description": "Add CSS keyframe animation for dice spinning/tumbling (3D rotation effect). Wrap the dice roll logic in a promise that delays state updates until the animation completes (0.8–1s). Apply the spinning animation class to the dice element when Roll Dice is pressed, then remove it and update the dice value after the animation duration."
+          "description": "Integrate DifficultySelector component to show before game starts. Add state to track selected difficulty. Implement three AI strategies: Easy (random moves), Medium (50/50 mix of random and Minimax), and Hard (pure Minimax). Display difficulty badge during gameplay. Integrate useSoundManager hook to play win/lose/draw sound effects on game outcomes and click sounds on moves."
         },
         {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Define a @keyframes rule for dice spinning animation using 3D rotateX and rotateY transforms to create a tumbling effect. Add a CSS class (e.g., .dice-rolling) that applies the animation with 0.8–1s duration and ease-out timing."
+          "path": "frontend/src/utils/minimax.ts",
+          "operation": "create",
+          "description": "Create a utility module implementing the Minimax algorithm for unbeatable Tic Tac Toe AI. Export a function that takes the current board state and returns the optimal move coordinates."
         }
       ]
     },
     {
-      "id": "REQ-39",
-      "summary": "Animate player token movement square by square in Snake and Ladder game",
+      "id": "REQ-4",
+      "summary": "Upgrade Snake game with three speed-based difficulty modes (Easy: ~200ms tick, Medium: ~130ms tick, Hard: ~70ms tick) controlled by the DifficultySelector screen",
       "acceptanceCriteria": [
-        "After a dice roll, the token moves one square at a time with a visible transition between cells.",
-        "The movement easing is smooth (e.g., ease-in-out) and not instantaneous.",
-        "The token reaches the correct destination cell after completing all steps.",
-        "Snake/ladder logic fires only after the token finishes its square-by-square movement."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/SnakeAndLadder.tsx",
-          "operation": "modify",
-          "description": "Implement step-by-step token movement animation using setInterval or recursive setTimeout. For each step from current position to target position, update token position state with a delay (e.g., 150–200ms per square). Apply CSS transitions (ease-in-out) to the token element for smooth movement between cells. Delay snake/ladder teleportation logic until the square-by-square animation completes."
-        }
-      ]
-    },
-    {
-      "id": "REQ-40",
-      "summary": "Add sliding down animation when player lands on snake head",
-      "acceptanceCriteria": [
-        "When a token lands on a snake head cell, a downward sliding animation plays.",
-        "The token transitions visually from the head cell to the tail cell with smooth motion.",
-        "The animation is distinct from regular movement (e.g., curved path or CSS translate).",
-        "Turn does not end until the snake slide animation completes."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/SnakeAndLadder.tsx",
-          "operation": "modify",
-          "description": "Add a snake slide animation function that triggers when a player lands on a snake head. Implement a curved downward path animation using CSS transforms (translateY with slight translateX curve) or JS-driven position updates. Apply a distinct animation duration (e.g., 0.6–0.8s) with ease-in timing. Delay turn completion and next player switch until the snake slide animation finishes."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Define a @keyframes rule for snake sliding animation using translateY and slight translateX to create a curved downward path. Add a CSS class (e.g., .snake-slide) with the animation and appropriate timing function (ease-in)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-41",
-      "summary": "Add climbing up animation when player lands on ladder bottom",
-      "acceptanceCriteria": [
-        "When a token lands on a ladder base cell, an upward climbing animation plays.",
-        "The token transitions visually from the base cell to the top cell with smooth motion.",
-        "The animation is visually distinct from regular movement.",
-        "Turn does not end until the ladder climbing animation completes."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/SnakeAndLadder.tsx",
-          "operation": "modify",
-          "description": "Add a ladder climb animation function that triggers when a player lands on a ladder base. Implement an upward climbing path animation using CSS transforms (translateY with slight translateX) or JS-driven position updates. Apply a distinct animation duration (e.g., 0.6–0.8s) with ease-out timing. Delay turn completion and next player switch until the ladder climbing animation finishes."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Define a @keyframes rule for ladder climbing animation using negative translateY and slight translateX to create an upward climbing path. Add a CSS class (e.g., .ladder-climb) with the animation and appropriate timing function (ease-out)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-42",
-      "summary": "Add confetti burst effect when player wins Snake and Ladder game",
-      "acceptanceCriteria": [
-        "Winning triggers a confetti particle burst that covers the game area or full screen.",
-        "Confetti particles use multiple neon colors consistent with the dark neon theme.",
-        "The confetti animation plays simultaneously with or just after the winner announcement.",
-        "Confetti is implemented with CSS/JS — no external libraries or assets."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/SnakeAndLadder.tsx",
-          "operation": "modify",
-          "description": "Create a confetti effect function using JavaScript that spawns 50–100 DOM elements (divs) with random positions, colors (neon blue, purple, pink, cyan from theme), and sizes. Apply CSS animations with random durations and delays to make particles fall and fade out. Trigger the confetti burst when a player reaches square 100, rendering particles over the winner announcement overlay. Clean up particle elements after animation completes."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Define @keyframes rules for confetti particles including falling motion (translateY), rotation, and opacity fade-out. Add utility classes for confetti particles with absolute positioning, neon colors, and pointer-events-none to prevent interaction."
-        }
-      ]
-    },
-    {
-      "id": "REQ-43",
-      "summary": "Add glowing turn indicator to Snake and Ladder game",
-      "acceptanceCriteria": [
-        "The active player's turn indicator displays a neon pulsing glow animation.",
-        "The glow switches to the other player's indicator after each turn completes.",
-        "The inactive player's indicator has no glow or a dim state.",
-        "The indicator is visually prominent and readable on the dark neon theme."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/SnakeAndLadder.tsx",
-          "operation": "modify",
-          "description": "Add conditional CSS classes to player name/token labels based on currentPlayer state. Apply a neon pulsing glow class to the active player's indicator and a dim/inactive class to the other player. Ensure the glow switches immediately when currentPlayer state updates after a turn completes."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Define a @keyframes rule for neon pulsing glow animation using box-shadow with alternating intensity. Add CSS classes for active turn indicator (with pulsing glow animation) and inactive turn indicator (dim or no glow). Use neon colors from the existing theme (blue/purple)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-44",
-      "summary": "Add Web Audio API sound effects to Snake and Ladder game",
-      "acceptanceCriteria": [
-        "A short percussive rattle sound plays when the dice roll animation begins.",
-        "A descending tone plays when a player slides down a snake.",
-        "An ascending tone plays when a player climbs a ladder.",
-        "A triumphant fanfare sound plays when a player wins.",
-        "All sounds are generated via Web Audio API with no external audio files.",
-        "Sounds play in sync with the corresponding animations."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/SnakeAndLadder.tsx",
-          "operation": "modify",
-          "description": "Create Web Audio API sound generation functions: (1) dice rattle using white noise burst filtered with a short envelope, (2) snake slide using a descending frequency tone (e.g., 400Hz to 200Hz over 0.5s), (3) ladder climb using an ascending frequency tone (e.g., 200Hz to 500Hz over 0.5s), (4) winner fanfare using a sequence of ascending chord tones. Trigger sounds at the start of each corresponding animation: dice roll, snake slide, ladder climb, and win condition. Initialize AudioContext on first user interaction to comply with browser autoplay policies."
-        }
-      ]
-    },
-    {
-      "id": "REQ-45",
-      "summary": "Redesign player car in Traffic Car Game to look more realistic",
-      "acceptanceCriteria": [
-        "The player car displays a recognizable car silhouette with roof, hood, and body sections.",
-        "Front headlights are rendered with a neon or bright glow effect.",
-        "Side windows and a windshield are visually distinguishable on the car body.",
-        "Wheels are visible on both the left and right sides of the car.",
-        "The car uses a distinct color scheme that contrasts with the road background.",
-        "The car retains its existing hitbox dimensions so collision detection is unaffected.",
-        "All rendering is done via canvas draw calls or layered CSS — no external image assets."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/TrafficCarGame.tsx",
-          "operation": "modify",
-          "description": "Replace the player car rendering logic with a multi-layered canvas draw function. Draw: (1) car body using fillRect or rounded paths for roof, hood, and main body sections with a distinct color (e.g., bright blue or red), (2) side windows and windshield using semi-transparent darker fills, (3) headlights as small circles or arcs at the front with radial gradient glows (yellow/white), (4) wheels as filled circles on both left and right sides (black fill with light gray outlines). Preserve the existing car width and height constants so hitbox and collision detection logic remain unchanged."
-        }
-      ]
-    },
-    {
-      "id": "REQ-46",
-      "summary": "Redesign snake in Snake Game to look more realistic",
-      "acceptanceCriteria": [
-        "The snake head is visually distinct from body segments, with two small eyes rendered.",
-        "A small tongue or forked tip is drawn on the head pointing in the movement direction.",
-        "Body segments use a gradient fill (e.g., green shades) that creates a scale-like or rounded appearance.",
-        "Segments near the tail are slightly smaller or tapered to suggest a tail end.",
-        "The final tail segment is pointed or visually tapered.",
-        "The snake head rotates or is oriented to face the current movement direction.",
-        "All rendering is done via canvas draw calls — no external image assets.",
-        "Existing game logic, speed increases, collision detection, and scoring are unaffected."
+        "Easy mode runs at a visibly slow snake speed.",
+        "Medium mode runs at the current default speed.",
+        "Hard mode runs noticeably faster than Medium.",
+        "Difficulty label is displayed during gameplay.",
+        "Sound effects play on food eaten (score), game over, and new high score."
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/SnakeGame.tsx",
           "operation": "modify",
-          "description": "Replace the snake segment rendering logic with detailed canvas draw functions. For the head segment: draw a rounded shape using arc or bezierCurvePath, add two small filled circles for eyes, and draw a small forked tongue line pointing in the current direction. For body segments: use radial or linear gradients (green shades) and render as rounded rectangles or circles. Apply slight size tapering toward the tail by reducing segment size based on index. For the tail segment: draw a pointed or tapered shape using a triangle or narrow ellipse. Rotate or orient the head drawing based on the snake's current direction vector. Preserve the existing grid-based position logic and segment size constants so collision detection and food spawning continue to work."
+          "description": "Integrate DifficultySelector component to show before game starts. Add state to track selected difficulty and map it to tick intervals (Easy: 200ms, Medium: 130ms, Hard: 70ms). Update game loop to use difficulty-based interval. Display difficulty badge during gameplay. Integrate useSoundManager hook to play score sound on food eaten, game over sound on collision, and special event sound on new high score."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Upgrade Traffic Car game with three difficulty modes (Easy: slow/sparse traffic, Medium: normal, Hard: fast/dense traffic) controlled by the DifficultySelector screen",
+      "acceptanceCriteria": [
+        "Easy mode has visibly slower and sparser traffic.",
+        "Medium mode matches current default behavior.",
+        "Hard mode has faster and denser traffic from the start.",
+        "Difficulty label is displayed during gameplay.",
+        "Sound effects play on collision (game over), scoring milestones, and special events."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/TrafficCarGame.tsx",
+          "operation": "modify",
+          "description": "Integrate DifficultySelector component to show before game starts. Add state to track selected difficulty and map it to traffic parameters (Easy: slow speed + fewer cars, Medium: current defaults, Hard: fast speed + more simultaneous cars). Adjust car spawn rate and speed based on difficulty. Display difficulty badge during gameplay. Integrate useSoundManager hook to play game over sound on collision, score sound on milestones, and special event sound for achievements (keep existing Web Audio engine sound)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Integrate the global mute/unmute toggle button into all game pages and the Home page, styled consistently with the dark neon theme",
+      "acceptanceCriteria": [
+        "Mute/unmute button is visible on all game pages.",
+        "Button shows a clear muted vs. unmuted visual state.",
+        "Button uses neon styling consistent with the app theme.",
+        "Toggling mute immediately silences or restores all game sounds."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/SoundToggle.tsx",
+          "operation": "create",
+          "description": "Create a reusable SoundToggle component that uses useSoundManager hook to display the current mute state and toggle it on click. Render a speaker icon with neon glow styling that changes visual state when muted (e.g., speaker-off icon or slashed speaker). Use neon-btn class for consistent theme styling."
+        },
+        {
+          "path": "frontend/src/pages/Home.tsx",
+          "operation": "modify",
+          "description": "Add SoundToggle component to the header/navbar area of the Home page, positioned consistently with the neon theme layout (e.g., top-right corner)."
+        },
+        {
+          "path": "frontend/src/pages/SinglePlayer.tsx",
+          "operation": "modify",
+          "description": "Add SoundToggle component to the game page header area for in-game mute control."
+        },
+        {
+          "path": "frontend/src/pages/TwoPlayer.tsx",
+          "operation": "modify",
+          "description": "Add SoundToggle component to the game page header area for in-game mute control."
+        },
+        {
+          "path": "frontend/src/pages/SnakeGame.tsx",
+          "operation": "modify",
+          "description": "Add SoundToggle component to the game page header area for in-game mute control."
+        },
+        {
+          "path": "frontend/src/pages/RockPaperScissors.tsx",
+          "operation": "modify",
+          "description": "Add SoundToggle component to the game page header area for in-game mute control."
+        },
+        {
+          "path": "frontend/src/pages/MemoryCardMatch.tsx",
+          "operation": "modify",
+          "description": "Add SoundToggle component to the game page header area for in-game mute control."
+        },
+        {
+          "path": "frontend/src/pages/TrafficCarGame.tsx",
+          "operation": "modify",
+          "description": "Add SoundToggle component to the game page header area for in-game mute control."
+        },
+        {
+          "path": "frontend/src/pages/SnakeAndLadder.tsx",
+          "operation": "modify",
+          "description": "Add SoundToggle component to the game page header area for in-game mute control."
         }
       ]
     }

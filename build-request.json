@@ -1,205 +1,147 @@
 {
   "kind": "build_request",
-  "title": "Snake & Ladder Upgrades + Realistic Player Car & Snake Visuals",
+  "title": "Ultimate Gaming Arena — Sound Effects, Difficulty Levels & Selector Screens",
   "projectName": "Ultimate Gaming Arena",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-38",
-      "text": "Add a spinning/tumbling dice roll animation to the Snake and Ladder game at /snake-ladder. When the Roll Dice button is pressed, the dice element must visually spin (CSS keyframe rotation or 3D tumble) for approximately 0.8–1 second before settling on the rolled value.",
+      "id": "REQ-1",
+      "text": "Create a global sound manager module (e.g., frontend/src/hooks/useSoundManager.ts) that uses HTML5 Audio API to play distinct sound effects for: click/button press, win, game over, score increment, and special events. Expose a global mute/unmute toggle that persists its state in localStorage.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-7"
         ],
         "quotes": [
-          "Animate dice rolling (spinning effect)."
+          "Add sound effects for clicks, wins, game over, scoring, and special events.",
+          "Include a sound toggle button (Mute / Unmute).",
+          "Use HTML5 audio."
         ]
       },
       "acceptanceCriteria": [
-        "Pressing Roll Dice triggers a visible spinning animation on the dice element.",
-        "The animation lasts approximately 0.8–1 second before the final value is shown.",
-        "The board and turn logic do not advance until the animation completes.",
-        "The animation uses CSS keyframes or JS-driven transforms with no external assets."
+        "Distinct sounds play for click, win, game over, score, and special events across all games.",
+        "A mute/unmute toggle button is visible and functional in all game pages.",
+        "Mute state persists across page refreshes via localStorage.",
+        "No sound plays when muted."
       ]
     },
     {
-      "id": "REQ-39",
-      "text": "Animate player token movement square by square in the Snake and Ladder game at /snake-ladder. When a player rolls the dice, their token must visually move one cell at a time along the board path with smooth easing between each step.",
+      "id": "REQ-2",
+      "text": "Create a reusable DifficultySelector component styled in the dark neon theme that presents Easy / Medium / Hard options and a game title. This screen must appear before each game starts for Tic Tac Toe (SinglePlayer), Snake, and Traffic Car. The selected difficulty is passed to the game logic.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-9",
+          "msg-7"
         ],
         "quotes": [
-          "Animate player token movement square by square."
+          "Add difficulty selector screen before starting each game.",
+          "📋 Difficulty Selector Screen add to all games",
+          "Pre-game screen before each game launches, styled in the dark neon theme"
         ]
       },
       "acceptanceCriteria": [
-        "After a dice roll, the token moves one square at a time with a visible transition between cells.",
-        "The movement easing is smooth (e.g., ease-in-out) and not instantaneous.",
-        "The token reaches the correct destination cell after completing all steps.",
-        "Snake/ladder logic fires only after the token finishes its square-by-square movement."
+        "A full-screen or overlay difficulty selector appears when navigating to Tic Tac Toe (SinglePlayer), Snake, and Traffic Car pages before gameplay begins.",
+        "Selector shows Easy, Medium, and Hard options with neon styling consistent with the rest of the app.",
+        "Selecting a difficulty dismisses the selector and starts the game at the chosen difficulty.",
+        "Returning to the selector (e.g., restart) re-shows the difficulty screen."
       ]
     },
     {
-      "id": "REQ-40",
-      "text": "Add a sliding down animation to the Snake and Ladder game at /snake-ladder when a player lands on a snake head. The token must visually animate downward from the snake's head position to the snake's tail position before the turn ends.",
+      "id": "REQ-3",
+      "text": "Upgrade SinglePlayer Tic Tac Toe (frontend/src/pages/SinglePlayer.tsx) with three AI difficulty modes: Easy uses fully random moves; Medium randomly mixes random and optimal moves (e.g., 50/50); Hard uses Minimax algorithm for unbeatable AI. The difficulty is set from the DifficultySelector screen.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-7"
         ],
         "quotes": [
-          "Add sliding animation when hitting snake."
+          "Tic Tac Toe: Easy (Random AI), Medium (Mixed AI), Hard (Minimax AI)"
         ]
       },
       "acceptanceCriteria": [
-        "When a token lands on a snake head cell, a downward sliding animation plays.",
-        "The token transitions visually from the head cell to the tail cell with smooth motion.",
-        "The animation is distinct from regular movement (e.g., curved path or CSS translate).",
-        "Turn does not end until the snake slide animation completes."
+        "Easy AI makes fully random valid moves.",
+        "Medium AI alternates or randomly mixes random and Minimax moves.",
+        "Hard AI uses Minimax and never loses.",
+        "Difficulty label is shown during gameplay (e.g., badge or subtitle).",
+        "Win/lose/draw sound effects play on respective outcomes."
       ]
     },
     {
-      "id": "REQ-41",
-      "text": "Add a climbing up animation to the Snake and Ladder game at /snake-ladder when a player lands on a ladder bottom. The token must visually animate upward from the ladder's base cell to the ladder's top cell before the turn ends.",
+      "id": "REQ-4",
+      "text": "Upgrade the Snake game (frontend/src/pages/SnakeGame.tsx) with three speed-based difficulty modes: Easy uses slow tick interval (~200ms), Medium uses normal (~130ms), Hard uses fast (~70ms). Difficulty is set from the DifficultySelector screen.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-7"
         ],
         "quotes": [
-          "Add climbing animation when using ladder."
+          "Snake: Easy (Slow speed), Medium (Normal speed), Hard (Fast speed)"
         ]
       },
       "acceptanceCriteria": [
-        "When a token lands on a ladder base cell, an upward climbing animation plays.",
-        "The token transitions visually from the base cell to the top cell with smooth motion.",
-        "The animation is visually distinct from regular movement.",
-        "Turn does not end until the ladder climbing animation completes."
+        "Easy mode runs at a visibly slow snake speed.",
+        "Medium mode runs at the current default speed.",
+        "Hard mode runs noticeably faster than Medium.",
+        "Difficulty label is displayed during gameplay.",
+        "Sound effects play on food eaten (score), game over, and new high score."
       ]
     },
     {
-      "id": "REQ-42",
-      "text": "Add a confetti burst effect to the Snake and Ladder game at /snake-ladder when a player wins. When a player's token reaches square 100, a full-screen confetti animation must play over the winner announcement overlay.",
+      "id": "REQ-5",
+      "text": "Upgrade the Traffic Car game (frontend/src/pages/TrafficCarGame.tsx) with three difficulty modes: Easy uses slow traffic speed and fewer cars; Medium uses normal speed and car density; Hard uses fast speed with more simultaneous cars. Difficulty is set from the DifficultySelector screen.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-7"
         ],
         "quotes": [
-          "Add confetti effect when someone wins."
+          "Traffic Car: Easy (Slow traffic), Medium (Normal), Hard (Fast + more cars)"
         ]
       },
       "acceptanceCriteria": [
-        "Winning triggers a confetti particle burst that covers the game area or full screen.",
-        "Confetti particles use multiple neon colors consistent with the dark neon theme.",
-        "The confetti animation plays simultaneously with or just after the winner announcement.",
-        "Confetti is implemented with CSS/JS — no external libraries or assets."
+        "Easy mode has visibly slower and sparser traffic.",
+        "Medium mode matches current default behavior.",
+        "Hard mode has faster and denser traffic from the start.",
+        "Difficulty label is displayed during gameplay.",
+        "Sound effects play on collision (game over), scoring milestones, and special events."
       ]
     },
     {
-      "id": "REQ-43",
-      "text": "Add a glowing turn indicator to the Snake and Ladder game at /snake-ladder. The current player's name or token label must be highlighted with a neon pulsing glow effect to clearly show whose turn it is. The glow must switch to the other player immediately after a turn ends.",
+      "id": "REQ-6",
+      "text": "Integrate the global mute/unmute toggle button into all game pages and the Home page header/navbar area, styled consistently with the dark neon theme (e.g., a speaker icon with neon glow).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-7",
+          "msg-11"
         ],
         "quotes": [
-          "Add glowing turn indicator."
+          "Include a sound toggle button (Mute / Unmute)",
+          "Keep dark neon theme consistent",
+          "Make everything clean and structured"
         ]
       },
       "acceptanceCriteria": [
-        "The active player's turn indicator displays a neon pulsing glow animation.",
-        "The glow switches to the other player's indicator after each turn completes.",
-        "The inactive player's indicator has no glow or a dim state.",
-        "The indicator is visually prominent and readable on the dark neon theme."
-      ]
-    },
-    {
-      "id": "REQ-44",
-      "text": "Add Web Audio API sound effects (programmatically generated, no external audio files) to the Snake and Ladder game at /snake-ladder. Play distinct sounds for: dice roll (short percussive rattle), snake slide (descending pitch tone), ladder climb (ascending pitch tone), and winner fanfare (triumphant ascending chord sequence).",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "Add sound effects for dice, snake, ladder, and win."
-        ]
-      },
-      "acceptanceCriteria": [
-        "A short percussive rattle sound plays when the dice roll animation begins.",
-        "A descending tone plays when a player slides down a snake.",
-        "An ascending tone plays when a player climbs a ladder.",
-        "A triumphant fanfare sound plays when a player wins.",
-        "All sounds are generated via Web Audio API with no external audio files.",
-        "Sounds play in sync with the corresponding animations."
-      ]
-    },
-    {
-      "id": "REQ-45",
-      "text": "Redesign the player car in the Traffic Car Game at /traffic to look more realistic and detailed. Replace the current basic shape with a multi-layered CSS/canvas car illustration that includes: a car body with visible roof and hood sections, side windows, front windshield, headlights with a glow effect, visible wheels on both sides, and a distinct color scheme that stands out on the road.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5"
-        ],
-        "quotes": [
-          "traffic car game player car make more real"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The player car displays a recognizable car silhouette with roof, hood, and body sections.",
-        "Front headlights are rendered with a neon or bright glow effect.",
-        "Side windows and a windshield are visually distinguishable on the car body.",
-        "Wheels are visible on both the left and right sides of the car.",
-        "The car uses a distinct color scheme that contrasts with the road background.",
-        "The car retains its existing hitbox dimensions so collision detection is unaffected.",
-        "All rendering is done via canvas draw calls or layered CSS — no external image assets."
-      ]
-    },
-    {
-      "id": "REQ-46",
-      "text": "Redesign the snake in the Snake Game at /snake to look more realistic and detailed. Replace the current basic rectangle segments with a segmented snake that includes: a distinct head shape with two visible eyes and a tongue, gradient-colored body segments that taper slightly toward the tail, a curved/rounded segment style to give a lifelike serpentine appearance, and a pointed or tapered tail segment.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5"
-        ],
-        "quotes": [
-          "snake game player snake make real"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The snake head is visually distinct from body segments, with two small eyes rendered.",
-        "A small tongue or forked tip is drawn on the head pointing in the movement direction.",
-        "Body segments use a gradient fill (e.g., green shades) that creates a scale-like or rounded appearance.",
-        "Segments near the tail are slightly smaller or tapered to suggest a tail end.",
-        "The final tail segment is pointed or visually tapered.",
-        "The snake head rotates or is oriented to face the current movement direction.",
-        "All rendering is done via canvas draw calls — no external image assets.",
-        "Existing game logic, speed increases, collision detection, and scoring are unaffected."
+        "Mute/unmute button is visible on all game pages.",
+        "Button shows a clear muted vs. unmuted visual state.",
+        "Button uses neon styling consistent with the app theme.",
+        "Toggling mute immediately silences or restores all game sounds."
       ]
     }
   ],
   "constraints": [
-    "All animations and sound effects must use CSS keyframes, JS/canvas, or Web Audio API only — no external audio files, image assets, or third-party animation libraries.",
-    "Existing game logic, collision detection, scoring, localStorage persistence, and Back to Home buttons must remain intact in both TrafficCarGame and SnakeGame.",
-    "Snake and Ladder existing board layout, snakes/ladders positions, restart button, and Back to Home button must be preserved.",
-    "Player car hitbox dimensions in TrafficCarGame must not change so existing collision detection continues to work correctly.",
-    "Snake segment hitbox/grid logic in SnakeGame must not change so existing collision detection and food spawning continue to work correctly."
+    "All sound effects must use HTML5 Audio API — no Web Audio API oscillators for these new effects (existing Web Audio usage in TrafficCarGame/RockPaperScissors may remain).",
+    "Dark neon theme must remain consistent across all new UI elements.",
+    "Do not modify files in frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui.",
+    "Backend (backend/main.mo) must not be changed — all game logic remains client-side."
   ],
   "nonGoals": [
-    "Adding new game modes or levels to any game.",
-    "Changing the board layout or snake/ladder positions in Snake and Ladder.",
-    "Adding multiplayer or online features.",
-    "Modifying the backend (main.mo).",
-    "Changing any route paths or navigation structure.",
-    "Redesigning traffic car sprites (non-player cars) or Snake game food items.",
-    "Adding new sound effects to Traffic Car Game or Snake Game beyond what already exists."
+    "Two-player Tic Tac Toe difficulty levels (difficulty only applies to single-player AI mode).",
+    "Online multiplayer or backend score persistence.",
+    "New games beyond the existing six.",
+    "Difficulty levels for Rock Paper Scissors, Memory Card Match, or Snake and Ladder.",
+    "Custom sound file uploads by users."
   ],
   "imageRequirements": {
     "required": [],

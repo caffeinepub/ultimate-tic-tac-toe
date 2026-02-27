@@ -1,375 +1,168 @@
 import React from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { Zap, Grid3x3, Worm, Scissors, Brain, Car, Dices, Trophy } from 'lucide-react';
+import SoundToggle from '../components/SoundToggle';
+import { useSoundManager } from '../hooks/useSoundManager';
 
 interface GameCard {
   title: string;
-  description: string;
-  icon: React.ReactNode;
+  subtitle: string;
+  icon: string;
   route: string;
-  color: 'blue' | 'purple' | 'green' | 'orange' | 'cyan' | 'pink';
+  color: string;
+  glow: string;
+  border: string;
+  badge?: string;
 }
 
-interface Category {
-  name: string;
-  icon: React.ReactNode;
-  games: GameCard[];
-}
-
-const colorStyles: Record<string, { border: string; glow: string; text: string; btnBg: string; btnHover: string; iconBg: string }> = {
-  blue: {
-    border: 'oklch(0.72 0.22 200 / 0.4)',
-    glow: '0 0 20px oklch(0.72 0.22 200 / 0.4), 0 0 40px oklch(0.72 0.22 200 / 0.2)',
-    text: 'oklch(0.85 0.22 200)',
-    btnBg: 'oklch(0.72 0.22 200 / 0.15)',
-    btnHover: 'oklch(0.72 0.22 200 / 0.25)',
-    iconBg: 'oklch(0.72 0.22 200 / 0.1)',
-  },
-  purple: {
-    border: 'oklch(0.65 0.28 295 / 0.4)',
-    glow: '0 0 20px oklch(0.65 0.28 295 / 0.4), 0 0 40px oklch(0.65 0.28 295 / 0.2)',
-    text: 'oklch(0.8 0.28 295)',
-    btnBg: 'oklch(0.65 0.28 295 / 0.15)',
-    btnHover: 'oklch(0.65 0.28 295 / 0.25)',
-    iconBg: 'oklch(0.65 0.28 295 / 0.1)',
-  },
-  green: {
-    border: 'oklch(0.75 0.22 155 / 0.4)',
-    glow: '0 0 20px oklch(0.75 0.22 155 / 0.4), 0 0 40px oklch(0.75 0.22 155 / 0.2)',
-    text: 'oklch(0.85 0.22 155)',
-    btnBg: 'oklch(0.75 0.22 155 / 0.15)',
-    btnHover: 'oklch(0.75 0.22 155 / 0.25)',
-    iconBg: 'oklch(0.75 0.22 155 / 0.1)',
-  },
-  orange: {
-    border: 'oklch(0.75 0.2 55 / 0.4)',
-    glow: '0 0 20px oklch(0.75 0.2 55 / 0.4), 0 0 40px oklch(0.75 0.2 55 / 0.2)',
-    text: 'oklch(0.85 0.2 55)',
-    btnBg: 'oklch(0.75 0.2 55 / 0.15)',
-    btnHover: 'oklch(0.75 0.2 55 / 0.25)',
-    iconBg: 'oklch(0.75 0.2 55 / 0.1)',
-  },
-  cyan: {
-    border: 'oklch(0.78 0.2 185 / 0.4)',
-    glow: '0 0 20px oklch(0.78 0.2 185 / 0.4), 0 0 40px oklch(0.78 0.2 185 / 0.2)',
-    text: 'oklch(0.88 0.2 185)',
-    btnBg: 'oklch(0.78 0.2 185 / 0.15)',
-    btnHover: 'oklch(0.78 0.2 185 / 0.25)',
-    iconBg: 'oklch(0.78 0.2 185 / 0.1)',
-  },
-  pink: {
-    border: 'oklch(0.7 0.25 340 / 0.4)',
-    glow: '0 0 20px oklch(0.7 0.25 340 / 0.4), 0 0 40px oklch(0.7 0.25 340 / 0.2)',
-    text: 'oklch(0.82 0.25 340)',
-    btnBg: 'oklch(0.7 0.25 340 / 0.15)',
-    btnHover: 'oklch(0.7 0.25 340 / 0.25)',
-    iconBg: 'oklch(0.7 0.25 340 / 0.1)',
-  },
-};
-
-const categories: Category[] = [
+const GAMES: GameCard[] = [
   {
-    name: 'Strategy Games',
-    icon: <Grid3x3 size={18} />,
-    games: [
-      {
-        title: 'Tic Tac Toe',
-        description: 'Classic X vs O battle. Challenge the AI or play with a friend in this timeless strategy game.',
-        icon: <Grid3x3 size={32} />,
-        route: '/single-player',
-        color: 'blue',
-      },
-    ],
+    title: 'Tic Tac Toe',
+    subtitle: 'Single Player vs AI',
+    icon: '🎮',
+    route: '/single-player',
+    color: 'text-neon-blue',
+    glow: 'hover:shadow-[0_0_25px_rgba(0,212,255,0.3)]',
+    border: 'hover:border-neon-blue/60',
+    badge: 'AI',
   },
   {
-    name: 'Arcade Games',
-    icon: <Car size={18} />,
-    games: [
-      {
-        title: 'Snake Game',
-        description: 'Guide your snake to eat food and grow longer. Avoid walls and yourself — how long can you last?',
-        icon: <Worm size={32} />,
-        route: '/snake',
-        color: 'green',
-      },
-      {
-        title: 'Traffic Car',
-        description: 'Dodge incoming traffic at high speed! Use arrow keys to swerve and survive as long as possible.',
-        icon: <Car size={32} />,
-        route: '/traffic',
-        color: 'cyan',
-      },
-    ],
+    title: 'Tic Tac Toe',
+    subtitle: 'Two Players',
+    icon: '🕹️',
+    route: '/two-player',
+    color: 'text-neon-purple',
+    glow: 'hover:shadow-[0_0_25px_rgba(168,85,247,0.3)]',
+    border: 'hover:border-neon-purple/60',
+    badge: '2P',
   },
   {
-    name: 'Casual Games',
-    icon: <Scissors size={18} />,
-    games: [
-      {
-        title: 'Rock Paper Scissors',
-        description: 'The ultimate hand game. Test your luck and strategy against the computer in rapid-fire rounds.',
-        icon: <Scissors size={32} />,
-        route: '/rps',
-        color: 'purple',
-      },
-      {
-        title: 'Memory Card Match',
-        description: 'Flip cards and find matching pairs. Train your memory and beat your best move count.',
-        icon: <Brain size={32} />,
-        route: '/memory',
-        color: 'orange',
-      },
-    ],
+    title: 'Snake',
+    subtitle: 'Classic arcade game',
+    icon: '🐍',
+    route: '/snake',
+    color: 'text-green-400',
+    glow: 'hover:shadow-[0_0_25px_rgba(74,222,128,0.3)]',
+    border: 'hover:border-green-500/60',
   },
   {
-    name: '2 Player Games',
-    icon: <Dices size={18} />,
-    games: [
-      {
-        title: 'Snake & Ladder',
-        description: 'Classic board game for 2 players! Roll the dice, climb ladders, and avoid snakes to reach 100.',
-        icon: <Dices size={32} />,
-        route: '/snake-ladder',
-        color: 'pink',
-      },
-    ],
+    title: 'Traffic Rush',
+    subtitle: 'Dodge the traffic',
+    icon: '🚗',
+    route: '/traffic',
+    color: 'text-yellow-400',
+    glow: 'hover:shadow-[0_0_25px_rgba(250,204,21,0.3)]',
+    border: 'hover:border-yellow-500/60',
+  },
+  {
+    title: 'Rock Paper Scissors',
+    subtitle: 'Classic hand game',
+    icon: '✊',
+    route: '/rps',
+    color: 'text-red-400',
+    glow: 'hover:shadow-[0_0_25px_rgba(248,113,113,0.3)]',
+    border: 'hover:border-red-500/60',
+  },
+  {
+    title: 'Memory Match',
+    subtitle: 'Find the pairs',
+    icon: '🃏',
+    route: '/memory',
+    color: 'text-pink-400',
+    glow: 'hover:shadow-[0_0_25px_rgba(244,114,182,0.3)]',
+    border: 'hover:border-pink-500/60',
+  },
+  {
+    title: 'Snake & Ladder',
+    subtitle: 'Classic board game',
+    icon: '🎲',
+    route: '/snake-ladder',
+    color: 'text-orange-400',
+    glow: 'hover:shadow-[0_0_25px_rgba(251,146,60,0.3)]',
+    border: 'hover:border-orange-500/60',
   },
 ];
 
-const categoryAccentColors: Record<string, { heading: string; line: string; badge: string }> = {
-  'Strategy Games': {
-    heading: 'oklch(0.85 0.22 200)',
-    line: 'oklch(0.72 0.22 200 / 0.5)',
-    badge: 'oklch(0.72 0.22 200 / 0.12)',
-  },
-  'Arcade Games': {
-    heading: 'oklch(0.88 0.2 185)',
-    line: 'oklch(0.78 0.2 185 / 0.5)',
-    badge: 'oklch(0.78 0.2 185 / 0.12)',
-  },
-  'Casual Games': {
-    heading: 'oklch(0.8 0.28 295)',
-    line: 'oklch(0.65 0.28 295 / 0.5)',
-    badge: 'oklch(0.65 0.28 295 / 0.12)',
-  },
-  '2 Player Games': {
-    heading: 'oklch(0.82 0.25 340)',
-    line: 'oklch(0.7 0.25 340 / 0.5)',
-    badge: 'oklch(0.7 0.25 340 / 0.12)',
-  },
-};
-
-export function Home() {
+const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [hoveredCard, setHoveredCard] = React.useState<string | null>(null);
+  const { playClick } = useSoundManager();
 
   return (
-    <div className="min-h-screen bg-grid-pattern flex flex-col">
-      {/* Ambient glow orbs */}
-      <div
-        className="fixed top-1/4 left-1/4 w-96 h-96 rounded-full pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, oklch(0.72 0.22 200 / 0.06) 0%, transparent 70%)',
-          filter: 'blur(40px)',
-        }}
-      />
-      <div
-        className="fixed bottom-1/4 right-1/4 w-96 h-96 rounded-full pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, oklch(0.65 0.28 295 / 0.06) 0%, transparent 70%)',
-          filter: 'blur(40px)',
-        }}
-      />
-
+    <div className="min-h-screen bg-gray-950 flex flex-col">
       {/* Header */}
-      <header className="w-full py-5 px-4 flex items-center justify-between max-w-5xl mx-auto">
-        <div className="flex items-center gap-2">
-          <Zap size={20} className="text-neon-blue animate-glow-pulse" />
-          <span className="font-orbitron text-xs tracking-widest text-muted-foreground uppercase hidden sm:block">
-            Ultimate Gaming Arena
-          </span>
-          <Zap size={20} className="text-neon-purple animate-glow-pulse" />
+      <header className="flex items-center justify-between px-6 py-4 border-b border-neon-blue/20 bg-gray-950/80 backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">🎮</span>
+          <div>
+            <h1 className="font-orbitron text-white text-lg font-bold tracking-widest">ULTIMATE</h1>
+            <p className="font-rajdhani text-neon-blue text-xs tracking-widest">GAMING ARENA</p>
+          </div>
         </div>
-        <button
-          onClick={() => navigate({ to: '/leaderboard' })}
-          className="flex items-center gap-2 font-orbitron text-xs tracking-wider px-4 py-2 rounded-xl transition-all duration-300"
-          style={{
-            background: 'oklch(0.72 0.22 200 / 0.1)',
-            border: '1px solid oklch(0.72 0.22 200 / 0.4)',
-            color: 'oklch(0.85 0.22 200)',
-            boxShadow: '0 0 10px oklch(0.72 0.22 200 / 0.2)',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.background = 'oklch(0.72 0.22 200 / 0.2)';
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 20px oklch(0.72 0.22 200 / 0.4)';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.background = 'oklch(0.72 0.22 200 / 0.1)';
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 10px oklch(0.72 0.22 200 / 0.2)';
-          }}
-        >
-          <Trophy size={14} />
-          <span>LEADERBOARD</span>
-        </button>
+        <SoundToggle />
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center px-4 py-6">
-        <div className="w-full max-w-5xl flex flex-col items-center gap-10 animate-float-up">
-          {/* Title */}
-          <div className="text-center">
-            <div className="font-orbitron text-xs sm:text-sm tracking-[0.3em] text-muted-foreground uppercase mb-3">
-              ⚡ Welcome to ⚡
-            </div>
-            <h1
-              className="font-orbitron font-black text-4xl sm:text-5xl md:text-6xl leading-tight animate-title-glow"
-              style={{ color: 'oklch(0.85 0.22 200)' }}
+      {/* Hero */}
+      <section className="text-center py-10 px-4">
+        <h2 className="font-orbitron text-3xl md:text-4xl font-bold text-white mb-3 tracking-wider">
+          Choose Your <span className="text-neon-blue">Game</span>
+        </h2>
+        <p className="font-rajdhani text-gray-400 text-lg tracking-wide">
+          7 games • Difficulty levels • Sound effects
+        </p>
+      </section>
+
+      {/* Game grid */}
+      <main className="flex-1 px-4 pb-8">
+        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {GAMES.map(game => (
+            <button
+              key={game.route}
+              onClick={() => { playClick(); navigate({ to: game.route }); }}
+              className={`
+                group relative flex flex-col items-start gap-3 p-5 rounded-2xl
+                border border-gray-800 bg-gray-900/60 backdrop-blur-sm
+                transition-all duration-300 cursor-pointer text-left
+                hover:bg-gray-800/80 hover:scale-[1.02] active:scale-[0.98]
+                ${game.glow} ${game.border}
+              `}
             >
-              ULTIMATE
-            </h1>
-            <h1
-              className="font-orbitron font-black text-3xl sm:text-4xl md:text-5xl leading-tight"
-              style={{
-                color: 'oklch(0.8 0.28 295)',
-                textShadow: '0 0 20px oklch(0.65 0.28 295 / 0.8), 0 0 50px oklch(0.65 0.28 295 / 0.4)',
-              }}
-            >
-              GAMING ARENA
-            </h1>
-          </div>
-
-          {/* Decorative line */}
-          <div className="w-full flex items-center gap-3">
-            <div
-              className="flex-1 h-px"
-              style={{ background: 'linear-gradient(to right, transparent, oklch(0.72 0.22 200 / 0.5))' }}
-            />
-            <div className="w-2 h-2 rounded-full bg-neon-blue animate-pulse" />
-            <div
-              className="flex-1 h-px"
-              style={{ background: 'linear-gradient(to left, transparent, oklch(0.65 0.28 295 / 0.5))' }}
-            />
-          </div>
-
-          {/* Categories */}
-          <div className="w-full flex flex-col gap-10">
-            {categories.map((category) => {
-              const accent = categoryAccentColors[category.name];
-              return (
-                <section key={category.name}>
-                  {/* Category Heading */}
-                  <div className="flex items-center gap-3 mb-5">
-                    <div
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg font-orbitron text-xs tracking-widest uppercase"
-                      style={{
-                        background: accent.badge,
-                        color: accent.heading,
-                        border: `1px solid ${accent.line}`,
-                      }}
-                    >
-                      {category.icon}
-                      {category.name}
-                    </div>
-                    <div
-                      className="flex-1 h-px"
-                      style={{ background: `linear-gradient(to right, ${accent.line}, transparent)` }}
-                    />
-                  </div>
-
-                  {/* Game Cards Grid */}
-                  <div className={`grid gap-5 ${category.games.length === 1 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
-                    {category.games.map((game) => {
-                      const styles = colorStyles[game.color];
-                      const isHovered = hoveredCard === game.title;
-                      return (
-                        <div
-                          key={game.title}
-                          className="rounded-2xl p-6 flex flex-col gap-4 cursor-pointer transition-all duration-300"
-                          style={{
-                            background: 'oklch(0.12 0.02 265)',
-                            border: `1px solid ${isHovered ? styles.border : 'oklch(0.22 0.03 265)'}`,
-                            boxShadow: isHovered ? styles.glow : 'none',
-                            transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
-                          }}
-                          onMouseEnter={() => setHoveredCard(game.title)}
-                          onMouseLeave={() => setHoveredCard(null)}
-                        >
-                          {/* Icon */}
-                          <div
-                            className="w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300"
-                            style={{
-                              background: styles.iconBg,
-                              color: styles.text,
-                              boxShadow: isHovered ? `0 0 15px ${styles.border}` : 'none',
-                            }}
-                          >
-                            {game.icon}
-                          </div>
-
-                          {/* Text */}
-                          <div className="flex flex-col gap-1 flex-1">
-                            <h2
-                              className="font-orbitron font-bold text-lg tracking-wide"
-                              style={{ color: styles.text }}
-                            >
-                              {game.title}
-                            </h2>
-                            <p className="font-rajdhani text-sm text-muted-foreground leading-relaxed">
-                              {game.description}
-                            </p>
-                          </div>
-
-                          {/* Play Button */}
-                          <button
-                            onClick={() => navigate({ to: game.route })}
-                            className="w-full py-3 px-4 rounded-xl font-orbitron font-bold text-sm tracking-wider transition-all duration-300"
-                            style={{
-                              background: isHovered ? styles.btnHover : styles.btnBg,
-                              border: `1px solid ${styles.border}`,
-                              color: styles.text,
-                              textShadow: `0 0 8px ${styles.text}80`,
-                            }}
-                          >
-                            ▶ PLAY NOW
-                          </button>
-                        </div>
-                      );
-                    })}
-                    {/* Spacer for single-game categories on sm+ */}
-                    {category.games.length === 1 && (
-                      <div className="hidden sm:block" />
-                    )}
-                  </div>
-                </section>
-              );
-            })}
-          </div>
-
-          {/* Tagline */}
-          <p className="font-rajdhani text-center text-muted-foreground text-sm tracking-widest uppercase">
-            🎮 6 Games · Neon Powered · Score Tracking 🏆
-          </p>
+              {game.badge && (
+                <span className={`absolute top-3 right-3 font-orbitron text-xs px-2 py-0.5 rounded-full border border-current/40 bg-current/10 ${game.color}`}>
+                  {game.badge}
+                </span>
+              )}
+              <span className="text-4xl">{game.icon}</span>
+              <div>
+                <h3 className={`font-orbitron text-base font-bold tracking-wider ${game.color}`}>
+                  {game.title}
+                </h3>
+                <p className="font-rajdhani text-gray-400 text-sm mt-0.5">{game.subtitle}</p>
+              </div>
+              <span className={`font-orbitron text-xs tracking-widest opacity-0 group-hover:opacity-100 transition-opacity ${game.color}`}>
+                PLAY NOW →
+              </span>
+            </button>
+          ))}
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="w-full py-4 px-4 text-center">
-        <p className="font-rajdhani text-xs text-muted-foreground/50 tracking-wide">
-          Built with{' '}
-          <span style={{ color: 'oklch(0.65 0.28 295)' }}>♥</span>{' '}
+      <footer className="text-center py-4 border-t border-gray-800">
+        <p className="font-rajdhani text-gray-600 text-sm">
+          © {new Date().getFullYear()} Built with{' '}
+          <span className="text-red-500">♥</span>{' '}
           using{' '}
           <a
-            href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== 'undefined' ? window.location.hostname : 'ultimate-gaming-arena')}`}
+            href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname || 'ultimate-gaming-arena')}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-neon-blue transition-colors duration-200"
-            style={{ color: 'oklch(0.72 0.22 200 / 0.7)' }}
+            className="text-neon-blue hover:text-white transition-colors"
           >
             caffeine.ai
           </a>
-          {' '}· © {new Date().getFullYear()}
         </p>
       </footer>
     </div>
   );
-}
+};
+
+export default Home;

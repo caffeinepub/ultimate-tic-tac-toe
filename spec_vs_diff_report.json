@@ -1,85 +1,35 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-26T14:37:16.467Z",
-  "summary": "The diff only modifies project_state.json (a metadata/state tracking file) and does not contain any actual implementation changes to game source files. None of the 9 requirements (REQ-38 through REQ-46) appear to be implemented in the diff.",
+  "generatedAt": "2026-02-27T03:12:44.267Z",
+  "summary": "The diff implements nearly all six requirements. REQ-1 through REQ-6 are all addressed: a sound manager hook is created, a DifficultySelector component is added, SinglePlayer Tic Tac Toe gains Minimax AI with difficulty modes, SnakeGame gains speed-based difficulty, TrafficCarGame gains difficulty configs, and SoundToggle is added to all game pages and the Home header. One notable constraint violation exists: the sound manager uses Web Audio API oscillators rather than the HTML5 Audio API as required by the build constraint.",
   "missing_requirements": [
     {
-      "id": "REQ-38",
-      "requirement": "Add a spinning/tumbling dice roll animation to the Snake and Ladder game at /snake-ladder using CSS keyframes or JS-driven transforms.",
-      "reason": "No source code changes were made to any Snake and Ladder game file. Only project_state.json was modified.",
+      "id": "REQ-1",
+      "requirement": "Sound effects must use HTML5 Audio API — no Web Audio API oscillators for these new effects.",
+      "reason": "The useSoundManager.ts implementation uses Web Audio API oscillators (AudioContext, OscillatorNode) to generate sounds programmatically, which explicitly violates the build constraint requiring HTML5 Audio API for new sound effects.",
       "evidence": [
-        "project_state.json"
-      ]
-    },
-    {
-      "id": "REQ-39",
-      "requirement": "Animate player token movement square by square in the Snake and Ladder game with smooth easing between each step.",
-      "reason": "No source code changes were made to any Snake and Ladder game file. Only project_state.json was modified.",
-      "evidence": [
-        "project_state.json"
-      ]
-    },
-    {
-      "id": "REQ-40",
-      "requirement": "Add a sliding down animation when a player lands on a snake head in the Snake and Ladder game.",
-      "reason": "No source code changes were made to any Snake and Ladder game file. Only project_state.json was modified.",
-      "evidence": [
-        "project_state.json"
-      ]
-    },
-    {
-      "id": "REQ-41",
-      "requirement": "Add a climbing up animation when a player lands on a ladder bottom in the Snake and Ladder game.",
-      "reason": "No source code changes were made to any Snake and Ladder game file. Only project_state.json was modified.",
-      "evidence": [
-        "project_state.json"
-      ]
-    },
-    {
-      "id": "REQ-42",
-      "requirement": "Add a confetti burst effect when a player wins in the Snake and Ladder game.",
-      "reason": "No source code changes were made to any Snake and Ladder game file. Only project_state.json was modified.",
-      "evidence": [
-        "project_state.json"
-      ]
-    },
-    {
-      "id": "REQ-43",
-      "requirement": "Add a glowing turn indicator with neon pulsing glow to the Snake and Ladder game.",
-      "reason": "No source code changes were made to any Snake and Ladder game file. Only project_state.json was modified.",
-      "evidence": [
-        "project_state.json"
-      ]
-    },
-    {
-      "id": "REQ-44",
-      "requirement": "Add Web Audio API sound effects for dice roll, snake slide, ladder climb, and winner fanfare in the Snake and Ladder game.",
-      "reason": "No source code changes were made to any Snake and Ladder game file. Only project_state.json was modified.",
-      "evidence": [
-        "project_state.json"
-      ]
-    },
-    {
-      "id": "REQ-45",
-      "requirement": "Redesign the player car in the Traffic Car Game to be more realistic with roof, hood, windows, headlights, wheels, and distinct color scheme.",
-      "reason": "No source code changes were made to any Traffic Car Game file. Only project_state.json was modified.",
-      "evidence": [
-        "project_state.json"
-      ]
-    },
-    {
-      "id": "REQ-46",
-      "requirement": "Redesign the snake in the Snake Game to be more realistic with distinct head, eyes, tongue, gradient body segments, and tapered tail.",
-      "reason": "No source code changes were made to any Snake Game file. Only project_state.json was modified.",
-      "evidence": [
-        "project_state.json"
+        "frontend/src/hooks/useSoundManager.ts"
       ]
     }
   ],
   "hallucinated_features": [],
-  "confidence": 0.97,
+  "confidence": 0.87,
   "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/App.tsx",
+    "frontend/src/components/DifficultySelector.tsx",
+    "frontend/src/components/SoundToggle.tsx",
+    "frontend/src/hooks/useSoundManager.ts",
+    "frontend/src/pages/Home.tsx",
+    "frontend/src/pages/MemoryCardMatch.tsx",
+    "frontend/src/pages/RockPaperScissors.tsx",
+    "frontend/src/pages/SinglePlayer.tsx",
+    "frontend/src/pages/SnakeAndLadder.tsx",
+    "frontend/src/pages/SnakeGame.tsx",
+    "frontend/src/pages/TrafficCarGame.tsx",
+    "frontend/src/pages/TwoPlayer.tsx",
+    "frontend/src/utils/minimax.ts",
     "project_state.json"
   ]
 }

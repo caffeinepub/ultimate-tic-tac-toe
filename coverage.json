@@ -1,107 +1,119 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-26T14:37:16.470Z",
+  "generatedAt": "2026-02-27T03:12:44.270Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 9,
-    "implemented": 0,
+    "total": 6,
+    "implemented": 6,
     "items": [
       {
-        "id": "REQ-38",
-        "summary": "Add a spinning/tumbling dice roll animation to the Snake and Ladder game at /snake-ladder. When the Roll Dice button is pressed, the dice element must visually spin (CSS keyframe rotation or 3D tumble) for approximately 0.8–1 second before settling on the rolled value.",
-        "status": "missing",
+        "id": "REQ-1",
+        "summary": "Create a global sound manager module (e.g., frontend/src/hooks/useSoundManager.ts) that uses HTML5 Audio API to play distinct sound effects for: click/button press, win, game over, score increment, and special events. Expose a global mute/unmute toggle that persists its state in localStorage.",
+        "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/SnakeAndLadder.tsx",
-          "frontend/src/index.css"
+          "frontend/src/hooks/useSoundManager.ts"
         ],
-        "matchedFiles": []
+        "matchedFiles": [
+          "frontend/src/hooks/useSoundManager.ts"
+        ]
       },
       {
-        "id": "REQ-39",
-        "summary": "Animate player token movement square by square in the Snake and Ladder game at /snake-ladder. When a player rolls the dice, their token must visually move one cell at a time along the board path with smooth easing between each step.",
-        "status": "missing",
+        "id": "REQ-2",
+        "summary": "Create a reusable DifficultySelector component styled in the dark neon theme that presents Easy / Medium / Hard options and a game title. This screen must appear before each game starts for Tic Tac Toe (SinglePlayer), Snake, and Traffic Car. The selected difficulty is passed to the game logic.",
+        "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/SnakeAndLadder.tsx"
+          "frontend/src/components/DifficultySelector.tsx"
         ],
-        "matchedFiles": []
+        "matchedFiles": [
+          "frontend/src/components/DifficultySelector.tsx"
+        ]
       },
       {
-        "id": "REQ-40",
-        "summary": "Add a sliding down animation to the Snake and Ladder game at /snake-ladder when a player lands on a snake head. The token must visually animate downward from the snake's head position to the snake's tail position before the turn ends.",
-        "status": "missing",
+        "id": "REQ-3",
+        "summary": "Upgrade SinglePlayer Tic Tac Toe (frontend/src/pages/SinglePlayer.tsx) with three AI difficulty modes: Easy uses fully random moves; Medium randomly mixes random and optimal moves (e.g., 50/50); Hard uses Minimax algorithm for unbeatable AI. The difficulty is set from the DifficultySelector screen.",
+        "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/SnakeAndLadder.tsx",
-          "frontend/src/index.css"
+          "frontend/src/pages/SinglePlayer.tsx",
+          "frontend/src/utils/minimax.ts"
         ],
-        "matchedFiles": []
+        "matchedFiles": [
+          "frontend/src/pages/SinglePlayer.tsx",
+          "frontend/src/utils/minimax.ts"
+        ]
       },
       {
-        "id": "REQ-41",
-        "summary": "Add a climbing up animation to the Snake and Ladder game at /snake-ladder when a player lands on a ladder bottom. The token must visually animate upward from the ladder's base cell to the ladder's top cell before the turn ends.",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/pages/SnakeAndLadder.tsx",
-          "frontend/src/index.css"
-        ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-42",
-        "summary": "Add a confetti burst effect to the Snake and Ladder game at /snake-ladder when a player wins. When a player's token reaches square 100, a full-screen confetti animation must play over the winner announcement overlay.",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/pages/SnakeAndLadder.tsx",
-          "frontend/src/index.css"
-        ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-43",
-        "summary": "Add a glowing turn indicator to the Snake and Ladder game at /snake-ladder. The current player's name or token label must be highlighted with a neon pulsing glow effect to clearly show whose turn it is. The glow must switch to the other player immediately after a turn ends.",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/pages/SnakeAndLadder.tsx",
-          "frontend/src/index.css"
-        ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-44",
-        "summary": "Add Web Audio API sound effects (programmatically generated, no external audio files) to the Snake and Ladder game at /snake-ladder. Play distinct sounds for: dice roll (short percussive rattle), snake slide (descending pitch tone), ladder climb (ascending pitch tone), and winner fanfare (triumphant ascending chord sequence).",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/pages/SnakeAndLadder.tsx"
-        ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-45",
-        "summary": "Redesign the player car in the Traffic Car Game at /traffic to look more realistic and detailed. Replace the current basic shape with a multi-layered CSS/canvas car illustration that includes: a car body with visible roof and hood sections, side windows, front windshield, headlights with a glow effect, visible wheels on both sides, and a distinct color scheme that stands out on the road.",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/pages/TrafficCarGame.tsx"
-        ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-46",
-        "summary": "Redesign the snake in the Snake Game at /snake to look more realistic and detailed. Replace the current basic rectangle segments with a segmented snake that includes: a distinct head shape with two visible eyes and a tongue, gradient-colored body segments that taper slightly toward the tail, a curved/rounded segment style to give a lifelike serpentine appearance, and a pointed or tapered tail segment.",
-        "status": "missing",
+        "id": "REQ-4",
+        "summary": "Upgrade the Snake game (frontend/src/pages/SnakeGame.tsx) with three speed-based difficulty modes: Easy uses slow tick interval (~200ms), Medium uses normal (~130ms), Hard uses fast (~70ms). Difficulty is set from the DifficultySelector screen.",
+        "status": "implemented",
         "plannedFiles": [
           "frontend/src/pages/SnakeGame.tsx"
         ],
-        "matchedFiles": []
+        "matchedFiles": [
+          "frontend/src/pages/SnakeGame.tsx"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Upgrade the Traffic Car game (frontend/src/pages/TrafficCarGame.tsx) with three difficulty modes: Easy uses slow traffic speed and fewer cars; Medium uses normal speed and car density; Hard uses fast speed with more simultaneous cars. Difficulty is set from the DifficultySelector screen.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/TrafficCarGame.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/TrafficCarGame.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Integrate the global mute/unmute toggle button into all game pages and the Home page header/navbar area, styled consistently with the dark neon theme (e.g., a speaker icon with neon glow).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/SoundToggle.tsx",
+          "frontend/src/pages/Home.tsx",
+          "frontend/src/pages/SinglePlayer.tsx",
+          "frontend/src/pages/TwoPlayer.tsx",
+          "frontend/src/pages/SnakeGame.tsx",
+          "frontend/src/pages/RockPaperScissors.tsx",
+          "frontend/src/pages/MemoryCardMatch.tsx",
+          "frontend/src/pages/TrafficCarGame.tsx",
+          "frontend/src/pages/SnakeAndLadder.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/SoundToggle.tsx",
+          "frontend/src/pages/Home.tsx",
+          "frontend/src/pages/SinglePlayer.tsx",
+          "frontend/src/pages/TwoPlayer.tsx",
+          "frontend/src/pages/SnakeGame.tsx",
+          "frontend/src/pages/RockPaperScissors.tsx",
+          "frontend/src/pages/MemoryCardMatch.tsx",
+          "frontend/src/pages/TrafficCarGame.tsx",
+          "frontend/src/pages/SnakeAndLadder.tsx"
+        ]
       }
     ]
   },
   "changedFiles": [
     "build-request.json",
     "feature_evidence.json",
+    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/App.tsx",
+    "frontend/src/components/DifficultySelector.tsx",
+    "frontend/src/components/SoundToggle.tsx",
+    "frontend/src/hooks/useSoundManager.ts",
+    "frontend/src/pages/Home.tsx",
+    "frontend/src/pages/MemoryCardMatch.tsx",
+    "frontend/src/pages/RockPaperScissors.tsx",
+    "frontend/src/pages/SinglePlayer.tsx",
+    "frontend/src/pages/SnakeAndLadder.tsx",
+    "frontend/src/pages/SnakeGame.tsx",
+    "frontend/src/pages/TrafficCarGame.tsx",
+    "frontend/src/pages/TwoPlayer.tsx",
+    "frontend/src/utils/minimax.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

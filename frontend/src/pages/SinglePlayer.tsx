@@ -1,97 +1,142 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { ArrowLeft, Bot } from 'lucide-react';
 import { GameBoard } from '../components/GameBoard';
 import { Scoreboard } from '../components/Scoreboard';
+import SoundToggle from '../components/SoundToggle';
+import DifficultySelector, { Difficulty } from '../components/DifficultySelector';
 import { useGameLogic } from '../hooks/useGameLogic';
 import { useScoreboard } from '../hooks/useScoreboard';
+import { useSoundManager } from '../hooks/useSoundManager';
+import { getBestMove, getRandomMove } from '../utils/minimax';
 
-export function SinglePlayer() {
+const HUMAN = 'X';
+const AI = 'O';
+
+const difficultyLabels: Record<Difficulty, { label: string; color: string }> = {
+  easy: { label: 'EASY', color: 'text-green-400' },
+  medium: { label: 'MEDIUM', color: 'text-yellow-400' },
+  hard: { label: 'HARD', color: 'text-red-400' },
+};
+
+const SinglePlayer: React.FC = () => {
   const navigate = useNavigate();
+  const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
   const { gameState, makeMove, resetGame, getAvailableCells } = useGameLogic();
-  const { scores, incrementScore } = useScoreboard();
+  const { scores, incrementScore, resetScores } = useScoreboard();
+  const { playClick, playWin, playGameOver, playScore } = useSoundManager();
+
   const scoreUpdatedRef = useRef(false);
-  const computerMoveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevStatusRef = useRef(gameState.status);
+  const aiThinkingRef = useRef(false);
 
-  // Track score updates
+  // Sound & score effects on game outcome
   useEffect(() => {
-    if (gameState.status !== 'playing' && !scoreUpdatedRef.current) {
+    if (gameState.status === prevStatusRef.current) return;
+    prevStatusRef.current = gameState.status;
+
+    if (gameState.status === 'won' && !scoreUpdatedRef.current) {
       scoreUpdatedRef.current = true;
-      if (gameState.status === 'won' && gameState.winner) {
-        incrementScore(gameState.winner);
+      if (gameState.winner) incrementScore(gameState.winner);
+      if (gameState.winner === HUMAN) {
+        playWin();
+      } else {
+        playGameOver();
       }
+    } else if (gameState.status === 'draw' && !scoreUpdatedRef.current) {
+      scoreUpdatedRef.current = true;
+      playScore();
     }
-  }, [gameState.status, gameState.winner, incrementScore]);
+  }, [gameState.status, gameState.winner, incrementScore, playWin, playGameOver, playScore]);
 
-  // Computer move logic
-  const triggerComputerMove = useCallback(() => {
-    if (gameState.status !== 'playing' || gameState.currentPlayer !== 'O') return;
-
-    const available = getAvailableCells(gameState.board);
-    if (available.length === 0) return;
-
-    const randomIndex = available[Math.floor(Math.random() * available.length)];
-    makeMove(randomIndex);
-  }, [gameState.status, gameState.currentPlayer, gameState.board, getAvailableCells, makeMove]);
-
-  // Trigger computer move after human plays
+  // AI move logic
   useEffect(() => {
-    if (gameState.currentPlayer === 'O' && gameState.status === 'playing') {
-      computerMoveTimeoutRef.current = setTimeout(() => {
-        triggerComputerMove();
-      }, 600);
-    }
+    if (!difficulty) return;
+    if (gameState.status !== 'playing') return;
+    if (gameState.currentPlayer !== AI) return;
+    if (aiThinkingRef.current) return;
+
+    aiThinkingRef.current = true;
+    const timer = setTimeout(() => {
+      const boardCopy = [...gameState.board] as (string | null)[];
+      let move = -1;
+
+      if (difficulty === 'easy') {
+        const available = getAvailableCells(gameState.board);
+        move = available[Math.floor(Math.random() * available.length)];
+      } else if (difficulty === 'medium') {
+        if (Math.random() < 0.5) {
+          move = getBestMove(boardCopy, AI, HUMAN);
+        } else {
+          const available = getAvailableCells(gameState.board);
+          move = available[Math.floor(Math.random() * available.length)];
+        }
+      } else {
+        move = getBestMove(boardCopy, AI, HUMAN);
+      }
+
+      if (move !== -1) {
+        makeMove(move);
+      }
+      aiThinkingRef.current = false;
+    }, 600);
 
     return () => {
-      if (computerMoveTimeoutRef.current) {
-        clearTimeout(computerMoveTimeoutRef.current);
-      }
+      clearTimeout(timer);
+      aiThinkingRef.current = false;
     };
-  }, [gameState.currentPlayer, gameState.status, triggerComputerMove]);
+  }, [gameState.board, gameState.currentPlayer, gameState.status, difficulty, makeMove, getAvailableCells]);
 
   const handleCellClick = (index: number) => {
-    if (gameState.currentPlayer !== 'X' || gameState.status !== 'playing') return;
+    if (!difficulty) return;
+    if (gameState.currentPlayer !== HUMAN) return;
+    if (gameState.status !== 'playing') return;
+    playClick();
     makeMove(index);
   };
 
   const handleRestart = () => {
+    playClick();
     scoreUpdatedRef.current = false;
-    if (computerMoveTimeoutRef.current) {
-      clearTimeout(computerMoveTimeoutRef.current);
-    }
+    prevStatusRef.current = 'playing';
+    aiThinkingRef.current = false;
+    resetGame();
+    setDifficulty(null);
+  };
+
+  const handleResetScores = () => {
+    playClick();
+    resetScores();
+  };
+
+  const handleSelectDifficulty = (d: Difficulty) => {
+    playClick();
+    setDifficulty(d);
+    scoreUpdatedRef.current = false;
+    prevStatusRef.current = 'playing';
     resetGame();
   };
 
-  // Determine status message and type
+  // Build status message and type for GameBoard
   const getStatusInfo = () => {
     if (gameState.status === 'won') {
-      if (gameState.winner === 'X') {
+      if (gameState.winner === HUMAN) {
         return {
-          message: (
-            <span>
-              🎉 <span className="neon-text-blue">You Win!</span> Player X takes the round!
-            </span>
-          ),
+          message: <span>🎉 <span className="neon-text-blue">You Win!</span></span>,
           type: 'winner-x' as const,
         };
-      } else {
-        return {
-          message: (
-            <span>
-              🤖 <span className="neon-text-purple">Computer Wins!</span> Better luck next time!
-            </span>
-          ),
-          type: 'winner-o' as const,
-        };
       }
+      return {
+        message: <span>🤖 <span className="neon-text-purple">Computer Wins!</span></span>,
+        type: 'winner-o' as const,
+      };
     }
     if (gameState.status === 'draw') {
       return {
-        message: <span>🤝 <span style={{ color: 'oklch(0.8 0.15 60)' }}>It's a Draw!</span> Well played!</span>,
+        message: <span>🤝 It's a Draw!</span>,
         type: 'draw' as const,
       };
     }
-    if (gameState.currentPlayer === 'X') {
+    if (gameState.currentPlayer === HUMAN) {
       return {
         message: <span>Your turn — <span className="neon-text-blue">Player X</span></span>,
         type: 'playing' as const,
@@ -105,85 +150,70 @@ export function SinglePlayer() {
 
   const { message, type } = getStatusInfo();
   const isBoardDisabled =
-    gameState.status !== 'playing' || gameState.currentPlayer === 'O';
+    gameState.status !== 'playing' || gameState.currentPlayer === AI;
 
   return (
-    <div className="min-h-screen bg-grid-pattern flex flex-col">
-      {/* Ambient glow */}
-      <div
-        className="fixed top-0 left-0 w-full h-full pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(ellipse at 20% 20%, oklch(0.72 0.22 200 / 0.04) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, oklch(0.65 0.28 295 / 0.04) 0%, transparent 50%)',
-        }}
-      />
+    <div className="min-h-screen bg-gray-950 flex flex-col">
+      {/* Difficulty Selector Overlay */}
+      {!difficulty && (
+        <DifficultySelector
+          gameTitle="Tic Tac Toe"
+          gameIcon="🎮"
+          onSelect={handleSelectDifficulty}
+          descriptions={{
+            easy: 'AI makes random moves',
+            medium: 'AI mixes strategy & random',
+            hard: 'Unbeatable Minimax AI',
+          }}
+        />
+      )}
 
       {/* Header */}
-      <header className="w-full py-4 px-4 flex items-center justify-between max-w-lg mx-auto">
+      <header className="flex items-center justify-between px-4 py-3 border-b border-neon-blue/20 bg-gray-950/80 backdrop-blur-sm">
         <button
-          onClick={() => navigate({ to: '/' })}
-          className="flex items-center gap-2 font-rajdhani text-sm text-muted-foreground hover:text-neon-blue transition-colors duration-200 group"
+          onClick={() => { playClick(); navigate({ to: '/' }); }}
+          className="font-orbitron text-neon-blue hover:text-white transition-colors text-sm tracking-wider flex items-center gap-2"
         >
-          <ArrowLeft size={16} className="transition-transform duration-200 group-hover:-translate-x-1" />
-          Back
+          ← ARENA
         </button>
-        <div className="flex items-center gap-2">
-          <Bot size={16} className="text-neon-purple" />
-          <span className="font-orbitron text-xs tracking-widest text-muted-foreground uppercase">
-            vs Computer
-          </span>
+        <div className="flex items-center gap-3">
+          <h1 className="font-orbitron text-white text-sm tracking-widest">TIC TAC TOE</h1>
+          {difficulty && (
+            <span className={`font-orbitron text-xs font-bold px-2 py-0.5 rounded border border-current/30 bg-current/10 ${difficultyLabels[difficulty].color}`}>
+              {difficultyLabels[difficulty].label}
+            </span>
+          )}
         </div>
+        <SoundToggle />
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-4">
-        <div className="w-full max-w-sm flex flex-col items-center gap-5">
-          {/* Title */}
-          <h2 className="font-orbitron font-bold text-xl sm:text-2xl tracking-wider text-center">
-            <span className="neon-text-blue">SINGLE</span>{' '}
-            <span className="text-foreground/80">PLAYER</span>
-          </h2>
-
-          {/* Scoreboard */}
-          <Scoreboard
-            scores={scores}
-            playerXLabel="You (X)"
-            playerOLabel="Computer"
-            currentPlayer={gameState.status === 'playing' ? gameState.currentPlayer : undefined}
-            gameOver={gameState.status !== 'playing'}
-          />
-
-          {/* Game Board */}
-          <GameBoard
-            board={gameState.board}
-            winningCells={gameState.winningCells}
-            onCellClick={handleCellClick}
-            disabled={isBoardDisabled}
-            statusMessage={message}
-            statusType={type}
-            onRestart={handleRestart}
-          />
-        </div>
+      {/* Main content */}
+      <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4">
+        <Scoreboard
+          scores={scores}
+          playerXLabel="You (X)"
+          playerOLabel="Computer"
+          currentPlayer={gameState.status === 'playing' ? gameState.currentPlayer : undefined}
+          gameOver={gameState.status !== 'playing'}
+        />
+        <GameBoard
+          board={gameState.board}
+          winningCells={gameState.winningCells}
+          onCellClick={handleCellClick}
+          disabled={isBoardDisabled}
+          statusMessage={message}
+          statusType={type}
+          onRestart={handleRestart}
+        />
+        <button
+          onClick={handleResetScores}
+          className="font-rajdhani text-gray-500 hover:text-gray-300 text-sm tracking-wider transition-colors"
+        >
+          Reset Scores
+        </button>
       </main>
-
-      {/* Footer */}
-      <footer className="w-full py-4 px-4 text-center">
-        <p className="font-rajdhani text-xs text-muted-foreground/50 tracking-wide">
-          Built with{' '}
-          <span style={{ color: 'oklch(0.65 0.28 295)' }}>♥</span>{' '}
-          using{' '}
-          <a
-            href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== 'undefined' ? window.location.hostname : 'ultimate-tic-tac-toe')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-neon-blue transition-colors duration-200"
-            style={{ color: 'oklch(0.72 0.22 200 / 0.7)' }}
-          >
-            caffeine.ai
-          </a>
-          {' '}· © {new Date().getFullYear()}
-        </p>
-      </footer>
     </div>
   );
-}
+};
+
+export default SinglePlayer;

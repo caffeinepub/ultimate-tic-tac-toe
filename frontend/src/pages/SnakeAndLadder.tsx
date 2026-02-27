@@ -1,232 +1,131 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { ArrowLeft, Dices, RotateCcw } from 'lucide-react';
+import SoundToggle from '../components/SoundToggle';
+import { useSoundManager } from '../hooks/useSoundManager';
 
-// Snakes: head -> tail (head > tail)
-const SNAKES: Record<number, number> = {
-  99: 54,
-  87: 24,
-  62: 19,
-  56: 3,
-  49: 11,
-  48: 26,
-};
+// ─── Board config ─────────────────────────────────────────────────────────────
+const SNAKES: Record<number, number> = { 99: 78, 95: 56, 87: 24, 62: 19, 54: 34, 17: 7 };
+const LADDERS: Record<number, number> = { 4: 25, 13: 46, 33: 49, 42: 63, 50: 69, 67: 91, 72: 92 };
+const BOARD_SIZE = 100;
 
-// Ladders: bottom -> top (bottom < top)
-const LADDERS: Record<number, number> = {
-  4: 14,
-  9: 31,
-  20: 38,
-  28: 84,
-  40: 59,
-  51: 67,
-  63: 81,
-  71: 91,
-};
+type PlayerColor = 'neon-blue' | 'neon-purple';
+interface Player { id: number; name: string; pos: number; color: PlayerColor; emoji: string }
 
-const BOARD_SIZE = 10;
-const TOTAL_SQUARES = 100;
+function rollDice(): number { return Math.floor(Math.random() * 6) + 1; }
 
-function getSquarePosition(square: number): { row: number; col: number } {
-  if (square < 1 || square > 100) return { row: 0, col: 0 };
-  const idx = square - 1;
-  const row = Math.floor(idx / BOARD_SIZE);
-  const col = idx % BOARD_SIZE;
-  // Board goes bottom-to-top, alternating direction
-  const boardRow = BOARD_SIZE - 1 - row;
-  const boardCol = row % 2 === 0 ? col : BOARD_SIZE - 1 - col;
-  return { row: boardRow, col: boardCol };
-}
-
-function getSquareNumber(row: number, col: number): number {
-  const boardRow = BOARD_SIZE - 1 - row;
-  const actualCol = boardRow % 2 === 0 ? col : BOARD_SIZE - 1 - col;
-  return boardRow * BOARD_SIZE + actualCol + 1;
-}
-
-const PLAYER_COLORS = {
-  1: { main: 'oklch(0.85 0.22 200)', glow: 'oklch(0.72 0.22 200 / 0.8)', bg: 'oklch(0.72 0.22 200 / 0.2)' },
-  2: { main: 'oklch(0.82 0.25 340)', glow: 'oklch(0.7 0.25 340 / 0.8)', bg: 'oklch(0.7 0.25 340 / 0.2)' },
-};
-
-export function SnakeAndLadder() {
+const SnakeAndLadder: React.FC = () => {
   const navigate = useNavigate();
-  const [positions, setPositions] = useState<[number, number]>([1, 1]);
-  const [currentPlayer, setCurrentPlayer] = useState<1 | 2>(1);
+  const [players, setPlayers] = useState<Player[]>([
+    { id: 0, name: 'Player 1', pos: 0, color: 'neon-blue', emoji: '🔵' },
+    { id: 1, name: 'Player 2', pos: 0, color: 'neon-purple', emoji: '🟣' },
+  ]);
+  const [currentPlayer, setCurrentPlayer] = useState(0);
   const [diceValue, setDiceValue] = useState<number | null>(null);
-  const [isRolling, setIsRolling] = useState(false);
-  const [winner, setWinner] = useState<1 | 2 | null>(null);
-  const [message, setMessage] = useState<string>('');
-  const [rollCount, setRollCount] = useState(0);
+  const [rolling, setRolling] = useState(false);
+  const [message, setMessage] = useState('');
+  const [winner, setWinner] = useState<Player | null>(null);
+  const { playClick, playScore, playWin, playGameOver, playSpecial } = useSoundManager();
 
-  const rollDice = useCallback(() => {
-    if (isRolling || winner) return;
-    setIsRolling(true);
-    setMessage('');
+  const handleRoll = useCallback(() => {
+    if (rolling || winner) return;
+    playClick();
+    setRolling(true);
 
-    // Animate dice roll
-    let ticks = 0;
-    const maxTicks = 8;
+    let count = 0;
     const interval = setInterval(() => {
-      setDiceValue(Math.floor(Math.random() * 6) + 1);
-      ticks++;
-      if (ticks >= maxTicks) {
+      setDiceValue(rollDice());
+      count++;
+      if (count >= 8) {
         clearInterval(interval);
-        const finalRoll = Math.floor(Math.random() * 6) + 1;
+        const finalRoll = rollDice();
         setDiceValue(finalRoll);
-        setRollCount((c) => c + 1);
+        setRolling(false);
 
-        setPositions((prev) => {
-          const newPositions: [number, number] = [...prev] as [number, number];
-          let newPos = prev[currentPlayer - 1] + finalRoll;
+        setPlayers(prev => {
+          const updated = [...prev];
+          const p = { ...updated[currentPlayer] };
+          let newPos = p.pos + finalRoll;
 
-          if (newPos > TOTAL_SQUARES) {
-            setMessage(`Need exact roll to finish! Stayed at ${prev[currentPlayer - 1]}.`);
-            setIsRolling(false);
-            setCurrentPlayer((p) => (p === 1 ? 2 : 1));
-            return prev;
-          }
-
-          let extraMsg = '';
-          if (LADDERS[newPos]) {
-            extraMsg = `🪜 Ladder! Climbed from ${newPos} to ${LADDERS[newPos]}!`;
-            newPos = LADDERS[newPos];
-          } else if (SNAKES[newPos]) {
-            extraMsg = `🐍 Snake! Slid from ${newPos} to ${SNAKES[newPos]}!`;
-            newPos = SNAKES[newPos];
-          }
-
-          newPositions[currentPlayer - 1] = newPos;
-
-          if (newPos >= TOTAL_SQUARES) {
-            setWinner(currentPlayer);
-            setMessage(`🏆 Player ${currentPlayer} wins!`);
+          if (newPos > BOARD_SIZE) {
+            newPos = p.pos;
+            setMessage(`${p.name} needs exact roll!`);
+          } else if (newPos === BOARD_SIZE) {
+            p.pos = newPos;
+            updated[currentPlayer] = p;
+            setWinner(p);
+            playWin();
+            setMessage(`🏆 ${p.name} wins!`);
+            return updated;
+          } else if (SNAKES[newPos] !== undefined) {
+            const snakeTo = SNAKES[newPos];
+            setMessage(`🐍 Snake! ${p.name} slides from ${newPos} to ${snakeTo}`);
+            newPos = snakeTo;
+            playGameOver();
+          } else if (LADDERS[newPos] !== undefined) {
+            const ladderTo = LADDERS[newPos];
+            setMessage(`🪜 Ladder! ${p.name} climbs from ${newPos} to ${ladderTo}`);
+            newPos = ladderTo;
+            playSpecial();
           } else {
-            setMessage(extraMsg || `Player ${currentPlayer} moved to ${newPos}.`);
-            setCurrentPlayer((p) => (p === 1 ? 2 : 1));
+            setMessage(`${p.name} rolled ${finalRoll} → position ${newPos}`);
+            playScore();
           }
 
-          setIsRolling(false);
-          return newPositions;
+          p.pos = newPos;
+          updated[currentPlayer] = p;
+          return updated;
         });
+
+        setCurrentPlayer(prev => (prev + 1) % 2);
       }
     }, 80);
-  }, [isRolling, winner, currentPlayer]);
+  }, [rolling, winner, currentPlayer, playClick, playWin, playGameOver, playSpecial, playScore]);
 
-  const restartGame = () => {
-    setPositions([1, 1]);
-    setCurrentPlayer(1);
+  const handleRestart = useCallback(() => {
+    playClick();
+    setPlayers([
+      { id: 0, name: 'Player 1', pos: 0, color: 'neon-blue', emoji: '🔵' },
+      { id: 1, name: 'Player 2', pos: 0, color: 'neon-purple', emoji: '🟣' },
+    ]);
+    setCurrentPlayer(0);
     setDiceValue(null);
-    setWinner(null);
+    setRolling(false);
     setMessage('');
-    setRollCount(0);
-    setIsRolling(false);
-  };
+    setWinner(null);
+  }, [playClick]);
 
-  const renderBoard = () => {
+  // Render board
+  const renderBoard = (): React.ReactNode[] => {
     const cells: React.ReactNode[] = [];
-    for (let row = 0; row < BOARD_SIZE; row++) {
-      for (let col = 0; col < BOARD_SIZE; col++) {
-        const squareNum = getSquareNumber(row, col);
-        const isSnakeHead = squareNum in SNAKES;
-        const isLadderBottom = squareNum in LADDERS;
-        const isSnakeTail = Object.values(SNAKES).includes(squareNum);
-        const isLadderTop = Object.values(LADDERS).includes(squareNum);
-        const p1Here = positions[0] === squareNum;
-        const p2Here = positions[1] === squareNum;
+    for (let row = 0; row < 10; row++) {
+      for (let col = 0; col < 10; col++) {
+        const rowFromBottom = 9 - row;
+        const cellNum = rowFromBottom % 2 === 0
+          ? rowFromBottom * 10 + col + 1
+          : rowFromBottom * 10 + (9 - col) + 1;
 
-        let cellBg = 'oklch(0.12 0.02 265)';
-        let cellBorder = 'oklch(0.22 0.03 265)';
-        let numColor = 'oklch(0.5 0.04 265)';
-
-        if (isSnakeHead) {
-          cellBg = 'oklch(0.12 0.06 25)';
-          cellBorder = 'oklch(0.65 0.25 25 / 0.5)';
-          numColor = 'oklch(0.75 0.25 25)';
-        } else if (isLadderBottom) {
-          cellBg = 'oklch(0.12 0.06 155)';
-          cellBorder = 'oklch(0.65 0.22 155 / 0.5)';
-          numColor = 'oklch(0.75 0.22 155)';
-        } else if (isSnakeTail) {
-          cellBg = 'oklch(0.11 0.04 25)';
-          cellBorder = 'oklch(0.65 0.25 25 / 0.25)';
-        } else if (isLadderTop) {
-          cellBg = 'oklch(0.11 0.04 155)';
-          cellBorder = 'oklch(0.65 0.22 155 / 0.25)';
-        }
-
-        if (squareNum === 100) {
-          cellBg = 'oklch(0.15 0.08 60)';
-          cellBorder = 'oklch(0.75 0.2 55 / 0.6)';
-          numColor = 'oklch(0.85 0.2 55)';
-        }
+        const hasSnake = SNAKES[cellNum] !== undefined;
+        const hasLadder = LADDERS[cellNum] !== undefined;
+        const playersHere = players.filter(p => p.pos === cellNum);
 
         cells.push(
           <div
-            key={squareNum}
-            className="relative flex flex-col items-center justify-center"
-            style={{
-              background: cellBg,
-              border: `1px solid ${cellBorder}`,
-              aspectRatio: '1',
-              minWidth: 0,
-            }}
+            key={cellNum}
+            className={[
+              'relative flex flex-col items-center justify-center text-center',
+              'border border-gray-800 text-xs',
+              hasSnake ? 'bg-red-950/40 border-red-800/40' : '',
+              hasLadder ? 'bg-green-950/40 border-green-800/40' : '',
+              !hasSnake && !hasLadder ? 'bg-gray-900/60' : '',
+            ].join(' ')}
+            style={{ width: '10%', aspectRatio: '1' }}
           >
-            {/* Square number */}
-            <span
-              className="font-orbitron leading-none select-none"
-              style={{
-                fontSize: 'clamp(6px, 1.5vw, 11px)',
-                color: numColor,
-                fontWeight: squareNum === 100 ? 900 : 600,
-              }}
-            >
-              {squareNum}
-            </span>
-
-            {/* Snake/Ladder indicator */}
-            {isSnakeHead && (
-              <span style={{ fontSize: 'clamp(8px, 1.8vw, 13px)', lineHeight: 1 }}>🐍</span>
-            )}
-            {isLadderBottom && (
-              <span style={{ fontSize: 'clamp(8px, 1.8vw, 13px)', lineHeight: 1 }}>🪜</span>
-            )}
-
-            {/* Player tokens */}
-            <div className="absolute inset-0 flex items-center justify-center gap-0.5">
-              {p1Here && (
-                <div
-                  className="rounded-full flex items-center justify-center font-orbitron font-black"
-                  style={{
-                    width: 'clamp(10px, 2.5vw, 18px)',
-                    height: 'clamp(10px, 2.5vw, 18px)',
-                    background: PLAYER_COLORS[1].bg,
-                    border: `1.5px solid ${PLAYER_COLORS[1].main}`,
-                    color: PLAYER_COLORS[1].main,
-                    fontSize: 'clamp(5px, 1.2vw, 8px)',
-                    boxShadow: `0 0 6px ${PLAYER_COLORS[1].glow}`,
-                  }}
-                >
-                  1
-                </div>
-              )}
-              {p2Here && (
-                <div
-                  className="rounded-full flex items-center justify-center font-orbitron font-black"
-                  style={{
-                    width: 'clamp(10px, 2.5vw, 18px)',
-                    height: 'clamp(10px, 2.5vw, 18px)',
-                    background: PLAYER_COLORS[2].bg,
-                    border: `1.5px solid ${PLAYER_COLORS[2].main}`,
-                    color: PLAYER_COLORS[2].main,
-                    fontSize: 'clamp(5px, 1.2vw, 8px)',
-                    boxShadow: `0 0 6px ${PLAYER_COLORS[2].glow}`,
-                  }}
-                >
-                  2
-                </div>
-              )}
-            </div>
+            <span className="font-orbitron text-gray-600" style={{ fontSize: '0.5rem' }}>{cellNum}</span>
+            {hasSnake && <span style={{ fontSize: '0.7rem' }}>🐍</span>}
+            {hasLadder && <span style={{ fontSize: '0.7rem' }}>🪜</span>}
+            {playersHere.map(p => (
+              <span key={p.id} style={{ fontSize: '0.8rem' }}>{p.emoji}</span>
+            ))}
           </div>
         );
       }
@@ -234,243 +133,83 @@ export function SnakeAndLadder() {
     return cells;
   };
 
-  const diceEmoji = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+  const DICE_FACES = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 
   return (
-    <div className="min-h-screen bg-grid-pattern flex flex-col">
-      {/* Ambient glow */}
-      <div
-        className="fixed top-1/4 right-1/4 w-80 h-80 rounded-full pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, oklch(0.7 0.25 340 / 0.06) 0%, transparent 70%)',
-          filter: 'blur(40px)',
-        }}
-      />
-
-      {/* Header */}
-      <header className="w-full py-4 px-4 flex items-center justify-between max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gray-950 flex flex-col">
+      <header className="flex items-center justify-between px-4 py-3 border-b border-neon-blue/20 bg-gray-950/80 backdrop-blur-sm">
         <button
-          onClick={() => navigate({ to: '/' })}
-          className="flex items-center gap-2 font-rajdhani text-sm text-muted-foreground hover:text-neon-blue transition-colors duration-200 group"
+          onClick={() => { playClick(); navigate({ to: '/' }); }}
+          className="font-orbitron text-neon-blue hover:text-white transition-colors text-sm tracking-wider"
         >
-          <ArrowLeft size={16} className="transition-transform duration-200 group-hover:-translate-x-1" />
-          Back to Home
+          ← ARENA
         </button>
-        <span
-          className="font-orbitron font-bold text-sm tracking-widest"
-          style={{ color: 'oklch(0.82 0.25 340)' }}
-        >
-          SNAKE & LADDER
-        </span>
-        <div className="w-24" />
+        <h1 className="font-orbitron text-white text-sm tracking-widest">SNAKE & LADDER</h1>
+        <SoundToggle />
       </header>
 
-      <main className="flex-1 flex flex-col items-center px-3 py-4 gap-4 max-w-2xl mx-auto w-full">
-        {/* Player info */}
-        <div className="flex gap-3 w-full">
-          {([1, 2] as const).map((p) => (
+      <main className="flex-1 flex flex-col items-center gap-4 p-4 max-w-lg mx-auto w-full">
+        {/* Player status */}
+        <div className="flex gap-4 w-full">
+          {players.map((p, i) => (
             <div
-              key={p}
-              className="flex-1 rounded-xl py-3 px-3 flex flex-col items-center gap-1 transition-all duration-300"
-              style={{
-                background: 'oklch(0.12 0.02 265)',
-                border: `2px solid ${currentPlayer === p && !winner ? PLAYER_COLORS[p].main : 'oklch(0.22 0.03 265)'}`,
-                boxShadow: currentPlayer === p && !winner ? `0 0 15px ${PLAYER_COLORS[p].glow}` : 'none',
-              }}
+              key={p.id}
+              className={[
+                'flex-1 flex items-center gap-2 p-3 rounded-xl border transition-all',
+                i === currentPlayer && !winner
+                  ? 'border-neon-blue/60 bg-neon-blue/10 shadow-[0_0_10px_rgba(0,212,255,0.2)]'
+                  : 'border-gray-800 bg-gray-900/60',
+              ].join(' ')}
             >
-              <div
-                className="font-orbitron font-bold text-sm tracking-wider"
-                style={{ color: PLAYER_COLORS[p].main }}
-              >
-                PLAYER {p}
+              <span className="text-xl">{p.emoji}</span>
+              <div>
+                <div className="font-orbitron text-white text-xs">{p.name}</div>
+                <div className="font-rajdhani text-gray-400 text-xs">Pos: {p.pos || 'Start'}</div>
               </div>
-              <div className="font-rajdhani text-xs text-muted-foreground">
-                Square: <span style={{ color: PLAYER_COLORS[p].main }} className="font-bold">{positions[p - 1]}</span>
-              </div>
-              {currentPlayer === p && !winner && (
-                <div
-                  className="font-rajdhani text-xs tracking-wider animate-pulse"
-                  style={{ color: PLAYER_COLORS[p].main }}
-                >
-                  ← YOUR TURN
-                </div>
-              )}
-              {winner === p && (
-                <div
-                  className="font-orbitron text-xs font-bold tracking-wider"
-                  style={{ color: 'oklch(0.85 0.2 55)' }}
-                >
-                  🏆 WINNER!
-                </div>
+              {i === currentPlayer && !winner && (
+                <span className="ml-auto font-orbitron text-neon-blue text-xs">▶</span>
               )}
             </div>
           ))}
         </div>
 
         {/* Board */}
-        <div
-          className="w-full rounded-2xl p-2 sm:p-3"
-          style={{
-            background: 'oklch(0.1 0.015 265)',
-            border: '1px solid oklch(0.25 0.04 265)',
-            boxShadow: '0 0 30px oklch(0.7 0.25 340 / 0.1)',
-          }}
-        >
-          <div
-            className="grid w-full"
-            style={{
-              gridTemplateColumns: `repeat(${BOARD_SIZE}, 1fr)`,
-              gap: '2px',
-            }}
-          >
-            {renderBoard()}
-          </div>
-        </div>
-
-        {/* Legend */}
-        <div className="flex gap-4 flex-wrap justify-center">
-          <div className="flex items-center gap-1.5 font-rajdhani text-xs text-muted-foreground">
-            <span
-              className="w-3 h-3 rounded-sm inline-block"
-              style={{ background: 'oklch(0.12 0.06 25)', border: '1px solid oklch(0.65 0.25 25 / 0.5)' }}
-            />
-            🐍 Snake Head
-          </div>
-          <div className="flex items-center gap-1.5 font-rajdhani text-xs text-muted-foreground">
-            <span
-              className="w-3 h-3 rounded-sm inline-block"
-              style={{ background: 'oklch(0.12 0.06 155)', border: '1px solid oklch(0.65 0.22 155 / 0.5)' }}
-            />
-            🪜 Ladder Bottom
-          </div>
+        <div className="w-full flex flex-wrap border border-gray-800 rounded-lg overflow-hidden">
+          {renderBoard()}
         </div>
 
         {/* Message */}
         {message && (
-          <div
-            className="w-full rounded-xl px-4 py-3 text-center font-rajdhani text-sm"
-            style={{
-              background: 'oklch(0.12 0.02 265)',
-              border: '1px solid oklch(0.25 0.04 265)',
-              color: winner ? 'oklch(0.85 0.2 55)' : 'oklch(0.8 0.05 265)',
-            }}
-          >
+          <div className="font-rajdhani text-gray-300 text-sm text-center px-4 py-2 rounded-lg bg-gray-900/80 border border-gray-800 w-full">
             {message}
           </div>
         )}
 
-        {/* Dice & Controls */}
-        <div className="flex flex-col items-center gap-3 w-full">
-          {/* Dice display */}
-          <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center text-4xl transition-all duration-200"
-            style={{
-              background: 'oklch(0.14 0.03 265)',
-              border: `2px solid ${isRolling ? 'oklch(0.82 0.25 340 / 0.8)' : 'oklch(0.3 0.05 265)'}`,
-              boxShadow: isRolling ? '0 0 20px oklch(0.7 0.25 340 / 0.5)' : 'none',
-            }}
-          >
-            {diceValue ? diceEmoji[diceValue] : <Dices size={28} style={{ color: 'oklch(0.5 0.05 265)' }} />}
+        {/* Dice & controls */}
+        <div className="flex items-center gap-6">
+          <div className={`text-5xl transition-all ${rolling ? 'animate-spin' : ''}`}>
+            {diceValue ? DICE_FACES[diceValue] : '🎲'}
           </div>
-
           {!winner ? (
             <button
-              onClick={rollDice}
-              disabled={isRolling}
-              className="flex items-center gap-2 font-orbitron font-bold text-sm tracking-wider px-8 py-3 rounded-xl transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
-              style={{
-                background: 'oklch(0.7 0.25 340 / 0.15)',
-                border: '2px solid oklch(0.7 0.25 340 / 0.6)',
-                color: 'oklch(0.82 0.25 340)',
-                boxShadow: isRolling ? 'none' : '0 0 15px oklch(0.7 0.25 340 / 0.3)',
-              }}
+              onClick={handleRoll}
+              disabled={rolling}
+              className="font-orbitron text-sm px-6 py-3 rounded-xl border border-neon-blue/60 bg-neon-blue/10 text-neon-blue hover:bg-neon-blue/20 transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Dices size={18} className={isRolling ? 'animate-spin' : ''} />
-              {isRolling ? 'ROLLING...' : `ROLL DICE — PLAYER ${currentPlayer}`}
+              {rolling ? 'ROLLING...' : `ROLL — ${players[currentPlayer].name}`}
             </button>
           ) : (
-            <div className="flex flex-col items-center gap-3">
-              <div
-                className="font-orbitron font-black text-2xl tracking-wider"
-                style={{
-                  color: 'oklch(0.85 0.2 55)',
-                  textShadow: '0 0 20px oklch(0.75 0.2 55 / 0.8)',
-                }}
-              >
-                🏆 PLAYER {winner} WINS!
-              </div>
-              <button
-                onClick={restartGame}
-                className="flex items-center gap-2 font-orbitron font-bold text-sm tracking-wider px-6 py-3 rounded-xl transition-all duration-300"
-                style={{
-                  background: 'oklch(0.72 0.22 200 / 0.15)',
-                  border: '2px solid oklch(0.72 0.22 200 / 0.6)',
-                  color: 'oklch(0.85 0.22 200)',
-                }}
-              >
-                <RotateCcw size={16} />
-                PLAY AGAIN
-              </button>
-            </div>
-          )}
-
-          {!winner && rollCount > 0 && (
             <button
-              onClick={restartGame}
-              className="flex items-center gap-1.5 font-rajdhani text-sm text-muted-foreground hover:text-foreground transition-colors"
+              onClick={handleRestart}
+              className="font-orbitron text-sm px-6 py-3 rounded-xl border border-green-500/60 bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-all tracking-wider"
             >
-              <RotateCcw size={13} />
-              Restart Game
+              PLAY AGAIN
             </button>
           )}
         </div>
-
-        {/* Snakes & Ladders reference */}
-        <div
-          className="w-full rounded-xl p-3 grid grid-cols-2 gap-3"
-          style={{ background: 'oklch(0.1 0.015 265)', border: '1px solid oklch(0.2 0.03 265)' }}
-        >
-          <div>
-            <div className="font-orbitron text-xs tracking-wider mb-2" style={{ color: 'oklch(0.75 0.25 25)' }}>
-              🐍 SNAKES
-            </div>
-            {Object.entries(SNAKES).map(([head, tail]) => (
-              <div key={head} className="font-rajdhani text-xs text-muted-foreground">
-                {head} → {tail}
-              </div>
-            ))}
-          </div>
-          <div>
-            <div className="font-orbitron text-xs tracking-wider mb-2" style={{ color: 'oklch(0.75 0.22 155)' }}>
-              🪜 LADDERS
-            </div>
-            {Object.entries(LADDERS).map(([bottom, top]) => (
-              <div key={bottom} className="font-rajdhani text-xs text-muted-foreground">
-                {bottom} → {top}
-              </div>
-            ))}
-          </div>
-        </div>
       </main>
-
-      {/* Footer */}
-      <footer className="w-full py-4 px-4 text-center">
-        <p className="font-rajdhani text-xs text-muted-foreground/50 tracking-wide">
-          Built with{' '}
-          <span style={{ color: 'oklch(0.65 0.28 295)' }}>♥</span>{' '}
-          using{' '}
-          <a
-            href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== 'undefined' ? window.location.hostname : 'ultimate-gaming-arena')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-neon-blue transition-colors duration-200"
-            style={{ color: 'oklch(0.72 0.22 200 / 0.7)' }}
-          >
-            caffeine.ai
-          </a>
-          {' '}· © {new Date().getFullYear()}
-        </p>
-      </footer>
     </div>
   );
-}
+};
+
+export default SnakeAndLadder;

@@ -1,4 +1,122 @@
 {
   "kind": "feature_evidence_report",
-  "features": []
+  "features": [
+    {
+      "featureId": "feature-create-a-global-sound-manager-module-e-g-frontend-src-hooks-usesoundmanager-ts-that-uses-html5-audio-api-to-play-distinct-sound-effects-for-click-button-press-win-game-over-score-increment-and-special-events-expose-a-global-mute-unmute-toggle-that-persists-its-state-in-localstorage",
+      "featureTitle": "Create a global sound manager module (e.g., frontend/src/hooks/useSoundManager.ts) that uses HTML5 Audio API to play distinct sound effects for: click/button press, win, game over, score increment, and special events. Expose a global mute/unmute toggle that persists its state in localStorage.",
+      "files": [
+        "frontend/src/hooks/useSoundManager.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-a-reusable-difficultyselector-component-styled-in-the-dark-neon-theme-that-presents-easy-medium-hard-options-and-a-game-title-this-screen-must-appear-before-each-game-starts-for-tic-tac-toe-singleplayer-snake-and-traffic-car-the-selected-difficulty-is-passed-to-the-game-logic",
+      "featureTitle": "Create a reusable DifficultySelector component styled in the dark neon theme that presents Easy / Medium / Hard options and a game title. This screen must appear before each game starts for Tic Tac Toe (SinglePlayer), Snake, and Traffic Car. The selected difficulty is passed to the game logic.",
+      "files": [
+        "frontend/src/components/DifficultySelector.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-upgrade-singleplayer-tic-tac-toe-frontend-src-pages-singleplayer-tsx-with-three-ai-difficulty-modes-easy-uses-fully-random-moves-medium-randomly-mixes-random-and-optimal-moves-e-g-50-50-hard-uses-minimax-algorithm-for-unbeatable-ai-the-difficulty-is-set-from-the-difficultyselector-screen",
+      "featureTitle": "Upgrade SinglePlayer Tic Tac Toe (frontend/src/pages/SinglePlayer.tsx) with three AI difficulty modes: Easy uses fully random moves; Medium randomly mixes random and optimal moves (e.g., 50/50); Hard uses Minimax algorithm for unbeatable AI. The difficulty is set from the DifficultySelector screen.",
+      "files": [
+        "frontend/src/pages/SinglePlayer.tsx",
+        "frontend/src/utils/minimax.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-upgrade-the-snake-game-frontend-src-pages-snakegame-tsx-with-three-speed-based-difficulty-modes-easy-uses-slow-tick-interval-200ms-medium-uses-normal-130ms-hard-uses-fast-70ms-difficulty-is-set-from-the-difficultyselector-screen",
+      "featureTitle": "Upgrade the Snake game (frontend/src/pages/SnakeGame.tsx) with three speed-based difficulty modes: Easy uses slow tick interval (~200ms), Medium uses normal (~130ms), Hard uses fast (~70ms). Difficulty is set from the DifficultySelector screen.",
+      "files": [
+        "frontend/src/pages/SnakeGame.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-upgrade-the-traffic-car-game-frontend-src-pages-trafficcargame-tsx-with-three-difficulty-modes-easy-uses-slow-traffic-speed-and-fewer-cars-medium-uses-normal-speed-and-car-density-hard-uses-fast-speed-with-more-simultaneous-cars-difficulty-is-set-from-the-difficultyselector-screen",
+      "featureTitle": "Upgrade the Traffic Car game (frontend/src/pages/TrafficCarGame.tsx) with three difficulty modes: Easy uses slow traffic speed and fewer cars; Medium uses normal speed and car density; Hard uses fast speed with more simultaneous cars. Difficulty is set from the DifficultySelector screen.",
+      "files": [
+        "frontend/src/pages/TrafficCarGame.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-integrate-the-global-mute-unmute-toggle-button-into-all-game-pages-and-the-home-page-header-navbar-area-styled-consistently-with-the-dark-neon-theme-e-g-a-speaker-icon-with-neon-glow",
+      "featureTitle": "Integrate the global mute/unmute toggle button into all game pages and the Home page header/navbar area, styled consistently with the dark neon theme (e.g., a speaker icon with neon glow).",
+      "files": [
+        "frontend/src/components/SoundToggle.tsx",
+        "frontend/src/pages/Home.tsx",
+        "frontend/src/pages/MemoryCardMatch.tsx",
+        "frontend/src/pages/RockPaperScissors.tsx",
+        "frontend/src/pages/SinglePlayer.tsx",
+        "frontend/src/pages/SnakeAndLadder.tsx",
+        "frontend/src/pages/SnakeGame.tsx",
+        "frontend/src/pages/TrafficCarGame.tsx",
+        "frontend/src/pages/TwoPlayer.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    }
+  ]
 }

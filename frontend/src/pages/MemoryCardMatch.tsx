@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { ArrowLeft, RotateCcw } from 'lucide-react';
+import SoundToggle from '../components/SoundToggle';
+import { useSoundManager } from '../hooks/useSoundManager';
 
-const CARD_EMOJIS = ['🎮', '🕹️', '👾', '🚀', '⚡', '🔥', '💎', '🏆'];
-const ALL_CARDS = [...CARD_EMOJIS, ...CARD_EMOJIS];
+const EMOJIS = ['🎮', '🕹️', '👾', '🎯', '🏆', '⚡', '🔥', '💎'];
+const CARDS = [...EMOJIS, ...EMOJIS];
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -14,213 +15,157 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-function loadBestMoves(): number {
-  const val = parseInt(localStorage.getItem('memory-best-moves') ?? '0', 10);
-  return isNaN(val) ? 0 : val;
+interface Card {
+  id: number;
+  emoji: string;
+  flipped: boolean;
+  matched: boolean;
 }
 
-export function MemoryCardMatch() {
+const MemoryCardMatch: React.FC = () => {
   const navigate = useNavigate();
-
-  const [cards, setCards] = useState<string[]>(() => shuffle(ALL_CARDS));
-  const [flipped, setFlipped] = useState<number[]>([]);
-  const [matched, setMatched] = useState<number[]>([]);
-  const [moves, setMoves] = useState(0);
-  const [bestMoves, setBestMoves] = useState(loadBestMoves);
-  const [isChecking, setIsChecking] = useState(false);
-  const [won, setWon] = useState(false);
-
-  const handleCardClick = useCallback(
-    (index: number) => {
-      if (isChecking || flipped.includes(index) || matched.includes(index)) return;
-      if (flipped.length === 2) return;
-
-      const newFlipped = [...flipped, index];
-      setFlipped(newFlipped);
-
-      if (newFlipped.length === 2) {
-        setMoves((m) => m + 1);
-        setIsChecking(true);
-
-        const [a, b] = newFlipped;
-        if (cards[a] === cards[b]) {
-          const newMatched = [...matched, a, b];
-          setMatched(newMatched);
-          setFlipped([]);
-          setIsChecking(false);
-
-          if (newMatched.length === ALL_CARDS.length) {
-            setWon(true);
-            const finalMoves = moves + 1;
-            setBestMoves((prev) => {
-              if (prev === 0 || finalMoves < prev) {
-                localStorage.setItem('memory-best-moves', String(finalMoves));
-                return finalMoves;
-              }
-              return prev;
-            });
-          }
-        } else {
-          setTimeout(() => {
-            setFlipped([]);
-            setIsChecking(false);
-          }, 900);
-        }
-      }
-    },
-    [isChecking, flipped, matched, cards, moves]
+  const [cards, setCards] = useState<Card[]>(() =>
+    shuffle(CARDS).map((emoji, i) => ({ id: i, emoji, flipped: false, matched: false }))
   );
+  const [selected, setSelected] = useState<number[]>([]);
+  const [moves, setMoves] = useState(0);
+  const [won, setWon] = useState(false);
+  const [bestScore, setBestScore] = useState(() => {
+    try { return parseInt(localStorage.getItem('memory-best') || '0', 10); } catch { return 0; }
+  });
+  const lockRef = useRef(false);
+  const { playClick, playScore, playWin, playSpecial } = useSoundManager();
 
-  const handleRestart = () => {
-    setCards(shuffle(ALL_CARDS));
-    setFlipped([]);
-    setMatched([]);
+  const handleCardClick = useCallback((id: number) => {
+    if (lockRef.current) return;
+    const card = cards.find(c => c.id === id);
+    if (!card || card.flipped || card.matched) return;
+    if (selected.includes(id)) return;
+
+    playClick();
+
+    const newSelected = [...selected, id];
+    setCards(prev => prev.map(c => c.id === id ? { ...c, flipped: true } : c));
+    setSelected(newSelected);
+
+    if (newSelected.length === 2) {
+      lockRef.current = true;
+      setMoves(m => m + 1);
+      const [a, b] = newSelected;
+      const cardA = cards.find(c => c.id === a)!;
+      const cardB = cards.find(c => c.id === b)!;
+
+      if (cardA.emoji === cardB.emoji) {
+        // Match
+        playScore();
+        setTimeout(() => {
+          setCards(prev => {
+            const updated = prev.map(c =>
+              c.id === a || c.id === b ? { ...c, matched: true } : c
+            );
+            const allMatched = updated.every(c => c.matched);
+            if (allMatched) {
+              setWon(true);
+              playWin();
+              const totalMoves = moves + 1;
+              const bs = parseInt(localStorage.getItem('memory-best') || '0', 10);
+              if (bs === 0 || totalMoves < bs) {
+                localStorage.setItem('memory-best', String(totalMoves));
+                setBestScore(totalMoves);
+                playSpecial();
+              }
+            }
+            return updated;
+          });
+          setSelected([]);
+          lockRef.current = false;
+        }, 500);
+      } else {
+        // Mismatch
+        setTimeout(() => {
+          setCards(prev => prev.map(c =>
+            c.id === a || c.id === b ? { ...c, flipped: false } : c
+          ));
+          setSelected([]);
+          lockRef.current = false;
+        }, 900);
+      }
+    }
+  }, [cards, selected, moves, playClick, playScore, playWin, playSpecial]);
+
+  const handleRestart = useCallback(() => {
+    playClick();
+    setCards(shuffle(CARDS).map((emoji, i) => ({ id: i, emoji, flipped: false, matched: false })));
+    setSelected([]);
     setMoves(0);
-    setIsChecking(false);
     setWon(false);
-  };
+    lockRef.current = false;
+  }, [playClick]);
 
   return (
-    <div className="min-h-screen bg-grid-pattern flex flex-col">
-      <div
-        className="fixed top-1/4 right-1/3 w-80 h-80 rounded-full pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, oklch(0.75 0.2 55 / 0.06) 0%, transparent 70%)',
-          filter: 'blur(40px)',
-        }}
-      />
-
-      {/* Header */}
-      <header className="w-full py-4 px-4 flex items-center justify-between max-w-lg mx-auto">
+    <div className="min-h-screen bg-gray-950 flex flex-col">
+      <header className="flex items-center justify-between px-4 py-3 border-b border-neon-blue/20 bg-gray-950/80 backdrop-blur-sm">
         <button
-          onClick={() => navigate({ to: '/' })}
-          className="flex items-center gap-2 font-rajdhani text-sm text-muted-foreground hover:text-neon-blue transition-colors duration-200 group"
+          onClick={() => { playClick(); navigate({ to: '/' }); }}
+          className="font-orbitron text-neon-blue hover:text-white transition-colors text-sm tracking-wider"
         >
-          <ArrowLeft size={16} className="transition-transform duration-200 group-hover:-translate-x-1" />
-          Back to Home
+          ← ARENA
         </button>
-        <span
-          className="font-orbitron font-bold text-sm tracking-widest"
-          style={{ color: 'oklch(0.85 0.2 55)' }}
-        >
-          MEMORY MATCH
-        </span>
-        <div className="w-24" />
+        <h1 className="font-orbitron text-white text-sm tracking-widest">MEMORY MATCH</h1>
+        <SoundToggle />
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-4 gap-5">
+      <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4">
         {/* Stats */}
-        <div className="flex gap-6">
-          <div
-            className="px-5 py-2 rounded-xl text-center"
-            style={{ background: 'oklch(0.12 0.02 265)', border: '1px solid oklch(0.75 0.2 55 / 0.3)' }}
-          >
-            <div className="font-rajdhani text-xs text-muted-foreground tracking-widest uppercase">Moves</div>
-            <div
-              className="font-orbitron font-black text-2xl"
-              style={{ color: 'oklch(0.85 0.2 55)', textShadow: '0 0 10px oklch(0.75 0.2 55 / 0.8)' }}
-            >
-              {moves}
-            </div>
+        <div className="flex gap-8">
+          <div className="text-center">
+            <div className="font-orbitron text-neon-blue text-2xl font-bold">{moves}</div>
+            <div className="font-rajdhani text-gray-500 text-xs tracking-wider">MOVES</div>
           </div>
-          <div
-            className="px-5 py-2 rounded-xl text-center"
-            style={{ background: 'oklch(0.12 0.02 265)', border: '1px solid oklch(0.72 0.22 200 / 0.3)' }}
-          >
-            <div className="font-rajdhani text-xs text-muted-foreground tracking-widest uppercase">Best</div>
-            <div
-              className="font-orbitron font-black text-2xl"
-              style={{ color: 'oklch(0.85 0.22 200)', textShadow: '0 0 10px oklch(0.72 0.22 200 / 0.8)' }}
-            >
-              {bestMoves === 0 ? '—' : bestMoves}
-            </div>
+          <div className="text-center">
+            <div className="font-orbitron text-neon-purple text-2xl font-bold">{bestScore || '—'}</div>
+            <div className="font-rajdhani text-gray-500 text-xs tracking-wider">BEST</div>
           </div>
         </div>
 
-        {/* Win message */}
+        {/* Win banner */}
         {won && (
-          <div
-            className="px-6 py-3 rounded-xl text-center font-orbitron font-bold text-lg tracking-wider"
-            style={{
-              background: 'oklch(0.12 0.02 265)',
-              border: '2px solid oklch(0.75 0.2 55 / 0.8)',
-              color: 'oklch(0.85 0.2 55)',
-              boxShadow: '0 0 20px oklch(0.75 0.2 55 / 0.4)',
-            }}
-          >
+          <div className="font-orbitron text-green-400 text-xl font-bold text-center py-3 px-6 rounded-xl border border-green-500/40 bg-green-500/10 shadow-[0_0_20px_rgba(74,222,128,0.3)]">
             🏆 YOU WIN! {moves} moves
           </div>
         )}
 
-        {/* Card Grid */}
-        <div className="grid grid-cols-4 gap-2 sm:gap-3">
-          {cards.map((emoji, index) => {
-            const isFlipped = flipped.includes(index) || matched.includes(index);
-            const isMatched = matched.includes(index);
-            return (
-              <button
-                key={index}
-                onClick={() => handleCardClick(index)}
-                className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl flex items-center justify-center text-2xl transition-all duration-300 select-none"
-                style={{
-                  background: isMatched
-                    ? 'oklch(0.15 0.06 55)'
-                    : isFlipped
-                    ? 'oklch(0.16 0.04 265)'
-                    : 'oklch(0.12 0.02 265)',
-                  border: isMatched
-                    ? '2px solid oklch(0.75 0.2 55 / 0.8)'
-                    : isFlipped
-                    ? '2px solid oklch(0.72 0.22 200 / 0.6)'
-                    : '2px solid oklch(0.22 0.03 265)',
-                  boxShadow: isMatched
-                    ? '0 0 15px oklch(0.75 0.2 55 / 0.4)'
-                    : isFlipped
-                    ? '0 0 10px oklch(0.72 0.22 200 / 0.3)'
-                    : 'none',
-                  transform: isFlipped ? 'rotateY(0deg)' : 'rotateY(0deg)',
-                  cursor: isMatched || isFlipped ? 'default' : 'pointer',
-                }}
-              >
-                {isFlipped ? emoji : '?'}
-              </button>
-            );
-          })}
+        {/* Card grid */}
+        <div className="grid grid-cols-4 gap-3">
+          {cards.map(card => (
+            <button
+              key={card.id}
+              onClick={() => handleCardClick(card.id)}
+              className={`
+                w-16 h-16 rounded-xl border text-2xl font-bold
+                transition-all duration-300 cursor-pointer
+                flex items-center justify-center
+                ${card.flipped || card.matched
+                  ? 'bg-gray-800 border-neon-blue/60 shadow-[0_0_10px_rgba(0,212,255,0.2)] scale-105'
+                  : 'bg-gray-900 border-gray-700 hover:border-gray-500 hover:bg-gray-800'
+                }
+                ${card.matched ? 'border-green-500/60 bg-green-900/20 shadow-[0_0_10px_rgba(74,222,128,0.2)]' : ''}
+              `}
+            >
+              {card.flipped || card.matched ? card.emoji : '?'}
+            </button>
+          ))}
         </div>
 
-        {/* Restart */}
         <button
           onClick={handleRestart}
-          className="flex items-center gap-2 font-orbitron font-bold text-sm tracking-wider px-6 py-3 rounded-xl transition-all duration-300"
-          style={{
-            background: 'oklch(0.75 0.2 55 / 0.1)',
-            border: '2px solid oklch(0.75 0.2 55 / 0.4)',
-            color: 'oklch(0.85 0.2 55)',
-          }}
+          className="font-orbitron text-sm px-6 py-2 rounded-lg border border-neon-blue/60 bg-neon-blue/10 text-neon-blue hover:bg-neon-blue/20 transition-all tracking-wider"
         >
-          <RotateCcw size={16} />
-          NEW GAME
+          RESTART
         </button>
       </main>
-
-      {/* Footer */}
-      <footer className="w-full py-4 px-4 text-center">
-        <p className="font-rajdhani text-xs text-muted-foreground/50 tracking-wide">
-          Built with{' '}
-          <span style={{ color: 'oklch(0.65 0.28 295)' }}>♥</span>{' '}
-          using{' '}
-          <a
-            href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== 'undefined' ? window.location.hostname : 'ultimate-gaming-arena')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-neon-blue transition-colors duration-200"
-            style={{ color: 'oklch(0.72 0.22 200 / 0.7)' }}
-          >
-            caffeine.ai
-          </a>
-          {' '}· © {new Date().getFullYear()}
-        </p>
-      </footer>
     </div>
   );
-}
+};
+
+export default MemoryCardMatch;
