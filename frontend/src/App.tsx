@@ -3,6 +3,12 @@ import { RouterProvider, createRouter, createRoute, createRootRoute } from '@tan
 import { Home } from './pages/Home';
 import { SinglePlayer } from './pages/SinglePlayer';
 import { TwoPlayer } from './pages/TwoPlayer';
+import { SnakeGame } from './pages/SnakeGame';
+import { RockPaperScissors } from './pages/RockPaperScissors';
+import { MemoryCardMatch } from './pages/MemoryCardMatch';
+import { TrafficCarGame } from './pages/TrafficCarGame';
+import { SnakeAndLadder } from './pages/SnakeAndLadder';
+import { Leaderboard } from './pages/Leaderboard';
 
 // Root route
 const rootRoute = createRootRoute();
@@ -26,8 +32,54 @@ const twoPlayerRoute = createRoute({
   component: TwoPlayer,
 });
 
+const snakeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/snake',
+  component: SnakeGame,
+});
+
+const rpsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/rps',
+  component: RockPaperScissors,
+});
+
+const memoryRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/memory',
+  component: MemoryCardMatch,
+});
+
+const trafficRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/traffic',
+  component: TrafficCarGame,
+});
+
+const snakeLadderRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/snake-ladder',
+  component: SnakeAndLadder,
+});
+
+const leaderboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/leaderboard',
+  component: Leaderboard,
+});
+
 // Route tree
-const routeTree = rootRoute.addChildren([homeRoute, singlePlayerRoute, twoPlayerRoute]);
+const routeTree = rootRoute.addChildren([
+  homeRoute,
+  singlePlayerRoute,
+  twoPlayerRoute,
+  snakeRoute,
+  rpsRoute,
+  memoryRoute,
+  trafficRoute,
+  snakeLadderRoute,
+  leaderboardRoute,
+]);
 
 // Router
 const router = createRouter({ routeTree });

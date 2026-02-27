@@ -216,7 +216,148 @@
       linear-gradient(90deg, oklch(0.72 0.22 200 / 0.03) 1px, transparent 1px);
     background-size: 40px 40px;
   }
+
+  /* Traffic Car Game - Score pop animation */
+  .score-pop {
+    animation: scorePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* Traffic Car Game - Screen shake */
+  .traffic-shake {
+    animation: trafficShake 0.55s ease-out forwards;
+  }
+
+  /* Traffic Car Game - Explosion burst */
+  .traffic-explosion {
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff 0%, #ffcc00 20%, #ff8800 45%, #ff4444 70%, transparent 100%);
+    animation: trafficExplosion 0.65s ease-out forwards;
+    pointer-events: none;
+  }
+
+  /* =============================================
+     RPS - Hand shake animation
+  ============================================= */
+  .rps-hand-shake {
+    animation: rpsHandShake 1s ease-in-out;
+    display: inline-block;
+  }
+
+  .rps-hand-shake-delay {
+    animation-delay: 0.08s;
+  }
+
+  /* =============================================
+     RPS - Dramatic reveal animation
+  ============================================= */
+  .rps-reveal {
+    animation: rpsReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    display: inline-block;
+  }
+
+  /* =============================================
+     RPS - Result text reveal (staggered)
+  ============================================= */
+  .rps-result-reveal {
+    animation: rpsResultReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* =============================================
+     RPS - Score bounce
+  ============================================= */
+  .rps-score-bounce {
+    animation: rpsScoreBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* =============================================
+     RPS - Win background pulse
+  ============================================= */
+  .rps-win-pulse {
+    animation: rpsWinPulse 1.2s ease-out forwards;
+  }
+
+  /* =============================================
+     RPS - Burst particle
+  ============================================= */
+  .rps-burst-particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: oklch(0.85 0.22 155);
+    box-shadow: 0 0 8px oklch(0.75 0.22 155), 0 0 16px oklch(0.75 0.22 155 / 0.6);
+    top: 50%;
+    left: 50%;
+    pointer-events: none;
+    animation: rpsBurstParticle 0.9s ease-out forwards;
+    animation-delay: 0s;
+    transform-origin: center center;
+    --angle: 0deg;
+  }
 }
+
+/* =============================================
+   RPS Keyframes
+============================================= */
+
+@keyframes rpsHandShake {
+  0%   { transform: translateY(0px) rotate(0deg); }
+  10%  { transform: translateY(-14px) rotate(-8deg); }
+  20%  { transform: translateY(10px) rotate(6deg); }
+  30%  { transform: translateY(-12px) rotate(-6deg); }
+  40%  { transform: translateY(10px) rotate(5deg); }
+  50%  { transform: translateY(-10px) rotate(-5deg); }
+  60%  { transform: translateY(8px) rotate(4deg); }
+  70%  { transform: translateY(-8px) rotate(-3deg); }
+  80%  { transform: translateY(5px) rotate(2deg); }
+  90%  { transform: translateY(-3px) rotate(-1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes rpsReveal {
+  0%   { transform: scale(0.2) rotate(-15deg); opacity: 0; }
+  60%  { transform: scale(1.15) rotate(5deg); opacity: 1; }
+  80%  { transform: scale(0.95) rotate(-2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes rpsResultReveal {
+  0%   { transform: scale(0.3) translateY(10px); opacity: 0; }
+  60%  { transform: scale(1.12) translateY(-3px); opacity: 1; }
+  80%  { transform: scale(0.97) translateY(1px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes rpsScoreBounce {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.45); }
+  55%  { transform: scale(0.9); }
+  75%  { transform: scale(1.15); }
+  90%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+@keyframes rpsWinPulse {
+  0%   { box-shadow: inset 0 0 0px oklch(0.75 0.22 155 / 0); }
+  20%  { box-shadow: inset 0 0 80px oklch(0.75 0.22 155 / 0.25), 0 0 60px oklch(0.75 0.22 155 / 0.15); }
+  50%  { box-shadow: inset 0 0 120px oklch(0.75 0.22 155 / 0.18), 0 0 80px oklch(0.75 0.22 155 / 0.1); }
+  100% { box-shadow: inset 0 0 0px oklch(0.75 0.22 155 / 0); }
+}
+
+@keyframes rpsBurstParticle {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(70px) scale(0.2);
+    opacity: 0;
+  }
+}
+
+/* =============================================
+   Existing keyframes (unchanged)
+============================================= */
 
 @keyframes markAppear {
   0% { transform: scale(0) rotate(-10deg); opacity: 0; }
@@ -250,6 +391,34 @@
   50% {
     text-shadow: 0 0 20px oklch(0.72 0.22 200), 0 0 50px oklch(0.72 0.22 200 / 0.7), 0 0 100px oklch(0.72 0.22 200 / 0.4), 0 0 10px oklch(0.65 0.28 295 / 0.5);
   }
+}
+
+/* Traffic Car Game keyframes */
+@keyframes scorePop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.45); }
+  100% { transform: scale(1); }
+}
+
+@keyframes trafficShake {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  10%  { transform: translate(-6px, -4px) rotate(-1deg); }
+  20%  { transform: translate(6px, 4px) rotate(1deg); }
+  30%  { transform: translate(-5px, 3px) rotate(-0.8deg); }
+  40%  { transform: translate(5px, -3px) rotate(0.8deg); }
+  50%  { transform: translate(-4px, 2px) rotate(-0.5deg); }
+  60%  { transform: translate(4px, -2px) rotate(0.5deg); }
+  70%  { transform: translate(-2px, 1px) rotate(-0.3deg); }
+  80%  { transform: translate(2px, -1px) rotate(0.3deg); }
+  90%  { transform: translate(-1px, 0px) rotate(0deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes trafficExplosion {
+  0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
+  40%  { transform: translate(-50%, -50%) scale(1.6); opacity: 0.9; }
+  70%  { transform: translate(-50%, -50%) scale(2.2); opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(2.8); opacity: 0; }
 }
 
 .animate-float-up {

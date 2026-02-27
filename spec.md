@@ -1,15 +1,23 @@
 # Specification
 
 ## Summary
-**Goal:** Build a fully client-side Ultimate Tic Tac Toe game with Single Player (vs random AI) and Two Player modes, a session scoreboard, and a modern dark neon UI.
+**Goal:** Add animations, sound effects, and visual improvements to the Snake and Ladder game, Traffic Car Game, and Snake Game.
 
 **Planned changes:**
-- Create a Home page with the title "Ultimate Tic Tac Toe" and two mode-selection buttons: "Single Player (Play vs Computer)" and "Two Player (Play with Friend)"
-- Implement a 3x3 Tic Tac Toe game board with win and draw detection, winning cell highlighting, and smooth animations
-- Single Player mode: human plays as X, computer plays as O using random move selection
-- Two Player mode: two humans alternate turns (X and O) on the same device with current-turn indicator
-- Session-only scoreboard tracking wins for both players/computer (resets on page refresh, no persistence)
-- Dark theme with neon blue and purple glow effects, smooth hover transitions, and mobile-responsive layout
-- Restart button to reset the board between rounds within a session
 
-**User-visible outcome:** Users can play Tic Tac Toe solo against a random AI or with a friend on the same device, with a live scoreboard tracking wins across rounds in the session, all presented in a dark neon-styled responsive interface.
+### Snake and Ladder (/snake-ladder)
+- Add a spinning/tumbling CSS keyframe dice roll animation (~0.8–1 second) when Roll Dice is pressed; board logic waits until animation completes
+- Animate player token movement square by square with smooth easing after each dice roll; snake/ladder logic fires only after movement finishes
+- Add a downward sliding animation when a token lands on a snake head, transitioning to the tail cell before the turn ends
+- Add an upward climbing animation when a token lands on a ladder base, transitioning to the top cell before the turn ends
+- Add a full-screen confetti burst effect using CSS/JS when a player reaches square 100 and wins
+- Add a neon pulsing glow turn indicator that highlights the active player and switches after each turn
+- Add Web Audio API programmatic sound effects: percussive rattle on dice roll, descending tone on snake slide, ascending tone on ladder climb, triumphant fanfare on win
+
+### Traffic Car Game (/traffic)
+- Redesign the player car with a more realistic multi-layered canvas illustration: visible roof, hood, body, side windows, windshield, glowing headlights, wheels on both sides, and a distinct color scheme — hitbox dimensions unchanged
+
+### Snake Game (/snake)
+- Redesign the snake with a realistic segmented appearance: distinct head with eyes and directional tongue, gradient-colored rounded body segments that taper toward a pointed tail, head oriented to face movement direction — all via canvas draw calls, no changes to game logic
+
+**User-visible outcome:** The Snake and Ladder game has rich animations and sound effects for dice rolls, token movement, snake slides, ladder climbs, and wins with confetti. The Traffic Car Game features a more realistic-looking player car, and the Snake Game displays a visually detailed serpentine snake, all while preserving existing game logic and collision detection.

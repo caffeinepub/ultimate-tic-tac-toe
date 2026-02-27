@@ -1,4 +1,4 @@
-## Ultimate Tic Tac Toe
+## 
 
 This source code has been exported from [Caffeine](https://caffeine.ai/)
 

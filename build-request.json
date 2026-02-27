@@ -1,143 +1,205 @@
 {
   "kind": "build_request",
-  "title": "Ultimate Tic Tac Toe Game",
-  "projectName": "Ultimate Tic Tac Toe",
+  "title": "Snake & Ladder Upgrades + Realistic Player Car & Snake Visuals",
+  "projectName": "Ultimate Gaming Arena",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Create a Home page with the title 'Ultimate Tic Tac Toe' and two mode-selection buttons: 'Single Player (Play vs Computer)' and 'Two Player (Play with Friend)'.",
+      "id": "REQ-38",
+      "text": "Add a spinning/tumbling dice roll animation to the Snake and Ladder game at /snake-ladder. When the Roll Dice button is pressed, the dice element must visually spin (CSS keyframe rotation or 3D tumble) for approximately 0.8–1 second before settling on the rolled value.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-3"
         ],
         "quotes": [
-          "Home page with: Title: 'Ultimate Tic Tac Toe', Two buttons: Single Player (Play vs Computer), Two Player (Play with Friend)"
+          "Animate dice rolling (spinning effect)."
         ]
       },
       "acceptanceCriteria": [
-        "Home page displays the title 'Ultimate Tic Tac Toe'",
-        "Two buttons are visible: 'Single Player' and 'Two Player'",
-        "Clicking each button navigates to the respective game mode"
+        "Pressing Roll Dice triggers a visible spinning animation on the dice element.",
+        "The animation lasts approximately 0.8–1 second before the final value is shown.",
+        "The board and turn logic do not advance until the animation completes.",
+        "The animation uses CSS keyframes or JS-driven transforms with no external assets."
       ]
     },
     {
-      "id": "REQ-2",
-      "text": "Implement a 3x3 Tic Tac Toe game grid with win and draw detection, a Restart button, and visual highlighting of winning cells with smooth animations.",
+      "id": "REQ-39",
+      "text": "Animate player token movement square by square in the Snake and Ladder game at /snake-ladder. When a player rolls the dice, their token must visually move one cell at a time along the board path with smooth easing between each step.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-3"
         ],
         "quotes": [
-          "3x3 grid",
-          "Detect win, draw",
-          "Restart button",
-          "Highlight winning cells",
-          "Smooth animations"
+          "Animate player token movement square by square."
         ]
       },
       "acceptanceCriteria": [
-        "3x3 grid renders and accepts player moves",
-        "Winning combination cells are visually highlighted",
-        "Draw state is detected and announced when all cells are filled with no winner",
-        "Restart button resets the board and current-game state",
-        "Cell placement and winning highlight have smooth CSS transitions/animations"
+        "After a dice roll, the token moves one square at a time with a visible transition between cells.",
+        "The movement easing is smooth (e.g., ease-in-out) and not instantaneous.",
+        "The token reaches the correct destination cell after completing all steps.",
+        "Snake/ladder logic fires only after the token finishes its square-by-square movement."
       ]
     },
     {
-      "id": "REQ-3",
-      "text": "Implement Single Player mode where the computer automatically makes random moves as Player O after the human Player X places a mark.",
+      "id": "REQ-40",
+      "text": "Add a sliding down animation to the Snake and Ladder game at /snake-ladder when a player lands on a snake head. The token must visually animate downward from the snake's head position to the snake's tail position before the turn ends.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2",
-          "msg-4"
+          "msg-3"
         ],
         "quotes": [
-          "Computer should make automatic moves",
-          "Basic AI (random move is fine)",
-          "Single Player mode with random AI moves"
+          "Add sliding animation when hitting snake."
         ]
       },
       "acceptanceCriteria": [
-        "After the human places a mark, the computer selects a random available cell and places its mark",
-        "Computer does not move on a already-occupied cell",
-        "Win/draw detection works correctly for both human and computer moves"
+        "When a token lands on a snake head cell, a downward sliding animation plays.",
+        "The token transitions visually from the head cell to the tail cell with smooth motion.",
+        "The animation is distinct from regular movement (e.g., curved path or CSS translate).",
+        "Turn does not end until the snake slide animation completes."
       ]
     },
     {
-      "id": "REQ-4",
-      "text": "Implement Two Player mode allowing two human players to take turns on the same device, alternating between Player X and Player O.",
+      "id": "REQ-41",
+      "text": "Add a climbing up animation to the Snake and Ladder game at /snake-ladder when a player lands on a ladder bottom. The token must visually animate upward from the ladder's base cell to the ladder's top cell before the turn ends.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-3"
         ],
         "quotes": [
-          "Same device multiplayer"
+          "Add climbing animation when using ladder."
         ]
       },
       "acceptanceCriteria": [
-        "Players alternate turns between X and O",
-        "Current player's turn is clearly indicated on screen",
-        "Win/draw detection works correctly for both players"
+        "When a token lands on a ladder base cell, an upward climbing animation plays.",
+        "The token transitions visually from the base cell to the top cell with smooth motion.",
+        "The animation is visually distinct from regular movement.",
+        "Turn does not end until the ladder climbing animation completes."
       ]
     },
     {
-      "id": "REQ-5",
-      "text": "Display a session-only scoreboard tracking wins for Player X and Player O (or Computer in Single Player mode). Scores accumulate across rounds within the session and reset on page refresh.",
+      "id": "REQ-42",
+      "text": "Add a confetti burst effect to the Snake and Ladder game at /snake-ladder when a player wins. When a player's token reaches square 100, a full-screen confetti animation must play over the winner announcement overlay.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2",
-          "msg-4"
+          "msg-3"
         ],
         "quotes": [
-          "Scoreboard (Player X, Player O / Computer)",
-          "Session-only scoreboard (resets on page refresh)"
+          "Add confetti effect when someone wins."
         ]
       },
       "acceptanceCriteria": [
-        "Scoreboard shows win counts for both players/computer",
-        "Scores increment correctly after each game concludes",
-        "Scores reset to zero on page refresh (no localStorage persistence)"
+        "Winning triggers a confetti particle burst that covers the game area or full screen.",
+        "Confetti particles use multiple neon colors consistent with the dark neon theme.",
+        "The confetti animation plays simultaneously with or just after the winner announcement.",
+        "Confetti is implemented with CSS/JS — no external libraries or assets."
       ]
     },
     {
-      "id": "REQ-6",
-      "text": "Apply a modern dark theme with neon blue and purple glow effects, smooth hover effects on interactive elements, and a fully mobile-responsive layout.",
+      "id": "REQ-43",
+      "text": "Add a glowing turn indicator to the Snake and Ladder game at /snake-ladder. The current player's name or token label must be highlighted with a neon pulsing glow effect to clearly show whose turn it is. The glow must switch to the other player immediately after a turn ends.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-3"
         ],
         "quotes": [
-          "Modern dark theme",
-          "Neon blue and purple glow effects",
-          "Mobile responsive",
-          "Clean UI",
-          "Smooth hover effects"
+          "Add glowing turn indicator."
         ]
       },
       "acceptanceCriteria": [
-        "Background is dark (near-black or very dark gray)",
-        "Interactive elements (buttons, grid cells) display neon blue and/or purple glow on hover and focus",
-        "Layout adapts cleanly to mobile screen sizes (320px and up)",
-        "Hover transitions are smooth (CSS transition applied)"
+        "The active player's turn indicator displays a neon pulsing glow animation.",
+        "The glow switches to the other player's indicator after each turn completes.",
+        "The inactive player's indicator has no glow or a dim state.",
+        "The indicator is visually prominent and readable on the dark neon theme."
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "text": "Add Web Audio API sound effects (programmatically generated, no external audio files) to the Snake and Ladder game at /snake-ladder. Play distinct sounds for: dice roll (short percussive rattle), snake slide (descending pitch tone), ladder climb (ascending pitch tone), and winner fanfare (triumphant ascending chord sequence).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Add sound effects for dice, snake, ladder, and win."
+        ]
+      },
+      "acceptanceCriteria": [
+        "A short percussive rattle sound plays when the dice roll animation begins.",
+        "A descending tone plays when a player slides down a snake.",
+        "An ascending tone plays when a player climbs a ladder.",
+        "A triumphant fanfare sound plays when a player wins.",
+        "All sounds are generated via Web Audio API with no external audio files.",
+        "Sounds play in sync with the corresponding animations."
+      ]
+    },
+    {
+      "id": "REQ-45",
+      "text": "Redesign the player car in the Traffic Car Game at /traffic to look more realistic and detailed. Replace the current basic shape with a multi-layered CSS/canvas car illustration that includes: a car body with visible roof and hood sections, side windows, front windshield, headlights with a glow effect, visible wheels on both sides, and a distinct color scheme that stands out on the road.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5"
+        ],
+        "quotes": [
+          "traffic car game player car make more real"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The player car displays a recognizable car silhouette with roof, hood, and body sections.",
+        "Front headlights are rendered with a neon or bright glow effect.",
+        "Side windows and a windshield are visually distinguishable on the car body.",
+        "Wheels are visible on both the left and right sides of the car.",
+        "The car uses a distinct color scheme that contrasts with the road background.",
+        "The car retains its existing hitbox dimensions so collision detection is unaffected.",
+        "All rendering is done via canvas draw calls or layered CSS — no external image assets."
+      ]
+    },
+    {
+      "id": "REQ-46",
+      "text": "Redesign the snake in the Snake Game at /snake to look more realistic and detailed. Replace the current basic rectangle segments with a segmented snake that includes: a distinct head shape with two visible eyes and a tongue, gradient-colored body segments that taper slightly toward the tail, a curved/rounded segment style to give a lifelike serpentine appearance, and a pointed or tapered tail segment.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5"
+        ],
+        "quotes": [
+          "snake game player snake make real"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The snake head is visually distinct from body segments, with two small eyes rendered.",
+        "A small tongue or forked tip is drawn on the head pointing in the movement direction.",
+        "Body segments use a gradient fill (e.g., green shades) that creates a scale-like or rounded appearance.",
+        "Segments near the tail are slightly smaller or tapered to suggest a tail end.",
+        "The final tail segment is pointed or visually tapered.",
+        "The snake head rotates or is oriented to face the current movement direction.",
+        "All rendering is done via canvas draw calls — no external image assets.",
+        "Existing game logic, speed increases, collision detection, and scoring are unaffected."
       ]
     }
   ],
   "constraints": [
-    "Scoreboard must be session-only — do not persist scores to localStorage or any backend storage.",
-    "AI must use random move selection only — no minimax or advanced algorithms."
+    "All animations and sound effects must use CSS keyframes, JS/canvas, or Web Audio API only — no external audio files, image assets, or third-party animation libraries.",
+    "Existing game logic, collision detection, scoring, localStorage persistence, and Back to Home buttons must remain intact in both TrafficCarGame and SnakeGame.",
+    "Snake and Ladder existing board layout, snakes/ladders positions, restart button, and Back to Home button must be preserved.",
+    "Player car hitbox dimensions in TrafficCarGame must not change so existing collision detection continues to work correctly.",
+    "Snake segment hitbox/grid logic in SnakeGame must not change so existing collision detection and food spawning continue to work correctly."
   ],
   "nonGoals": [
-    "Persistent score storage across sessions",
-    "Advanced AI (minimax or optimal play)",
-    "Online multiplayer",
-    "User accounts or authentication"
+    "Adding new game modes or levels to any game.",
+    "Changing the board layout or snake/ladder positions in Snake and Ladder.",
+    "Adding multiplayer or online features.",
+    "Modifying the backend (main.mo).",
+    "Changing any route paths or navigation structure.",
+    "Redesigning traffic car sprites (non-player cars) or Snake game food items.",
+    "Adding new sound effects to Traffic Car Game or Snake Game beyond what already exists."
   ],
   "imageRequirements": {
     "required": [],
