@@ -38,7 +38,6 @@ export function useHighwayRushSound() {
     const gain = ctx.createGain();
     const distortion = ctx.createWaveShaper();
 
-    // Create distortion curve for engine rumble
     const curve = new Float32Array(256);
     for (let i = 0; i < 256; i++) {
       const x = (i * 2) / 256 - 1;
@@ -71,9 +70,8 @@ export function useHighwayRushSound() {
     if (mutedRef.current) return;
     const ctx = ctxRef.current;
     if (!ctx || !engineOscRef.current || !engineGainRef.current) return;
-    // Map speed (10-60) to frequency (80-200)
     const freq = 80 + (speed - 10) * 2.4;
-    engineOscRef.current.frequency.setTargetAtTime(Math.min(freq, 220), ctx.currentTime, 0.1);
+    engineOscRef.current.frequency.setTargetAtTime(Math.min(freq, 260), ctx.currentTime, 0.1);
   }, []);
 
   const startBackgroundMusic = useCallback(() => {
@@ -83,11 +81,10 @@ export function useHighwayRushSound() {
     if (bgMasterGainRef.current) return;
 
     const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(0.06, ctx.currentTime);
+    masterGain.gain.setValueAtTime(0.05, ctx.currentTime);
     masterGain.connect(ctx.destination);
     bgMasterGainRef.current = masterGain;
 
-    // Simple repeating melody pattern
     const melody = [261, 329, 392, 523, 392, 329, 261, 196];
     let noteIdx = 0;
 
@@ -128,7 +125,6 @@ export function useHighwayRushSound() {
     const ctx = getCtx();
     if (!ctx) return;
 
-    // Noise burst
     const bufferSize = ctx.sampleRate * 0.5;
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
@@ -137,13 +133,12 @@ export function useHighwayRushSound() {
     const source = ctx.createBufferSource();
     source.buffer = buffer;
     const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.6, ctx.currentTime);
+    gain.gain.setValueAtTime(0.7, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
     source.connect(gain);
     gain.connect(ctx.destination);
     source.start();
 
-    // Low boom
     const osc = ctx.createOscillator();
     const oscGain = ctx.createGain();
     osc.type = 'sine';
@@ -155,6 +150,29 @@ export function useHighwayRushSound() {
     oscGain.connect(ctx.destination);
     osc.start();
     osc.stop(ctx.currentTime + 0.4);
+  }, [getCtx]);
+
+  const playScreech = useCallback(() => {
+    if (mutedRef.current) return;
+    const ctx = getCtx();
+    if (!ctx) return;
+    const bufferSize = ctx.sampleRate * 0.2;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(3000, ctx.currentTime);
+    filter.Q.setValueAtTime(5, ctx.currentTime);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
   }, [getCtx]);
 
   const playCoin = useCallback(() => {
@@ -172,6 +190,42 @@ export function useHighwayRushSound() {
     gain.connect(ctx.destination);
     osc.start();
     osc.stop(ctx.currentTime + 0.15);
+  }, [getCtx]);
+
+  const playBonus = useCallback(() => {
+    if (mutedRef.current) return;
+    const ctx = getCtx();
+    if (!ctx) return;
+    [440, 660, 880].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.06);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.06 + 0.1);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + i * 0.06);
+      osc.stop(ctx.currentTime + i * 0.06 + 0.1);
+    });
+  }, [getCtx]);
+
+  const playGameOver = useCallback(() => {
+    if (mutedRef.current) return;
+    const ctx = getCtx();
+    if (!ctx) return;
+    [440, 330, 220, 110].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.18);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.18);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.18 + 0.16);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + i * 0.18);
+      osc.stop(ctx.currentTime + i * 0.18 + 0.16);
+    });
   }, [getCtx]);
 
   const playClick = useCallback(() => {
@@ -240,7 +294,10 @@ export function useHighwayRushSound() {
     startBackgroundMusic,
     stopBackgroundMusic,
     playCrash,
+    playScreech,
     playCoin,
+    playBonus,
+    playGameOver,
     playClick,
     playNearMiss,
   };

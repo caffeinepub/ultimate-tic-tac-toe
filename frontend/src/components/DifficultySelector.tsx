@@ -1,116 +1,221 @@
-import React from 'react';
+import React, { useState } from 'react';
 
+// Re-exported so other pages (SinglePlayer, SnakeGame, etc.) can import it
 export type Difficulty = 'easy' | 'medium' | 'hard';
+
+export type CarType = 'muscle' | 'sports' | 'truck' | 'compact';
+
+export interface CarTypeConfig {
+  id: CarType;
+  name: string;
+  emoji: string;
+  description: string;
+  stats: {
+    speed: string;
+    handling: string;
+    size: string;
+  };
+  speedModifier: number;
+  accelerationFactor: number;
+  width: number;
+  height: number;
+}
+
+export const CAR_TYPES: CarTypeConfig[] = [
+  {
+    id: 'muscle',
+    name: 'Muscle Car',
+    emoji: '🚗',
+    description: 'Raw power, wide body',
+    stats: { speed: '★★★★☆', handling: '★★☆☆☆', size: 'Large' },
+    speedModifier: 1.15,
+    accelerationFactor: 1.2,
+    width: 38,
+    height: 70,
+  },
+  {
+    id: 'sports',
+    name: 'Sports Car',
+    emoji: '🏎️',
+    description: 'Fast & agile, low profile',
+    stats: { speed: '★★★★★', handling: '★★★★★', size: 'Small' },
+    speedModifier: 1.3,
+    accelerationFactor: 1.5,
+    width: 30,
+    height: 60,
+  },
+  {
+    id: 'truck',
+    name: 'Truck',
+    emoji: '🚛',
+    description: 'Slow but unstoppable',
+    stats: { speed: '★★☆☆☆', handling: '★★☆☆☆', size: 'XL' },
+    speedModifier: 0.8,
+    accelerationFactor: 0.7,
+    width: 44,
+    height: 80,
+  },
+  {
+    id: 'compact',
+    name: 'Compact',
+    emoji: '🚕',
+    description: 'Balanced everyday driver',
+    stats: { speed: '★★★☆☆', handling: '★★★★☆', size: 'Medium' },
+    speedModifier: 1.0,
+    accelerationFactor: 1.0,
+    width: 32,
+    height: 64,
+  },
+];
 
 interface DifficultySelectorProps {
   gameTitle: string;
   gameIcon: string;
-  onSelect: (difficulty: Difficulty) => void;
-  descriptions?: {
-    easy?: string;
-    medium?: string;
-    hard?: string;
-  };
+  descriptions?: { easy: string; medium: string; hard: string };
+  onSelect: (difficulty: Difficulty, carType?: CarType) => void;
+  showCarSelection?: boolean;
 }
-
-const defaultDescriptions = {
-  easy: 'Relaxed pace, perfect for beginners',
-  medium: 'Balanced challenge for casual players',
-  hard: 'Maximum intensity for experts',
-};
 
 const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   gameTitle,
   gameIcon,
+  descriptions = {
+    easy: 'Slower traffic, more room to breathe',
+    medium: 'Balanced challenge for most players',
+    hard: 'Dense traffic, high speed — survive!',
+  },
   onSelect,
-  descriptions = {},
+  showCarSelection = false,
 }) => {
-  const desc = { ...defaultDescriptions, ...descriptions };
+  const [step, setStep] = useState<'car' | 'difficulty'>(showCarSelection ? 'car' : 'difficulty');
+  const [selectedCar, setSelectedCar] = useState<CarType>('compact');
 
-  const difficulties: { key: Difficulty; label: string; color: string; glow: string; border: string }[] = [
+  const difficulties: Array<{
+    level: Difficulty;
+    label: string;
+    color: string;
+    glow: string;
+    bg: string;
+  }> = [
     {
-      key: 'easy',
-      label: 'EASY',
+      level: 'easy',
+      label: 'Easy',
       color: 'text-green-400',
-      glow: 'shadow-[0_0_20px_rgba(74,222,128,0.4)]',
-      border: 'border-green-500/60 hover:border-green-400',
+      glow: 'shadow-[0_0_16px_rgba(74,222,128,0.5)]',
+      bg: 'bg-green-900/30 border-green-500/50 hover:border-green-400',
     },
     {
-      key: 'medium',
-      label: 'MEDIUM',
+      level: 'medium',
+      label: 'Medium',
       color: 'text-yellow-400',
-      glow: 'shadow-[0_0_20px_rgba(250,204,21,0.4)]',
-      border: 'border-yellow-500/60 hover:border-yellow-400',
+      glow: 'shadow-[0_0_16px_rgba(250,204,21,0.5)]',
+      bg: 'bg-yellow-900/30 border-yellow-500/50 hover:border-yellow-400',
     },
     {
-      key: 'hard',
-      label: 'HARD',
+      level: 'hard',
+      label: 'Hard',
       color: 'text-red-400',
-      glow: 'shadow-[0_0_20px_rgba(248,113,113,0.4)]',
-      border: 'border-red-500/60 hover:border-red-400',
+      glow: 'shadow-[0_0_16px_rgba(248,113,113,0.5)]',
+      bg: 'bg-red-900/30 border-red-500/50 hover:border-red-400',
     },
   ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
-      {/* Ambient background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-neon-blue/5 blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-neon-purple/5 blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-      </div>
-
-      <div className="relative z-10 flex flex-col items-center gap-8 px-6 py-10 max-w-md w-full">
-        {/* Game icon & title */}
-        <div className="flex flex-col items-center gap-3">
-          <div className="text-6xl animate-bounce" style={{ animationDuration: '2s' }}>
-            {gameIcon}
-          </div>
-          <h1 className="font-orbitron text-3xl font-bold text-white tracking-widest text-center">
-            {gameTitle}
-          </h1>
-          <p className="font-rajdhani text-neon-blue/80 text-sm tracking-widest uppercase">
-            Select Difficulty
-          </p>
+      <div className="w-full max-w-2xl mx-4 rounded-2xl border border-neon-blue/30 bg-gray-950/95 p-8 shadow-[0_0_40px_rgba(0,212,255,0.15)]">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="text-5xl mb-3">{gameIcon}</div>
+          <h2 className="font-orbitron text-2xl font-bold text-neon-blue">{gameTitle}</h2>
+          {step === 'car' && (
+            <p className="text-gray-400 mt-2 font-rajdhani text-lg">Choose your vehicle</p>
+          )}
+          {step === 'difficulty' && (
+            <p className="text-gray-400 mt-2 font-rajdhani text-lg">Select difficulty</p>
+          )}
         </div>
 
-        {/* Divider */}
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-neon-blue/40 to-transparent" />
-
-        {/* Difficulty buttons */}
-        <div className="flex flex-col gap-4 w-full">
-          {difficulties.map(({ key, label, color, glow, border }) => (
+        {/* Car Selection Step */}
+        {step === 'car' && (
+          <>
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {CAR_TYPES.map((car) => (
+                <button
+                  key={car.id}
+                  onClick={() => setSelectedCar(car.id)}
+                  className={`relative rounded-xl border-2 p-4 text-left transition-all duration-200 ${
+                    selectedCar === car.id
+                      ? 'border-neon-blue bg-neon-blue/10 shadow-[0_0_20px_rgba(0,212,255,0.3)]'
+                      : 'border-gray-700 bg-gray-900/50 hover:border-gray-500'
+                  }`}
+                >
+                  {selectedCar === car.id && (
+                    <div className="absolute top-2 right-2 w-3 h-3 rounded-full bg-neon-blue shadow-[0_0_8px_rgba(0,212,255,0.8)]" />
+                  )}
+                  <div className="text-3xl mb-2">{car.emoji}</div>
+                  <div className="font-orbitron text-sm font-bold text-white mb-1">{car.name}</div>
+                  <div className="font-rajdhani text-xs text-gray-400 mb-3">{car.description}</div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-500">Speed</span>
+                      <span className="text-yellow-400">{car.stats.speed}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-500">Handling</span>
+                      <span className="text-cyan-400">{car.stats.handling}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-500">Size</span>
+                      <span className="text-purple-400">{car.stats.size}</span>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
             <button
-              key={key}
-              onClick={() => onSelect(key)}
-              className={`
-                group relative w-full py-4 px-6 rounded-xl border bg-gray-900/80
-                font-orbitron font-bold text-lg tracking-widest
-                transition-all duration-200 cursor-pointer
-                hover:bg-gray-800/90 hover:scale-[1.02] active:scale-[0.98]
-                ${color} ${border}
-              `}
+              onClick={() => setStep('difficulty')}
+              className="w-full py-3 rounded-xl font-orbitron font-bold text-black bg-neon-blue hover:bg-cyan-300 transition-colors shadow-[0_0_20px_rgba(0,212,255,0.4)]"
             >
-              {/* Hover glow overlay */}
-              <span
-                className={`
-                  absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100
-                  transition-opacity duration-200 ${glow}
-                `}
-              />
-              <span className="relative z-10 flex items-center justify-between">
-                <span>{label}</span>
-                <span className="font-rajdhani text-sm font-normal text-gray-400 group-hover:text-gray-300 normal-case tracking-normal">
-                  {desc[key]}
-                </span>
-              </span>
+              Next: Choose Difficulty →
             </button>
-          ))}
-        </div>
+          </>
+        )}
 
-        {/* Footer hint */}
-        <p className="font-rajdhani text-gray-600 text-xs tracking-wider text-center">
-          You can change difficulty by restarting the game
-        </p>
+        {/* Difficulty Selection Step */}
+        {step === 'difficulty' && (
+          <>
+            {showCarSelection && (
+              <div className="flex items-center gap-3 mb-6 p-3 rounded-xl bg-gray-900/60 border border-gray-700">
+                <span className="text-2xl">{CAR_TYPES.find((c) => c.id === selectedCar)?.emoji}</span>
+                <div>
+                  <div className="font-orbitron text-sm text-neon-blue">
+                    {CAR_TYPES.find((c) => c.id === selectedCar)?.name}
+                  </div>
+                  <button
+                    onClick={() => setStep('car')}
+                    className="text-xs text-gray-500 hover:text-gray-300 underline"
+                  >
+                    Change vehicle
+                  </button>
+                </div>
+              </div>
+            )}
+            <div className="space-y-4">
+              {difficulties.map(({ level, label, color, glow, bg }) => (
+                <button
+                  key={level}
+                  onClick={() => onSelect(level, showCarSelection ? selectedCar : undefined)}
+                  className={`w-full rounded-xl border-2 p-5 text-left transition-all duration-200 ${bg} hover:${glow}`}
+                >
+                  <div className={`font-orbitron text-xl font-bold ${color} mb-1`}>{label}</div>
+                  <div className="font-rajdhani text-gray-400 text-sm">
+                    {descriptions[level]}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

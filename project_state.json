@@ -1,107 +1,52 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Highway Rush: an endless traffic car driving game with 3D-style graphics using Three.js/React Three Fiber. Player controls a car on a highway, dodging traffic, collecting coins, and surviving as long as possible with increasing difficulty.",
+  "summary": "Gaming website (Endless Arcade) with integrated advertisement placeholders: top sticky banner (below nav, 90px desktop/60px mobile), bottom sticky banner, interstitial ad after Game Over (5s auto-close), and rewarded ad system (5s countdown, 1 extra life, once per game). All ad slots commented for future AdSense/Adsterra integration.",
   "architectural_notes": [
-    "Use Three.js / React Three Fiber for 3D rendering",
-    "Game state and high score persisted via localStorage"
+    "Endless Arcade game loop: play, crash, game over — ad triggers wired to these events",
+    "Ads must not overlap UI, block gameplay controls, or freeze the game",
+    "No random popups or ads during active gameplay"
   ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-create-a-new-page-component-at-frontend-src-pages-highwayrushgame-tsx-implementing-the-full-highway-rush-game-using-react-three-fiber-and-three-js-the-scene-must-render-an-endless-scrolling-highway-with-realistic-road-texture-white-and-yellow-lane-markings-and-a-third-person-camera-positioned-slightly-behind-and-above-the-player-s-car",
-      "title": "Create a new page component at frontend/src/pages/HighwayRushGame.tsx implementing the full Highway Rush game using React Three Fiber and Three.js. The scene must render an endless scrolling highway with realistic road texture, white and yellow lane markings, and a third-person camera positioned slightly behind and above the player's car.",
+      "id": "feature-add-a-responsive-top-sticky-banner-ad-container-displayed-below-the-existing-navigation-bar-in-rootlayout-on-desktop-it-must-be-90px-tall-and-full-width-on-mobile-it-must-be-60px-tall-and-full-width-label-it-ad-space-with-a-colored-placeholder-box-include-clear-html-comments-marking-where-to-paste-google-adsense-and-adsterra-scripts-later-the-compact-mobile-nav-must-remain-visible-not-hidden-when-this-banner-is-shown",
+      "title": "Add a responsive top sticky banner ad container displayed below the existing navigation bar in RootLayout. On desktop it must be 90px tall and full width; on mobile it must be 60px tall and full width. Label it 'Ad Space' with a colored placeholder box. Include clear HTML comments marking where to paste Google AdSense and Adsterra scripts later. The compact mobile nav must remain visible (not hidden) when this banner is shown.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-player-car-controls-arrow-left-right-and-a-d-keys-switch-lanes-on-desktop-on-mobile-render-on-screen-left-right-touch-buttons-the-highway-must-have-at-least-3-lanes-lane-switching-should-be-smooth-with-a-brief-lateral-animation",
-      "title": "Implement player car controls: Arrow Left/Right and A/D keys switch lanes on desktop; on mobile, render on-screen left/right touch buttons. The highway must have at least 3 lanes. Lane switching should be smooth with a brief lateral animation.",
+      "id": "feature-add-a-responsive-bottom-sticky-banner-ad-container-rendered-in-rootlayout-it-must-be-full-width-mobile-friendly-and-sticky-at-the-bottom-of-the-viewport-it-must-not-overlap-or-block-any-gameplay-controls-e-g-on-screen-buttons-canvas-interactions-label-it-ad-space-with-a-colored-placeholder-box-include-clear-html-comments-marking-where-to-paste-google-adsense-and-adsterra-scripts-later",
+      "title": "Add a responsive bottom sticky banner ad container rendered in RootLayout. It must be full width, mobile-friendly, and sticky at the bottom of the viewport. It must not overlap or block any gameplay controls (e.g., on-screen buttons, canvas interactions). Label it 'Ad Space' with a colored placeholder box. Include clear HTML comments marking where to paste Google AdSense and Adsterra scripts later.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-spawn-randomized-oncoming-traffic-cars-in-all-lanes-with-varied-colors-and-simple-geometric-shapes-traffic-spawn-rate-and-speed-increase-progressively-over-time-collision-detection-between-the-player-car-and-any-traffic-car-ends-the-game",
-      "title": "Spawn randomized oncoming traffic cars in all lanes with varied colors and simple geometric shapes. Traffic spawn rate and speed increase progressively over time. Collision detection between the player car and any traffic car ends the game.",
+      "id": "feature-implement-an-interstitial-ad-system-that-displays-a-full-screen-overlay-exclusively-after-a-full-game-over-event-not-during-mid-game-crashes-the-overlay-must-include-a-colored-ad-space-placeholder-box-a-close-button-x-in-the-corner-and-auto-close-after-5-seconds-with-a-visible-countdown-after-closing-manually-or-automatically-the-user-is-returned-to-the-main-menu-include-comments-marking-where-to-replace-the-placeholder-with-a-real-ad-script-this-must-be-integrated-with-the-existing-endless-runner-and-highway-rush-game-pages-and-any-other-game-that-has-a-game-over-state-without-modifying-immutable-files",
+      "title": "Implement an interstitial ad system that displays a full-screen overlay exclusively after a full Game Over event (not during mid-game crashes). The overlay must include a colored 'Ad Space' placeholder box, a close button (X) in the corner, and auto-close after 5 seconds with a visible countdown. After closing (manually or automatically), the user is returned to the main menu. Include comments marking where to replace the placeholder with a real ad script. This must be integrated with the existing Endless Runner and Highway Rush game pages (and any other game that has a Game Over state) without modifying immutable files.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-a-day-night-cycle-that-transitions-the-sky-ambient-lighting-and-road-appearance-over-time-at-high-speeds-apply-a-motion-blur-post-processing-effect-to-the-scene",
-      "title": "Implement a day/night cycle that transitions the sky, ambient lighting, and road appearance over time. At high speeds, apply a motion blur post-processing effect to the scene.",
+      "id": "feature-implement-a-rewarded-ad-system-that-appears-after-a-player-crash-not-full-game-over-show-a-button-labeled-watch-ad-to-continue-on-the-game-over-crash-screen-when-the-player-clicks-it-display-a-5-second-simulated-countdown-mimicking-a-video-ad-timer-after-the-countdown-completes-grant-the-player-1-extra-life-and-resume-the-game-this-option-may-only-be-used-once-per-game-session-include-comments-marking-where-to-replace-the-placeholder-countdown-with-a-real-rewarded-ad-sdk-call",
+      "title": "Implement a rewarded ad system that appears after a player crash (not full Game Over). Show a button labeled 'Watch Ad to Continue' on the game over / crash screen. When the player clicks it, display a 5-second simulated countdown mimicking a video ad timer. After the countdown completes, grant the player 1 extra life and resume the game. This option may only be used once per game session. Include comments marking where to replace the placeholder countdown with a real rewarded ad SDK call.",
       "reqIds": [
         "REQ-4"
       ],
       "version": 1
     },
     {
-      "id": "feature-on-collision-trigger-a-particle-explosion-effect-at-the-crash-point-a-screen-shake-animation-and-a-brief-slow-motion-effect-on-near-miss-traffic-car-passes-within-a-threshold-distance-without-collision-award-bonus-points-and-briefly-trigger-a-slow-motion-effect",
-      "title": "On collision, trigger: a particle explosion effect at the crash point, a screen shake animation, and a brief slow-motion effect. On near-miss (traffic car passes within a threshold distance without collision), award bonus points and briefly trigger a slow-motion effect.",
+      "id": "feature-ensure-all-ad-placeholder-containers-use-simple-colored-boxes-e-g-semi-transparent-dark-with-a-neon-accent-border-matching-the-site-theme-with-centered-ad-space-text-ad-containers-must-not-overlap-game-ui-nav-or-controls-the-layout-must-be-fully-responsive-and-maintain-smooth-gameplay-performance-ad-rendering-must-not-cause-frame-drops-or-freeze-the-game-loop",
+      "title": "Ensure all ad placeholder containers use simple colored boxes (e.g., semi-transparent dark with a neon accent border matching the site theme) with centered 'Ad Space' text. Ad containers must not overlap game UI, nav, or controls. The layout must be fully responsive and maintain smooth gameplay performance — ad rendering must not cause frame drops or freeze the game loop.",
       "reqIds": [
         "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-display-a-hud-overlay-with-current-score-distance-based-incrementing-per-frame-high-score-persisted-in-localstorage-current-speed-meter-and-coin-count-score-and-high-score-must-be-updated-at-game-over-with-the-high-score-saved-to-localstorage-key-highwayrush-highscore",
-      "title": "Display a HUD overlay with: current score (distance-based, incrementing per frame), high score (persisted in localStorage), current speed meter, and coin count. Score and high score must be updated at game over, with the high score saved to localStorage key 'highwayRush_highScore'.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-spawn-collectible-coins-on-the-highway-that-the-player-can-collect-by-driving-over-them-implement-a-car-skins-system-with-at-least-3-skins-unlockable-by-spending-accumulated-coins-the-currently-selected-skin-must-persist-in-localstorage",
-      "title": "Spawn collectible coins on the highway that the player can collect by driving over them. Implement a car skins system with at least 3 skins unlockable by spending accumulated coins. The currently selected skin must persist in localStorage.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-difficulty-escalation-every-30-seconds-increase-traffic-density-traffic-speed-cap-and-spawn-variety-show-a-brief-on-screen-notification-when-difficulty-increases",
-      "title": "Implement difficulty escalation every 30 seconds: increase traffic density, traffic speed cap, and spawn variety. Show a brief on-screen notification when difficulty increases.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-all-game-screens-main-menu-with-play-car-skins-and-leaderboard-high-score-sections-in-game-pause-overlay-with-resume-and-restart-buttons-and-game-over-screen-showing-final-score-high-score-coins-collected-and-restart-main-menu-buttons-include-a-rewarded-ad-placeholder-on-the-game-over-screen-for-extra-life-and-an-interstitial-ad-placeholder-zone-after-dismissing-game-over",
-      "title": "Implement all game screens: Main Menu (with Play, Car Skins, and Leaderboard/High Score sections), in-game Pause overlay (with Resume and Restart buttons), and Game Over screen (showing final score, high score, coins collected, and Restart/Main Menu buttons). Include a rewarded-ad placeholder on the Game Over screen for 'Extra Life' and an interstitial-ad placeholder zone after dismissing game over.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-all-audio-using-the-web-audio-api-procedural-synthesis-no-external-files-looping-engine-sound-that-pitches-up-with-speed-crash-explosion-sound-on-collision-looping-background-music-and-button-click-sounds-include-a-mute-toggle-button-in-the-hud-with-mute-state-persisted-in-localstorage",
-      "title": "Implement all audio using the Web Audio API (procedural synthesis, no external files): looping engine sound that pitches up with speed, crash/explosion sound on collision, looping background music, and button click sounds. Include a mute toggle button in the HUD, with mute state persisted in localStorage.",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-register-the-highway-rush-game-on-the-home-page-frontend-src-pages-home-tsx-as-a-new-game-card-with-an-appropriate-icon-and-description-linking-to-the-highway-rush-route-add-the-route-to-the-tanstack-router-setup-in-frontend-src-app-tsx",
-      "title": "Register the Highway Rush game on the Home page (frontend/src/pages/Home.tsx) as a new game card with an appropriate icon and description, linking to the /highway-rush route. Add the route to the TanStack Router setup in frontend/src/App.tsx.",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-integrate-highway-rush-with-the-existing-player-profile-and-xp-system-frontend-src-utils-playerprofile-ts-award-xp-based-on-distance-score-at-game-over-and-record-win-play-stats-award-an-achievement-for-reaching-milestone-scores-e-g-1000-5000-10000-points",
-      "title": "Integrate Highway Rush with the existing player profile and XP system (frontend/src/utils/playerProfile.ts): award XP based on distance score at game over, and record win/play stats. Award an achievement for reaching milestone scores (e.g., 1000, 5000, 10000 points).",
-      "reqIds": [
-        "REQ-12"
       ],
       "version": 1
     }
@@ -109,67 +54,43 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Third-person camera with lane switching via keyboard (Arrow/A&D) and touch controls",
+      "summary": "Responsive top sticky banner ad (below nav, 90px desktop / 60px mobile, labeled 'Ad Space')",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Endless highway with realistic road, lane markings, and random traffic patterns",
+      "summary": "Bottom sticky banner ad (mobile-friendly, does not block gameplay controls)",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Day/night cycle, motion blur at high speed, crash particles and explosion animation, screen shake",
+      "summary": "Interstitial ad system: full-screen after Game Over only, 5s auto-close with X button, returns to main menu",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-4",
-      "summary": "Score system based on distance, high score saved in localStorage, speed meter UI",
+      "summary": "Rewarded ad: 'Watch Ad to Continue' with 5s countdown, grants 1 extra life, usable once per game",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-5",
-      "summary": "Coin collection system and unlockable car skins",
+      "summary": "Ad placeholders using colored boxes labeled 'Ad Space', clearly commented for AdSense/Adsterra integration",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-6",
-      "summary": "Difficulty increases every 30 seconds, near-miss bonus points, slow motion on close calls",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Main menu, pause, and restart screens",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Engine sound, crash sound, background music loop, button click sounds",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Ad placement zones: banner ad space, rewarded ad for extra life, interstitial after game over",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Responsive design for desktop and mobile, optimized for smooth 60 FPS",
+      "summary": "Compact mobile nav (visible but space-efficient, not hidden when top banner is shown)",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "gameProjectType": "3d",
-  "projectName": "Highway Rush",
+  "gameProjectType": "2d",
+  "projectName": "Ultimate Gaming Arena",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

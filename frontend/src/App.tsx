@@ -32,6 +32,8 @@ const PacManGame = lazy(() => import("./pages/PacManGame"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const DarkTrapEscapeGame = lazy(() => import("./pages/DarkTrapEscapeGame"));
 const HighwayRushGame = lazy(() => import("./pages/HighwayRushGame"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 
 const queryClient = new QueryClient();
 
@@ -75,20 +77,44 @@ const pacManRoute = createRoute({ getParentRoute: () => rootRoute, path: "/pac-m
 const leaderboardRoute = createRoute({ getParentRoute: () => rootRoute, path: "/leaderboard", component: withSuspense(Leaderboard) });
 const darkTrapEscapeRoute = createRoute({ getParentRoute: () => rootRoute, path: "/dark-trap-escape", component: withSuspense(DarkTrapEscapeGame) });
 const highwayRushRoute = createRoute({ getParentRoute: () => rootRoute, path: "/highway-rush", component: withSuspense(HighwayRushGame) });
+const privacyPolicyRoute = createRoute({ getParentRoute: () => rootRoute, path: "/privacy-policy", component: withSuspense(PrivacyPolicy) });
+const termsOfServiceRoute = createRoute({ getParentRoute: () => rootRoute, path: "/terms-of-service", component: withSuspense(TermsOfService) });
 
 const routeTree = rootRoute.addChildren([
-  homeRoute, singlePlayerRoute, twoPlayerRoute, rockPaperScissorsRoute,
-  memoryCardMatchRoute, game2048Route, connect4Route, snakeRoute,
-  trafficCarRoute, snakeAndLadderRoute, pongRoute, flappyBirdRoute,
-  brickBreakerRoute, achievementsRoute, profileRoute, endlessRunnerRoute,
-  snakeArcadeRoute, tetrisRoute, spaceInvadersRoute, minesweeperRoute,
-  pacManRoute, leaderboardRoute, darkTrapEscapeRoute, highwayRushRoute,
+  homeRoute,
+  singlePlayerRoute,
+  twoPlayerRoute,
+  rockPaperScissorsRoute,
+  memoryCardMatchRoute,
+  game2048Route,
+  connect4Route,
+  snakeRoute,
+  trafficCarRoute,
+  snakeAndLadderRoute,
+  pongRoute,
+  flappyBirdRoute,
+  brickBreakerRoute,
+  achievementsRoute,
+  profileRoute,
+  endlessRunnerRoute,
+  snakeArcadeRoute,
+  tetrisRoute,
+  spaceInvadersRoute,
+  minesweeperRoute,
+  pacManRoute,
+  leaderboardRoute,
+  darkTrapEscapeRoute,
+  highwayRushRoute,
+  privacyPolicyRoute,
+  termsOfServiceRoute,
 ]);
 
 const router = createRouter({ routeTree });
 
 declare module "@tanstack/react-router" {
-  interface Register { router: typeof router; }
+  interface Register {
+    router: typeof router;
+  }
 }
 
 export default function App() {

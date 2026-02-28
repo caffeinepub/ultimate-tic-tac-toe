@@ -1,66 +1,90 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { useNavigate } from '@tanstack/react-router';
 import * as THREE from 'three';
+import { useNavigate } from '@tanstack/react-router';
+import { ArrowLeft, RotateCcw } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
+import InterstitialAd from '../components/InterstitialAd';
+import RewardedAd from '../components/RewardedAd';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
+interface GameState {
+  score: number;
+  lives: number;
+  speed: number;
+  phase: 'menu' | 'playing' | 'crashed' | 'gameover';
+  rewardedUsed: boolean;
+  showInterstitial: boolean;
+}
+
 interface Obstacle {
   mesh: THREE.Mesh;
-  lane: number; // -1, 0, 1
+  lane: number;
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-const LANE_WIDTH = 2.5;
-const LANES = [-LANE_WIDTH, 0, LANE_WIDTH]; // x positions
-const PLAYER_Y_GROUND = 0.5;
-const JUMP_VELOCITY = 8;
-const GRAVITY = -20;
-const INITIAL_SPEED = 10;
-const SPEED_INCREMENT = 0.5; // per second
-const OBSTACLE_SPAWN_INTERVAL = 1.4; // seconds
-const TRACK_TILE_LENGTH = 20;
-const TRACK_TILE_COUNT = 6;
+const LANES = [-2.5, 0, 2.5];
+const OBSTACLE_INTERVAL = 1.8; // seconds between spawns
+const BASE_SPEED = 8;
+const SPEED_INCREMENT = 0.002;
+const JUMP_VELOCITY = 7;
+const GRAVITY = -18;
+const GROUND_Y = 0;
+const PLAYER_Y_BASE = 0.5;
 
-// ─── Component ───────────────────────────────────────────────────────────────
 const EndlessRunnerGame: React.FC = () => {
-  const navigate = useNavigate();
   const mountRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const navigate = useNavigate();
 
-  // Game state refs (used inside animation loop)
-  const gameStateRef = useRef<'idle' | 'playing' | 'gameover'>('idle');
-  const scoreRef = useRef(0);
-  const speedRef = useRef(INITIAL_SPEED);
-  const playerLaneRef = useRef(1); // 0=left, 1=center, 2=right
-  const playerYRef = useRef(PLAYER_Y_GROUND);
-  const playerVYRef = useRef(0);
-  const isJumpingRef = useRef(false);
-  const obstaclesRef = useRef<Obstacle[]>([]);
-  const spawnTimerRef = useRef(0);
-  const elapsedRef = useRef(0);
-  const animFrameRef = useRef<number>(0);
-  const lastTimeRef = useRef<number>(0);
-  const keysRef = useRef<Record<string, boolean>>({});
-  const keyProcessedRef = useRef<Record<string, boolean>>({});
+  // React UI state
+  const [uiState, setUiState] = useState<GameState>({
+    score: 0,
+    lives: 3,
+    speed: BASE_SPEED,
+    phase: 'menu',
+    rewardedUsed: false,
+    showInterstitial: false,
+  });
 
-  // React state for UI overlay
-  const [gameState, setGameState] = useState<'idle' | 'playing' | 'gameover'>('idle');
-  const [score, setScore] = useState(0);
-  const [finalScore, setFinalScore] = useState(0);
-
-  // Three.js refs
+  // Refs for game loop (avoid stale closures)
   const sceneRef = useRef<THREE.Scene | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const playerMeshRef = useRef<THREE.Mesh | null>(null);
-  const trackTilesRef = useRef<THREE.Mesh[]>([]);
-  const playerTargetXRef = useRef(0);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const playerRef = useRef<THREE.Mesh | null>(null);
+  const obstaclesRef = useRef<Obstacle[]>([]);
+  const groundRef = useRef<THREE.Mesh | null>(null);
+  const animFrameRef = useRef<number>(0);
+  const clockRef = useRef(new THREE.Clock());
 
-  // ─── Init Three.js ──────────────────────────────────────────────────────
-  const initThree = useCallback(() => {
+  const gameStateRef = useRef({
+    phase: 'menu' as GameState['phase'],
+    score: 0,
+    lives: 3,
+    speed: BASE_SPEED,
+    rewardedUsed: false,
+    lane: 1, // 0=left, 1=center, 2=right
+    targetLaneX: 0,
+    velY: 0,
+    posY: PLAYER_Y_BASE,
+    isJumping: false,
+    obstacleTimer: 0,
+    groundOffset: 0,
+  });
+
+  const syncUI = useCallback(() => {
+    const s = gameStateRef.current;
+    setUiState({
+      score: Math.floor(s.score),
+      lives: s.lives,
+      speed: s.speed,
+      phase: s.phase,
+      rewardedUsed: s.rewardedUsed,
+      showInterstitial: s.phase === 'gameover',
+    });
+  }, []);
+
+  // ── Three.js setup ──────────────────────────────────────────────────────────
+  useEffect(() => {
     if (!mountRef.current) return;
-
-    const width = mountRef.current.clientWidth;
-    const height = mountRef.current.clientHeight;
 
     // Scene
     const scene = new THREE.Scene();
@@ -69,537 +93,444 @@ const EndlessRunnerGame: React.FC = () => {
     sceneRef.current = scene;
 
     // Camera
-    const camera = new THREE.PerspectiveCamera(65, width / height, 0.1, 200);
+    const camera = new THREE.PerspectiveCamera(
+      70,
+      mountRef.current.clientWidth / mountRef.current.clientHeight,
+      0.1,
+      100
+    );
     camera.position.set(0, 4, 8);
-    camera.lookAt(0, 0, -5);
+    camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(width, height);
+    renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     mountRef.current.appendChild(renderer.domElement);
-    canvasRef.current = renderer.domElement;
     rendererRef.current = renderer;
 
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0x111133, 1.5);
-    scene.add(ambientLight);
-
-    const dirLight = new THREE.DirectionalLight(0x4488ff, 2);
+    scene.add(new THREE.AmbientLight(0x334466, 1.5));
+    const dirLight = new THREE.DirectionalLight(0x88aaff, 2);
     dirLight.position.set(5, 10, 5);
-    dirLight.castShadow = true;
     scene.add(dirLight);
 
-    // Neon point lights
-    const neonBlue = new THREE.PointLight(0x00d4ff, 3, 15);
-    neonBlue.position.set(0, 3, 0);
-    scene.add(neonBlue);
+    // Ground — tiled neon grid
+    const groundGeo = new THREE.PlaneGeometry(10, 200, 10, 100);
+    const groundMat = new THREE.MeshStandardMaterial({
+      color: 0x0a0a2a,
+      wireframe: false,
+    });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.z = -90;
+    scene.add(ground);
+    groundRef.current = ground;
 
-    const neonPurple = new THREE.PointLight(0xaa00ff, 2, 12);
-    neonPurple.position.set(0, 2, -10);
-    scene.add(neonPurple);
+    // Grid lines overlay
+    const gridHelper = new THREE.GridHelper(200, 40, 0x1a3a6a, 0x0d1f3a);
+    gridHelper.position.z = -90;
+    scene.add(gridHelper);
 
-    // Track tiles
-    buildTrack(scene);
-
-    // Lane edge lines (neon rails)
-    buildRails(scene);
+    // Lane dividers
+    [-1.25, 1.25].forEach((x) => {
+      const geo = new THREE.BoxGeometry(0.05, 0.02, 200);
+      const mat = new THREE.MeshStandardMaterial({ color: 0x2244aa, emissive: 0x1122aa });
+      const divider = new THREE.Mesh(geo, mat);
+      divider.position.set(x, 0.01, -90);
+      scene.add(divider);
+    });
 
     // Player cube
-    const playerGeo = new THREE.BoxGeometry(0.9, 0.9, 0.9);
+    const playerGeo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
     const playerMat = new THREE.MeshStandardMaterial({
-      color: 0x00d4ff,
-      emissive: 0x00d4ff,
-      emissiveIntensity: 1.2,
-      roughness: 0.2,
-      metalness: 0.8,
+      color: 0x00aaff,
+      emissive: 0x0055aa,
+      emissiveIntensity: 0.8,
     });
     const player = new THREE.Mesh(playerGeo, playerMat);
-    player.position.set(LANES[1], PLAYER_Y_GROUND, 0);
-    player.castShadow = true;
+    player.position.set(0, PLAYER_Y_BASE, 2);
     scene.add(player);
-    playerMeshRef.current = player;
+    playerRef.current = player;
 
-    // Player glow light
-    const playerLight = new THREE.PointLight(0x00d4ff, 2, 4);
-    player.add(playerLight);
+    // Resize handler
+    const handleResize = () => {
+      if (!mountRef.current || !rendererRef.current || !cameraRef.current) return;
+      const w = mountRef.current.clientWidth;
+      const h = mountRef.current.clientHeight;
+      cameraRef.current.aspect = w / h;
+      cameraRef.current.updateProjectionMatrix();
+      rendererRef.current.setSize(w, h);
+    };
+    window.addEventListener('resize', handleResize);
 
-    // Grid floor lines
-    buildGridLines(scene);
-
-    // Stars
-    buildStars(scene);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animFrameRef.current);
+      renderer.dispose();
+      if (mountRef.current && renderer.domElement.parentNode === mountRef.current) {
+        mountRef.current.removeChild(renderer.domElement);
+      }
+      // Clean up obstacles
+      obstaclesRef.current.forEach((o) => scene.remove(o.mesh));
+      obstaclesRef.current = [];
+    };
   }, []);
 
-  const buildTrack = (scene: THREE.Scene) => {
-    const tileGeo = new THREE.BoxGeometry(LANE_WIDTH * 3 + 1, 0.2, TRACK_TILE_LENGTH);
-    const tileMat = new THREE.MeshStandardMaterial({
-      color: 0x0a0a2a,
-      emissive: 0x0a0a2a,
-      emissiveIntensity: 0.3,
-      roughness: 0.9,
-      metalness: 0.1,
-    });
-
-    for (let i = 0; i < TRACK_TILE_COUNT; i++) {
-      const tile = new THREE.Mesh(tileGeo, tileMat);
-      tile.position.set(0, -0.1, -i * TRACK_TILE_LENGTH + TRACK_TILE_LENGTH / 2);
-      tile.receiveShadow = true;
-      scene.add(tile);
-      trackTilesRef.current.push(tile);
-    }
-  };
-
-  const buildRails = (scene: THREE.Scene) => {
-    const railMat = new THREE.MeshStandardMaterial({
-      color: 0x00d4ff,
-      emissive: 0x00d4ff,
-      emissiveIntensity: 2,
-    });
-    const railGeo = new THREE.BoxGeometry(0.05, 0.05, 200);
-
-    const offsets = [-LANE_WIDTH * 1.5 - 0.5, -LANE_WIDTH * 0.5, LANE_WIDTH * 0.5, LANE_WIDTH * 1.5 + 0.5];
-    offsets.forEach(x => {
-      const rail = new THREE.Mesh(railGeo, railMat);
-      rail.position.set(x, 0, -90);
-      scene.add(rail);
-    });
-  };
-
-  const buildGridLines = (scene: THREE.Scene) => {
-    const lineMat = new THREE.LineBasicMaterial({ color: 0x1a1a4a, transparent: true, opacity: 0.6 });
-    for (let z = 0; z > -200; z -= 2) {
-      const points = [
-        new THREE.Vector3(-LANE_WIDTH * 1.5 - 0.5, 0, z),
-        new THREE.Vector3(LANE_WIDTH * 1.5 + 0.5, 0, z),
-      ];
-      const geo = new THREE.BufferGeometry().setFromPoints(points);
-      scene.add(new THREE.Line(geo, lineMat));
-    }
-  };
-
-  const buildStars = (scene: THREE.Scene) => {
-    const starGeo = new THREE.BufferGeometry();
-    const positions: number[] = [];
-    for (let i = 0; i < 300; i++) {
-      positions.push(
-        (Math.random() - 0.5) * 100,
-        Math.random() * 30 + 5,
-        Math.random() * -200
-      );
-    }
-    starGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.15, transparent: true, opacity: 0.8 });
-    scene.add(new THREE.Points(starGeo, starMat));
-  };
-
-  // ─── Spawn Obstacle ─────────────────────────────────────────────────────
+  // ── Spawn obstacle ──────────────────────────────────────────────────────────
   const spawnObstacle = useCallback(() => {
     if (!sceneRef.current) return;
-
-    const lane = Math.floor(Math.random() * 3); // 0, 1, 2
-    const height = 0.5 + Math.random() * 0.8;
-    const width = 0.8 + Math.random() * 0.4;
-
-    const geo = new THREE.BoxGeometry(width, height, width);
-    const colors = [0xff0066, 0xffaa00, 0xaa00ff, 0xff3300];
-    const color = colors[Math.floor(Math.random() * colors.length)];
+    const lane = Math.floor(Math.random() * 3);
+    const geo = new THREE.BoxGeometry(0.9, 1.0, 0.9);
     const mat = new THREE.MeshStandardMaterial({
-      color,
-      emissive: color,
-      emissiveIntensity: 1.0,
-      roughness: 0.3,
-      metalness: 0.7,
+      color: 0xff3333,
+      emissive: 0xaa1111,
+      emissiveIntensity: 0.6,
     });
-
     const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(LANES[lane], height / 2, -40);
-    mesh.castShadow = true;
-
-    // Glow light on obstacle
-    const light = new THREE.PointLight(color, 1.5, 5);
-    mesh.add(light);
-
+    mesh.position.set(LANES[lane], 0.5, -30);
     sceneRef.current.add(mesh);
     obstaclesRef.current.push({ mesh, lane });
   }, []);
 
-  // ─── Reset Game ─────────────────────────────────────────────────────────
-  const resetGame = useCallback(() => {
-    // Clear obstacles
-    obstaclesRef.current.forEach(o => {
-      sceneRef.current?.remove(o.mesh);
-      o.mesh.geometry.dispose();
-      (o.mesh.material as THREE.Material).dispose();
+  // ── Game loop ───────────────────────────────────────────────────────────────
+  const loopRef = useRef<() => void>(() => {});
+
+  loopRef.current = () => {
+    const gs = gameStateRef.current;
+    if (gs.phase !== 'playing') return;
+
+    const delta = Math.min(clockRef.current.getDelta(), 0.05);
+    gs.score += delta * 10;
+    gs.speed = BASE_SPEED + gs.score * SPEED_INCREMENT;
+
+    // Player lateral movement
+    const player = playerRef.current!;
+    const targetX = LANES[gs.lane];
+    player.position.x += (targetX - player.position.x) * 0.2;
+
+    // Jump physics
+    if (gs.isJumping) {
+      gs.velY += GRAVITY * delta;
+      gs.posY += gs.velY * delta;
+      if (gs.posY <= PLAYER_Y_BASE) {
+        gs.posY = PLAYER_Y_BASE;
+        gs.velY = 0;
+        gs.isJumping = false;
+      }
+    }
+    player.position.y = gs.posY;
+    player.rotation.x += delta * 2;
+
+    // Obstacle spawning
+    gs.obstacleTimer += delta;
+    if (gs.obstacleTimer >= OBSTACLE_INTERVAL) {
+      gs.obstacleTimer = 0;
+      spawnObstacle();
+    }
+
+    // Move obstacles
+    const toRemove: number[] = [];
+    obstaclesRef.current.forEach((obs, i) => {
+      obs.mesh.position.z += gs.speed * delta;
+      if (obs.mesh.position.z > 6) {
+        sceneRef.current!.remove(obs.mesh);
+        toRemove.push(i);
+        return;
+      }
+
+      // AABB collision
+      const dx = Math.abs(player.position.x - obs.mesh.position.x);
+      const dy = Math.abs(player.position.y - obs.mesh.position.y);
+      const dz = Math.abs(player.position.z - obs.mesh.position.z);
+      if (dx < 0.8 && dy < 0.8 && dz < 0.8) {
+        // Collision!
+        sceneRef.current!.remove(obs.mesh);
+        toRemove.push(i);
+        gs.lives -= 1;
+
+        if (gs.lives <= 0) {
+          gs.phase = 'gameover';
+        } else {
+          gs.phase = 'crashed';
+        }
+        syncUI();
+      }
     });
+    // Remove in reverse order
+    toRemove.sort((a, b) => b - a).forEach((i) => obstaclesRef.current.splice(i, 1));
+
+    // Camera follow
+    if (cameraRef.current) {
+      cameraRef.current.position.x += (player.position.x * 0.3 - cameraRef.current.position.x) * 0.1;
+    }
+
+    // Render
+    if (rendererRef.current && sceneRef.current && cameraRef.current) {
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+    }
+
+    // Update score in UI every ~30 frames
+    if (Math.floor(gs.score) % 30 === 0) {
+      setUiState((prev) => ({ ...prev, score: Math.floor(gs.score) }));
+    }
+
+    animFrameRef.current = requestAnimationFrame(() => loopRef.current());
+  };
+
+  // ── Start game ──────────────────────────────────────────────────────────────
+  const startGame = useCallback(() => {
+    const gs = gameStateRef.current;
+    gs.phase = 'playing';
+    gs.score = 0;
+    gs.lives = 3;
+    gs.speed = BASE_SPEED;
+    gs.rewardedUsed = false;
+    gs.lane = 1;
+    gs.targetLaneX = 0;
+    gs.velY = 0;
+    gs.posY = PLAYER_Y_BASE;
+    gs.isJumping = false;
+    gs.obstacleTimer = 0;
+
+    // Clear obstacles
+    obstaclesRef.current.forEach((o) => sceneRef.current?.remove(o.mesh));
     obstaclesRef.current = [];
 
     // Reset player
-    playerLaneRef.current = 1;
-    playerTargetXRef.current = LANES[1];
-    playerYRef.current = PLAYER_Y_GROUND;
-    playerVYRef.current = 0;
-    isJumpingRef.current = false;
-
-    if (playerMeshRef.current) {
-      playerMeshRef.current.position.set(LANES[1], PLAYER_Y_GROUND, 0);
+    if (playerRef.current) {
+      playerRef.current.position.set(0, PLAYER_Y_BASE, 2);
+      playerRef.current.rotation.set(0, 0, 0);
     }
 
-    // Reset game vars
-    scoreRef.current = 0;
-    speedRef.current = INITIAL_SPEED;
-    spawnTimerRef.current = 0;
-    elapsedRef.current = 0;
-    lastTimeRef.current = 0;
-    keysRef.current = {};
-    keyProcessedRef.current = {};
+    clockRef.current.start();
+    syncUI();
+    animFrameRef.current = requestAnimationFrame(() => loopRef.current());
+  }, [syncUI]);
 
-    setScore(0);
-    gameStateRef.current = 'playing';
-    setGameState('playing');
-  }, []);
+  // ── Resume after rewarded ad ────────────────────────────────────────────────
+  const resumeAfterReward = useCallback(() => {
+    const gs = gameStateRef.current;
+    gs.lives += 1;
+    gs.rewardedUsed = true;
+    gs.phase = 'playing';
 
-  // ─── Game Loop ──────────────────────────────────────────────────────────
-  const gameLoop = useCallback((timestamp: number) => {
-    animFrameRef.current = requestAnimationFrame(gameLoop);
+    // Reset player position
+    if (playerRef.current) {
+      playerRef.current.position.set(LANES[gs.lane], PLAYER_Y_BASE, 2);
+    }
 
-    if (!rendererRef.current || !sceneRef.current || !cameraRef.current || !playerMeshRef.current) return;
+    clockRef.current.start();
+    syncUI();
+    animFrameRef.current = requestAnimationFrame(() => loopRef.current());
+  }, [syncUI]);
 
-    const delta = lastTimeRef.current === 0 ? 0.016 : Math.min((timestamp - lastTimeRef.current) / 1000, 0.05);
-    lastTimeRef.current = timestamp;
+  // ── Input handling ──────────────────────────────────────────────────────────
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      const gs = gameStateRef.current;
+      if (gs.phase !== 'playing') return;
 
-    if (gameStateRef.current === 'playing') {
-      elapsedRef.current += delta;
-
-      // Increase speed over time
-      speedRef.current = INITIAL_SPEED + elapsedRef.current * SPEED_INCREMENT;
-
-      // Score
-      scoreRef.current += delta * 10 * (speedRef.current / INITIAL_SPEED);
-      if (Math.floor(scoreRef.current) % 5 === 0) {
-        setScore(Math.floor(scoreRef.current));
-      }
-
-      // ── Player lateral movement ──
-      const keys = keysRef.current;
-      if ((keys['ArrowLeft'] || keys['a'] || keys['A']) && !keyProcessedRef.current['left']) {
-        if (playerLaneRef.current > 0) {
-          playerLaneRef.current--;
-          playerTargetXRef.current = LANES[playerLaneRef.current];
-        }
-        keyProcessedRef.current['left'] = true;
-      }
-      if (!(keys['ArrowLeft'] || keys['a'] || keys['A'])) {
-        keyProcessedRef.current['left'] = false;
-      }
-
-      if ((keys['ArrowRight'] || keys['d'] || keys['D']) && !keyProcessedRef.current['right']) {
-        if (playerLaneRef.current < 2) {
-          playerLaneRef.current++;
-          playerTargetXRef.current = LANES[playerLaneRef.current];
-        }
-        keyProcessedRef.current['right'] = true;
-      }
-      if (!(keys['ArrowRight'] || keys['d'] || keys['D'])) {
-        keyProcessedRef.current['right'] = false;
-      }
-
-      // ── Jump ──
-      if ((keys[' '] || keys['ArrowUp'] || keys['w'] || keys['W']) && !isJumpingRef.current && !keyProcessedRef.current['jump']) {
-        playerVYRef.current = JUMP_VELOCITY;
-        isJumpingRef.current = true;
-        keyProcessedRef.current['jump'] = true;
-      }
-      if (!(keys[' '] || keys['ArrowUp'] || keys['w'] || keys['W'])) {
-        keyProcessedRef.current['jump'] = false;
-      }
-
-      // ── Physics ──
-      if (isJumpingRef.current) {
-        playerVYRef.current += GRAVITY * delta;
-        playerYRef.current += playerVYRef.current * delta;
-        if (playerYRef.current <= PLAYER_Y_GROUND) {
-          playerYRef.current = PLAYER_Y_GROUND;
-          playerVYRef.current = 0;
-          isJumpingRef.current = false;
-        }
-      }
-
-      // ── Update player mesh ──
-      const player = playerMeshRef.current;
-      player.position.x += (playerTargetXRef.current - player.position.x) * Math.min(delta * 12, 1);
-      player.position.y = playerYRef.current;
-      player.rotation.y += delta * 1.5;
-
-      // ── Camera follow ──
-      const cam = cameraRef.current;
-      const targetCamX = player.position.x * 0.3;
-      cam.position.x += (targetCamX - cam.position.x) * Math.min(delta * 8, 1);
-      cam.lookAt(player.position.x * 0.2, 1, -5);
-
-      // ── Scroll track tiles ──
-      trackTilesRef.current.forEach(tile => {
-        tile.position.z += speedRef.current * delta;
-        if (tile.position.z > TRACK_TILE_LENGTH * 1.5) {
-          tile.position.z -= TRACK_TILE_COUNT * TRACK_TILE_LENGTH;
-        }
-      });
-
-      // ── Spawn obstacles ──
-      spawnTimerRef.current += delta;
-      const spawnInterval = OBSTACLE_SPAWN_INTERVAL * (INITIAL_SPEED / speedRef.current);
-      if (spawnTimerRef.current >= spawnInterval) {
-        spawnTimerRef.current = 0;
-        spawnObstacle();
-      }
-
-      // ── Move & cull obstacles ──
-      const toRemove: Obstacle[] = [];
-      obstaclesRef.current.forEach(obs => {
-        obs.mesh.position.z += speedRef.current * delta;
-        obs.mesh.rotation.y += delta * 2;
-
-        if (obs.mesh.position.z > 5) {
-          toRemove.push(obs);
-        }
-      });
-
-      toRemove.forEach(obs => {
-        sceneRef.current!.remove(obs.mesh);
-        obs.mesh.geometry.dispose();
-        (obs.mesh.material as THREE.Material).dispose();
-        obstaclesRef.current = obstaclesRef.current.filter(o => o !== obs);
-      });
-
-      // ── Collision detection ──
-      const playerBox = new THREE.Box3().setFromObject(player);
-      // Shrink player box slightly to reduce false positives
-      playerBox.min.addScalar(0.1);
-      playerBox.max.addScalar(-0.1);
-
-      for (const obs of obstaclesRef.current) {
-        const obsBox = new THREE.Box3().setFromObject(obs.mesh);
-        if (playerBox.intersectsBox(obsBox)) {
-          // Game over
-          gameStateRef.current = 'gameover';
-          setFinalScore(Math.floor(scoreRef.current));
-          setScore(Math.floor(scoreRef.current));
-          setGameState('gameover');
+      switch (e.code) {
+        case 'ArrowLeft':
+        case 'KeyA':
+          gs.lane = Math.max(0, gs.lane - 1);
           break;
-        }
-      }
-    }
-
-    rendererRef.current.render(sceneRef.current, cameraRef.current);
-  }, [spawnObstacle]);
-
-  // ─── Keyboard handlers ──────────────────────────────────────────────────
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      keysRef.current[e.key] = true;
-      // Prevent page scroll
-      if ([' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-        e.preventDefault();
+        case 'ArrowRight':
+        case 'KeyD':
+          gs.lane = Math.min(2, gs.lane + 1);
+          break;
+        case 'ArrowUp':
+        case 'KeyW':
+        case 'Space':
+          if (!gs.isJumping) {
+            gs.velY = JUMP_VELOCITY;
+            gs.isJumping = true;
+          }
+          break;
       }
     };
-    const onKeyUp = (e: KeyboardEvent) => {
-      keysRef.current[e.key] = false;
-    };
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('keyup', onKeyUp);
-    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
   }, []);
 
-  // ─── Resize handler ─────────────────────────────────────────────────────
-  useEffect(() => {
-    const onResize = () => {
-      if (!mountRef.current || !rendererRef.current || !cameraRef.current) return;
-      const w = mountRef.current.clientWidth;
-      const h = mountRef.current.clientHeight;
-      rendererRef.current.setSize(w, h);
-      cameraRef.current.aspect = w / h;
-      cameraRef.current.updateProjectionMatrix();
-    };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
+  // ── Touch controls ──────────────────────────────────────────────────────────
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
 
-  // ─── Mount / Unmount ────────────────────────────────────────────────────
-  useEffect(() => {
-    initThree();
-    animFrameRef.current = requestAnimationFrame(gameLoop);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
 
-    return () => {
-      cancelAnimationFrame(animFrameRef.current);
-      if (rendererRef.current) {
-        rendererRef.current.dispose();
-        if (canvasRef.current && mountRef.current?.contains(canvasRef.current)) {
-          mountRef.current.removeChild(canvasRef.current);
-        }
-      }
-      obstaclesRef.current.forEach(o => {
-        o.mesh.geometry.dispose();
-        (o.mesh.material as THREE.Material).dispose();
-      });
-    };
-  }, [initThree, gameLoop]);
-
-  // ─── Touch / Button controls ────────────────────────────────────────────
-  const handleMoveLeft = useCallback(() => {
-    if (gameStateRef.current !== 'playing') return;
-    if (playerLaneRef.current > 0) {
-      playerLaneRef.current--;
-      playerTargetXRef.current = LANES[playerLaneRef.current];
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const gs = gameStateRef.current;
+    if (gs.phase !== 'playing') return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 30) gs.lane = Math.min(2, gs.lane + 1);
+      else if (dx < -30) gs.lane = Math.max(0, gs.lane - 1);
+    } else if (dy < -30 && !gs.isJumping) {
+      gs.velY = JUMP_VELOCITY;
+      gs.isJumping = true;
     }
-  }, []);
+  };
 
-  const handleMoveRight = useCallback(() => {
-    if (gameStateRef.current !== 'playing') return;
-    if (playerLaneRef.current < 2) {
-      playerLaneRef.current++;
-      playerTargetXRef.current = LANES[playerLaneRef.current];
-    }
-  }, []);
+  // ── Interstitial close → navigate home ─────────────────────────────────────
+  const handleInterstitialClose = useCallback(() => {
+    navigate({ to: '/' });
+  }, [navigate]);
 
-  const handleJump = useCallback(() => {
-    if (gameStateRef.current !== 'playing') return;
-    if (!isJumpingRef.current) {
-      playerVYRef.current = JUMP_VELOCITY;
-      isJumpingRef.current = true;
-    }
-  }, []);
-
-  const handleStart = useCallback(() => {
-    resetGame();
-  }, [resetGame]);
-
-  // ─── Render ─────────────────────────────────────────────────────────────
+  // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="relative w-full h-screen bg-gray-950 overflow-hidden flex flex-col">
-      {/* Back button */}
-      <button
-        onClick={() => navigate({ to: '/' })}
-        className="absolute top-4 left-4 z-30 flex items-center gap-2 px-3 py-2 rounded-lg border border-neon-blue/40 bg-gray-950/80 text-neon-blue font-orbitron text-xs font-bold tracking-widest uppercase hover:bg-neon-blue/20 transition-all duration-200"
-      >
-        ← Back
-      </button>
+    <div className="relative w-full h-[calc(100vh-60px)] md:h-[calc(100vh-90px-56px)] min-h-[500px] bg-background overflow-hidden"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Three.js mount */}
+      <div ref={mountRef} className="absolute inset-0" />
 
-      {/* Score HUD */}
-      {gameState === 'playing' && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 text-center pointer-events-none">
-          <div
-            className="font-orbitron font-black text-2xl text-neon-blue tracking-widest"
-            style={{ textShadow: '0 0 20px rgba(0,212,255,0.9), 0 0 40px rgba(0,212,255,0.5)' }}
-          >
-            {score.toString().padStart(5, '0')}
+      {/* HUD */}
+      {uiState.phase === 'playing' && (
+        <div className="absolute top-3 left-0 right-0 flex justify-between items-start px-4 pointer-events-none z-10">
+          <div className="bg-black/60 rounded-lg px-3 py-1.5 font-orbitron text-neon-blue text-sm">
+            {String(uiState.score).padStart(6, '0')}
           </div>
-          <div className="font-rajdhani text-gray-500 text-xs uppercase tracking-widest mt-0.5">Score</div>
+          <div className="flex gap-1">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className={`w-3 h-3 rounded-full border ${
+                  i < uiState.lives
+                    ? 'bg-neon-blue border-neon-blue shadow-[0_0_6px_#00aaff]'
+                    : 'bg-transparent border-neon-blue/30'
+                }`}
+              />
+            ))}
+          </div>
         </div>
       )}
 
-      {/* Three.js mount */}
-      <div ref={mountRef} className="absolute inset-0 w-full h-full" />
-
-      {/* Idle / Start screen */}
-      {gameState === 'idle' && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-gray-950/85 backdrop-blur-sm">
-          <div
-            className="font-orbitron font-black text-5xl md:text-6xl text-neon-blue mb-2 tracking-widest uppercase"
-            style={{ textShadow: '0 0 30px rgba(0,212,255,1), 0 0 60px rgba(0,212,255,0.5)' }}
-          >
-            ENDLESS
-          </div>
-          <div
-            className="font-orbitron font-black text-3xl md:text-4xl text-neon-purple mb-8 tracking-widest uppercase"
-            style={{ textShadow: '0 0 20px rgba(170,0,255,0.9)' }}
-          >
-            RUNNER
-          </div>
-          <div className="font-rajdhani text-gray-400 text-sm mb-2 text-center px-6">
-            Dodge obstacles. Survive as long as you can.
-          </div>
-          <div className="font-rajdhani text-gray-500 text-xs mb-8 text-center px-6">
-            ← → Arrow keys to move &nbsp;|&nbsp; Space / ↑ to jump
+      {/* Menu */}
+      {uiState.phase === 'menu' && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-20 bg-black/70">
+          <h1 className="font-orbitron text-3xl md:text-4xl font-bold text-neon-blue mb-2 text-center">
+            ENDLESS RUNNER
+          </h1>
+          <p className="font-rajdhani text-muted-foreground mb-8 text-center px-4">
+            Dodge obstacles across 3 lanes. Survive as long as you can!
+          </p>
+          <div className="grid grid-cols-3 gap-4 mb-8 text-center text-xs font-rajdhani text-muted-foreground">
+            <div className="bg-surface/60 rounded-lg p-3">
+              <div className="text-neon-blue font-bold mb-1">← →</div>
+              <div>Change Lane</div>
+            </div>
+            <div className="bg-surface/60 rounded-lg p-3">
+              <div className="text-neon-blue font-bold mb-1">↑ / Space</div>
+              <div>Jump</div>
+            </div>
+            <div className="bg-surface/60 rounded-lg p-3">
+              <div className="text-neon-blue font-bold mb-1">Swipe</div>
+              <div>Mobile</div>
+            </div>
           </div>
           <button
-            onClick={handleStart}
-            className="font-orbitron font-bold text-sm px-10 py-4 rounded-lg border-2 border-neon-blue text-neon-blue uppercase tracking-widest hover:bg-neon-blue/20 hover:shadow-[0_0_30px_rgba(0,212,255,0.6)] transition-all duration-200 active:scale-95"
+            onClick={startGame}
+            className="px-8 py-3 bg-neon-blue/20 border border-neon-blue text-neon-blue font-orbitron font-bold rounded-lg hover:bg-neon-blue/30 transition-all hover:shadow-[0_0_20px_#00aaff44] active:scale-95"
           >
             START GAME
+          </button>
+          <Link to="/" className="mt-4 flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground font-rajdhani transition-colors">
+            <ArrowLeft size={12} /> Back to Games
+          </Link>
+        </div>
+      )}
+
+      {/* Crashed overlay — show rewarded ad option */}
+      {uiState.phase === 'crashed' && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-20 bg-black/75">
+          <h2 className="font-orbitron text-2xl font-bold text-red-400 mb-1">CRASHED!</h2>
+          <p className="font-rajdhani text-muted-foreground mb-2">
+            Lives remaining: <span className="text-neon-blue font-bold">{uiState.lives}</span>
+          </p>
+          <p className="font-rajdhani text-sm text-muted-foreground mb-6">
+            Score: <span className="text-foreground font-bold">{uiState.score}</span>
+          </p>
+
+          {/* Rewarded ad — once per session */}
+          {!uiState.rewardedUsed && (
+            <div className="mb-4">
+              <RewardedAd
+                onRewardGranted={resumeAfterReward}
+                disabled={uiState.rewardedUsed}
+              />
+            </div>
+          )}
+
+          <button
+            onClick={() => {
+              gameStateRef.current.phase = 'playing';
+              clockRef.current.start();
+              syncUI();
+              animFrameRef.current = requestAnimationFrame(() => loopRef.current());
+            }}
+            className="px-6 py-2 bg-surface/60 border border-neon-blue/40 text-foreground font-rajdhani font-semibold rounded-lg hover:border-neon-blue transition-all text-sm"
+          >
+            Continue (–1 Life)
           </button>
         </div>
       )}
 
       {/* Game Over overlay */}
-      {gameState === 'gameover' && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-gray-950/90 backdrop-blur-sm">
-          <div
-            className="font-orbitron font-black text-5xl md:text-6xl text-red-400 mb-2 tracking-widest uppercase"
-            style={{ textShadow: '0 0 30px rgba(248,113,113,0.9), 0 0 60px rgba(248,113,113,0.4)' }}
-          >
-            GAME
-          </div>
-          <div
-            className="font-orbitron font-black text-5xl md:text-6xl text-red-400 mb-8 tracking-widest uppercase"
-            style={{ textShadow: '0 0 30px rgba(248,113,113,0.9), 0 0 60px rgba(248,113,113,0.4)' }}
-          >
-            OVER
-          </div>
-          <div className="font-rajdhani text-gray-400 text-sm uppercase tracking-widest mb-2">Final Score</div>
-          <div
-            className="font-orbitron font-black text-4xl text-neon-blue mb-10 tracking-widest"
-            style={{ textShadow: '0 0 20px rgba(0,212,255,0.9)' }}
-          >
-            {finalScore.toString().padStart(5, '0')}
-          </div>
+      {uiState.phase === 'gameover' && !uiState.showInterstitial && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-20 bg-black/80">
+          <h2 className="font-orbitron text-3xl font-bold text-red-400 mb-2">GAME OVER</h2>
+          <p className="font-rajdhani text-muted-foreground mb-1">Final Score</p>
+          <p className="font-orbitron text-4xl font-bold text-neon-blue mb-8">{uiState.score}</p>
           <button
-            onClick={handleStart}
-            className="font-orbitron font-bold text-sm px-10 py-4 rounded-lg border-2 border-neon-blue text-neon-blue uppercase tracking-widest hover:bg-neon-blue/20 hover:shadow-[0_0_30px_rgba(0,212,255,0.6)] transition-all duration-200 active:scale-95"
+            onClick={startGame}
+            className="flex items-center gap-2 px-6 py-2.5 bg-neon-blue/20 border border-neon-blue text-neon-blue font-orbitron font-bold rounded-lg hover:bg-neon-blue/30 transition-all mb-3"
           >
-            RESTART
+            <RotateCcw size={16} /> PLAY AGAIN
+          </button>
+          <Link to="/" className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground font-rajdhani transition-colors">
+            <ArrowLeft size={12} /> Back to Games
+          </Link>
+        </div>
+      )}
+
+      {/* Mobile lane buttons */}
+      {uiState.phase === 'playing' && (
+        <div className="absolute bottom-4 left-0 right-0 flex justify-between px-4 z-10 pointer-events-none">
+          <button
+            className="pointer-events-auto w-14 h-14 rounded-full bg-black/50 border border-neon-blue/40 flex items-center justify-center text-neon-blue text-xl active:bg-neon-blue/20"
+            onTouchStart={() => { gameStateRef.current.lane = Math.max(0, gameStateRef.current.lane - 1); }}
+          >
+            ←
+          </button>
+          <button
+            className="pointer-events-auto w-14 h-14 rounded-full bg-black/50 border border-neon-blue/40 flex items-center justify-center text-neon-blue text-xl active:bg-neon-blue/20"
+            onTouchStart={() => {
+              const gs = gameStateRef.current;
+              if (!gs.isJumping) { gs.velY = JUMP_VELOCITY; gs.isJumping = true; }
+            }}
+          >
+            ↑
+          </button>
+          <button
+            className="pointer-events-auto w-14 h-14 rounded-full bg-black/50 border border-neon-blue/40 flex items-center justify-center text-neon-blue text-xl active:bg-neon-blue/20"
+            onTouchStart={() => { gameStateRef.current.lane = Math.min(2, gameStateRef.current.lane + 1); }}
+          >
+            →
           </button>
         </div>
       )}
 
-      {/* Mobile touch controls */}
-      {gameState === 'playing' && (
-        <div className="absolute bottom-6 left-0 right-0 z-30 flex items-center justify-between px-6 pointer-events-none">
-          {/* Left button */}
-          <button
-            onPointerDown={handleMoveLeft}
-            className="pointer-events-auto w-16 h-16 rounded-xl border-2 border-neon-blue/60 bg-gray-950/70 text-neon-blue text-2xl font-bold flex items-center justify-center active:bg-neon-blue/30 active:scale-95 transition-all select-none"
-            style={{ boxShadow: '0 0 15px rgba(0,212,255,0.3)' }}
-            aria-label="Move Left"
-          >
-            ◀
-          </button>
-
-          {/* Jump button */}
-          <button
-            onPointerDown={handleJump}
-            className="pointer-events-auto w-20 h-20 rounded-full border-2 border-neon-purple/70 bg-gray-950/70 text-neon-purple text-sm font-orbitron font-bold flex items-center justify-center active:bg-neon-purple/30 active:scale-95 transition-all select-none uppercase tracking-widest"
-            style={{ boxShadow: '0 0 20px rgba(170,0,255,0.4)' }}
-            aria-label="Jump"
-          >
-            JUMP
-          </button>
-
-          {/* Right button */}
-          <button
-            onPointerDown={handleMoveRight}
-            className="pointer-events-auto w-16 h-16 rounded-xl border-2 border-neon-blue/60 bg-gray-950/70 text-neon-blue text-2xl font-bold flex items-center justify-center active:bg-neon-blue/30 active:scale-95 transition-all select-none"
-            style={{ boxShadow: '0 0 15px rgba(0,212,255,0.3)' }}
-            aria-label="Move Right"
-          >
-            ▶
-          </button>
-        </div>
+      {/* Interstitial ad — shown after full Game Over */}
+      {uiState.showInterstitial && (
+        <InterstitialAd onClose={handleInterstitialClose} />
       )}
     </div>
   );

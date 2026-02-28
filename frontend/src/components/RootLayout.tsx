@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Outlet, Link, useNavigate } from '@tanstack/react-router';
-import { Home, Trophy, User, BarChart2 } from 'lucide-react';
+import { Home, Trophy, User, BarChart2, Shield, FileText } from 'lucide-react';
 import AchievementNotification from './AchievementNotification';
 import FirstVisitModal from './FirstVisitModal';
 import LevelUpOverlay from './LevelUpOverlay';
+import AdBanner from './AdBanner';
 import { useAchievementNotifications } from '../hooks/useAchievementNotifications';
 import { registerNotificationCallback } from '../utils/achievements';
 import { getPlayerProfile, getAvatarImagePath, PlayerProfile } from '../utils/playerProfile';
@@ -53,8 +54,12 @@ export default function RootLayout() {
     setLevelUpVisible(false);
   }, []);
 
+  const appId = encodeURIComponent(
+    typeof window !== 'undefined' ? window.location.hostname : 'ultimate-gaming-arena'
+  );
+
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-gray-950 text-white flex flex-col">
       {/* Navigation Bar */}
       <nav
         className="sticky top-0 z-50 border-b border-neon-blue/20 bg-gray-950/95 backdrop-blur-sm"
@@ -150,26 +155,75 @@ export default function RootLayout() {
         </div>
       </nav>
 
+      {/*
+       * ============================================================
+       * TOP STICKY BANNER AD — Below navigation bar
+       * ============================================================
+       * Open frontend/src/components/AdBanner.tsx to replace the
+       * placeholder with your Google AdSense or Adsterra script.
+       * Desktop: 728×90 leaderboard | Mobile: 320×50 banner
+       * ============================================================
+       */}
+      <div className="sticky top-[57px] z-40 w-full">
+        <AdBanner position="top" />
+      </div>
+
       {/* Main Content */}
-      <main>
+      <main className="flex-1">
         <Outlet />
       </main>
 
       {/* Footer */}
-      <footer className="mt-16 border-t border-neon-blue/10 bg-gray-950 py-8 text-center">
-        <p className="font-rajdhani text-sm text-gray-600">
-          © {new Date().getFullYear()} Ultimate Gaming Arena. Built with{' '}
-          <span className="text-red-500">♥</span> using{' '}
-          <a
-            href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname || 'ultimate-gaming-arena')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-neon-blue hover:underline"
-          >
-            caffeine.ai
-          </a>
-        </p>
+      <footer className="mt-16 border-t border-neon-blue/10 bg-gray-950 py-8">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+            {/* Attribution */}
+            <p className="font-rajdhani text-sm text-gray-600 text-center sm:text-left">
+              © {new Date().getFullYear()} Ultimate Gaming Arena. Built with{' '}
+              <span className="text-red-500">♥</span> using{' '}
+              <a
+                href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${appId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-neon-blue hover:underline"
+              >
+                caffeine.ai
+              </a>
+            </p>
+
+            {/* Footer Links */}
+            <div className="flex items-center gap-4">
+              <Link
+                to="/privacy-policy"
+                className="flex items-center gap-1.5 font-rajdhani text-sm text-gray-500 transition-colors hover:text-neon-blue"
+              >
+                <Shield size={13} />
+                <span>Privacy Policy</span>
+              </Link>
+              <Link
+                to="/terms-of-service"
+                className="flex items-center gap-1.5 font-rajdhani text-sm text-gray-500 transition-colors hover:text-neon-blue"
+              >
+                <FileText size={13} />
+                <span>Terms</span>
+              </Link>
+            </div>
+          </div>
+        </div>
       </footer>
+
+      {/*
+       * ============================================================
+       * BOTTOM STICKY BANNER AD
+       * ============================================================
+       * Open frontend/src/components/AdBanner.tsx to replace the
+       * placeholder with your Google AdSense or Adsterra script.
+       * Desktop: 728×90 leaderboard | Mobile: 320×50 banner
+       * ============================================================
+       */}
+      <div className="sticky bottom-0 z-40 w-full">
+        <AdBanner position="bottom" />
+      </div>
 
       {/* Global Overlays */}
       <AchievementNotification

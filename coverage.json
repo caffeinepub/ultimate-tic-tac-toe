@@ -1,151 +1,80 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-28T05:04:39.813Z",
+  "generatedAt": "2026-02-28T07:30:49.751Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 12,
-    "implemented": 12,
+    "total": 5,
+    "implemented": 5,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Create a new page component at frontend/src/pages/HighwayRushGame.tsx implementing the full Highway Rush game using React Three Fiber and Three.js. The scene must render an endless scrolling highway with realistic road texture, white and yellow lane markings, and a third-person camera positioned slightly behind and above the player's car.",
+        "summary": "Add a responsive top sticky banner ad container displayed below the existing navigation bar in RootLayout. On desktop it must be 90px tall and full width; on mobile it must be 60px tall and full width. Label it 'Ad Space' with a colored placeholder box. Include clear HTML comments marking where to paste Google AdSense and Adsterra scripts later. The compact mobile nav must remain visible (not hidden) when this banner is shown.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
+          "frontend/src/components/RootLayout.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
-        ]
-      },
-      {
-        "id": "REQ-10",
-        "summary": "Implement all audio using the Web Audio API (procedural synthesis, no external files): looping engine sound that pitches up with speed, crash/explosion sound on collision, looping background music, and button click sounds. Include a mute toggle button in the HUD, with mute state persisted in localStorage.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useHighwayRushSound.ts",
-          "frontend/src/pages/HighwayRushGame.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useHighwayRushSound.ts",
-          "frontend/src/pages/HighwayRushGame.tsx"
-        ]
-      },
-      {
-        "id": "REQ-11",
-        "summary": "Register the Highway Rush game on the Home page (frontend/src/pages/Home.tsx) as a new game card with an appropriate icon and description, linking to the /highway-rush route. Add the route to the TanStack Router setup in frontend/src/App.tsx.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Home.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Home.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-12",
-        "summary": "Integrate Highway Rush with the existing player profile and XP system (frontend/src/utils/playerProfile.ts): award XP based on distance score at game over, and record win/play stats. Award an achievement for reaching milestone scores (e.g., 1000, 5000, 10000 points).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx",
-          "frontend/src/utils/achievements.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx",
-          "frontend/src/utils/achievements.ts"
+          "frontend/src/components/RootLayout.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Implement player car controls: Arrow Left/Right and A/D keys switch lanes on desktop; on mobile, render on-screen left/right touch buttons. The highway must have at least 3 lanes. Lane switching should be smooth with a brief lateral animation.",
+        "summary": "Add a responsive bottom sticky banner ad container rendered in RootLayout. It must be full width, mobile-friendly, and sticky at the bottom of the viewport. It must not overlap or block any gameplay controls (e.g., on-screen buttons, canvas interactions). Label it 'Ad Space' with a colored placeholder box. Include clear HTML comments marking where to paste Google AdSense and Adsterra scripts later.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
+          "frontend/src/components/RootLayout.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
+          "frontend/src/components/RootLayout.tsx"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Spawn randomized oncoming traffic cars in all lanes with varied colors and simple geometric shapes. Traffic spawn rate and speed increase progressively over time. Collision detection between the player car and any traffic car ends the game.",
+        "summary": "Implement an interstitial ad system that displays a full-screen overlay exclusively after a full Game Over event (not during mid-game crashes). The overlay must include a colored 'Ad Space' placeholder box, a close button (X) in the corner, and auto-close after 5 seconds with a visible countdown. After closing (manually or automatically), the user is returned to the main menu. Include comments marking where to replace the placeholder with a real ad script. This must be integrated with the existing Endless Runner and Highway Rush game pages (and any other game that has a Game Over state) without modifying immutable files.",
         "status": "implemented",
         "plannedFiles": [
+          "frontend/src/components/InterstitialAd.tsx",
+          "frontend/src/pages/EndlessRunnerGame.tsx",
           "frontend/src/pages/HighwayRushGame.tsx"
         ],
         "matchedFiles": [
+          "frontend/src/components/InterstitialAd.tsx",
+          "frontend/src/pages/EndlessRunnerGame.tsx",
           "frontend/src/pages/HighwayRushGame.tsx"
         ]
       },
       {
         "id": "REQ-4",
-        "summary": "Implement a day/night cycle that transitions the sky, ambient lighting, and road appearance over time. At high speeds, apply a motion blur post-processing effect to the scene.",
+        "summary": "Implement a rewarded ad system that appears after a player crash (not full Game Over). Show a button labeled 'Watch Ad to Continue' on the game over / crash screen. When the player clicks it, display a 5-second simulated countdown mimicking a video ad timer. After the countdown completes, grant the player 1 extra life and resume the game. This option may only be used once per game session. Include comments marking where to replace the placeholder countdown with a real rewarded ad SDK call.",
         "status": "implemented",
         "plannedFiles": [
+          "frontend/src/components/RewardedAd.tsx",
+          "frontend/src/pages/EndlessRunnerGame.tsx",
           "frontend/src/pages/HighwayRushGame.tsx"
         ],
         "matchedFiles": [
+          "frontend/src/components/RewardedAd.tsx",
+          "frontend/src/pages/EndlessRunnerGame.tsx",
           "frontend/src/pages/HighwayRushGame.tsx"
         ]
       },
       {
         "id": "REQ-5",
-        "summary": "On collision, trigger: a particle explosion effect at the crash point, a screen shake animation, and a brief slow-motion effect. On near-miss (traffic car passes within a threshold distance without collision), award bonus points and briefly trigger a slow-motion effect.",
+        "summary": "Ensure all ad placeholder containers use simple colored boxes (e.g., semi-transparent dark with a neon accent border matching the site theme) with centered 'Ad Space' text. Ad containers must not overlap game UI, nav, or controls. The layout must be fully responsive and maintain smooth gameplay performance — ad rendering must not cause frame drops or freeze the game loop.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
+          "frontend/src/index.css",
+          "frontend/src/components/InterstitialAd.tsx",
+          "frontend/src/components/RewardedAd.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
-        ]
-      },
-      {
-        "id": "REQ-6",
-        "summary": "Display a HUD overlay with: current score (distance-based, incrementing per frame), high score (persisted in localStorage), current speed meter, and coin count. Score and high score must be updated at game over, with the high score saved to localStorage key 'highwayRush_highScore'.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
-        ]
-      },
-      {
-        "id": "REQ-7",
-        "summary": "Spawn collectible coins on the highway that the player can collect by driving over them. Implement a car skins system with at least 3 skins unlockable by spending accumulated coins. The currently selected skin must persist in localStorage.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
-        ]
-      },
-      {
-        "id": "REQ-8",
-        "summary": "Implement difficulty escalation every 30 seconds: increase traffic density, traffic speed cap, and spawn variety. Show a brief on-screen notification when difficulty increases.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
-        ]
-      },
-      {
-        "id": "REQ-9",
-        "summary": "Implement all game screens: Main Menu (with Play, Car Skins, and Leaderboard/High Score sections), in-game Pause overlay (with Resume and Restart buttons), and Game Over screen (showing final score, high score, coins collected, and Restart/Main Menu buttons). Include a rewarded-ad placeholder on the Game Over screen for 'Extra Life' and an interstitial-ad placeholder zone after dismissing game over.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/HighwayRushGame.tsx"
+          "frontend/src/index.css",
+          "frontend/src/components/InterstitialAd.tsx",
+          "frontend/src/components/RewardedAd.tsx"
         ]
       }
     ]
@@ -155,11 +84,13 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/hooks/useHighwayRushSound.ts",
+    "frontend/src/components/AdBanner.tsx",
+    "frontend/src/components/InterstitialAd.tsx",
+    "frontend/src/components/RewardedAd.tsx",
+    "frontend/src/components/RootLayout.tsx",
+    "frontend/src/index.css",
+    "frontend/src/pages/EndlessRunnerGame.tsx",
     "frontend/src/pages/HighwayRushGame.tsx",
-    "frontend/src/pages/Home.tsx",
-    "frontend/src/utils/achievements.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
