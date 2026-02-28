@@ -1,59 +1,107 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Ultimate Gaming Arena — a multi-game web app featuring Tic Tac Toe, Snake, and Traffic Car games with a dark neon theme. Current upgrade: adding HTML5 sound effects (click, win, game over, scoring, special events) with a global mute/unmute toggle, difficulty selector screens before each game, and per-game difficulty levels (Easy/Medium/Hard with game-specific behaviors).",
+  "summary": "Highway Rush: an endless traffic car driving game with 3D-style graphics using Three.js/React Three Fiber. Player controls a car on a highway, dodging traffic, collecting coins, and surviving as long as possible with increasing difficulty.",
   "architectural_notes": [
-    "Dark neon theme must remain consistent across all games and new UI elements",
-    "Use HTML5 Audio API for all sound effects"
+    "Use Three.js / React Three Fiber for 3D rendering",
+    "Game state and high score persisted via localStorage"
   ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-create-a-global-sound-manager-module-e-g-frontend-src-hooks-usesoundmanager-ts-that-uses-html5-audio-api-to-play-distinct-sound-effects-for-click-button-press-win-game-over-score-increment-and-special-events-expose-a-global-mute-unmute-toggle-that-persists-its-state-in-localstorage",
-      "title": "Create a global sound manager module (e.g., frontend/src/hooks/useSoundManager.ts) that uses HTML5 Audio API to play distinct sound effects for: click/button press, win, game over, score increment, and special events. Expose a global mute/unmute toggle that persists its state in localStorage.",
+      "id": "feature-create-a-new-page-component-at-frontend-src-pages-highwayrushgame-tsx-implementing-the-full-highway-rush-game-using-react-three-fiber-and-three-js-the-scene-must-render-an-endless-scrolling-highway-with-realistic-road-texture-white-and-yellow-lane-markings-and-a-third-person-camera-positioned-slightly-behind-and-above-the-player-s-car",
+      "title": "Create a new page component at frontend/src/pages/HighwayRushGame.tsx implementing the full Highway Rush game using React Three Fiber and Three.js. The scene must render an endless scrolling highway with realistic road texture, white and yellow lane markings, and a third-person camera positioned slightly behind and above the player's car.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-create-a-reusable-difficultyselector-component-styled-in-the-dark-neon-theme-that-presents-easy-medium-hard-options-and-a-game-title-this-screen-must-appear-before-each-game-starts-for-tic-tac-toe-singleplayer-snake-and-traffic-car-the-selected-difficulty-is-passed-to-the-game-logic",
-      "title": "Create a reusable DifficultySelector component styled in the dark neon theme that presents Easy / Medium / Hard options and a game title. This screen must appear before each game starts for Tic Tac Toe (SinglePlayer), Snake, and Traffic Car. The selected difficulty is passed to the game logic.",
+      "id": "feature-implement-player-car-controls-arrow-left-right-and-a-d-keys-switch-lanes-on-desktop-on-mobile-render-on-screen-left-right-touch-buttons-the-highway-must-have-at-least-3-lanes-lane-switching-should-be-smooth-with-a-brief-lateral-animation",
+      "title": "Implement player car controls: Arrow Left/Right and A/D keys switch lanes on desktop; on mobile, render on-screen left/right touch buttons. The highway must have at least 3 lanes. Lane switching should be smooth with a brief lateral animation.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-upgrade-singleplayer-tic-tac-toe-frontend-src-pages-singleplayer-tsx-with-three-ai-difficulty-modes-easy-uses-fully-random-moves-medium-randomly-mixes-random-and-optimal-moves-e-g-50-50-hard-uses-minimax-algorithm-for-unbeatable-ai-the-difficulty-is-set-from-the-difficultyselector-screen",
-      "title": "Upgrade SinglePlayer Tic Tac Toe (frontend/src/pages/SinglePlayer.tsx) with three AI difficulty modes: Easy uses fully random moves; Medium randomly mixes random and optimal moves (e.g., 50/50); Hard uses Minimax algorithm for unbeatable AI. The difficulty is set from the DifficultySelector screen.",
+      "id": "feature-spawn-randomized-oncoming-traffic-cars-in-all-lanes-with-varied-colors-and-simple-geometric-shapes-traffic-spawn-rate-and-speed-increase-progressively-over-time-collision-detection-between-the-player-car-and-any-traffic-car-ends-the-game",
+      "title": "Spawn randomized oncoming traffic cars in all lanes with varied colors and simple geometric shapes. Traffic spawn rate and speed increase progressively over time. Collision detection between the player car and any traffic car ends the game.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-upgrade-the-snake-game-frontend-src-pages-snakegame-tsx-with-three-speed-based-difficulty-modes-easy-uses-slow-tick-interval-200ms-medium-uses-normal-130ms-hard-uses-fast-70ms-difficulty-is-set-from-the-difficultyselector-screen",
-      "title": "Upgrade the Snake game (frontend/src/pages/SnakeGame.tsx) with three speed-based difficulty modes: Easy uses slow tick interval (~200ms), Medium uses normal (~130ms), Hard uses fast (~70ms). Difficulty is set from the DifficultySelector screen.",
+      "id": "feature-implement-a-day-night-cycle-that-transitions-the-sky-ambient-lighting-and-road-appearance-over-time-at-high-speeds-apply-a-motion-blur-post-processing-effect-to-the-scene",
+      "title": "Implement a day/night cycle that transitions the sky, ambient lighting, and road appearance over time. At high speeds, apply a motion blur post-processing effect to the scene.",
       "reqIds": [
         "REQ-4"
       ],
       "version": 1
     },
     {
-      "id": "feature-upgrade-the-traffic-car-game-frontend-src-pages-trafficcargame-tsx-with-three-difficulty-modes-easy-uses-slow-traffic-speed-and-fewer-cars-medium-uses-normal-speed-and-car-density-hard-uses-fast-speed-with-more-simultaneous-cars-difficulty-is-set-from-the-difficultyselector-screen",
-      "title": "Upgrade the Traffic Car game (frontend/src/pages/TrafficCarGame.tsx) with three difficulty modes: Easy uses slow traffic speed and fewer cars; Medium uses normal speed and car density; Hard uses fast speed with more simultaneous cars. Difficulty is set from the DifficultySelector screen.",
+      "id": "feature-on-collision-trigger-a-particle-explosion-effect-at-the-crash-point-a-screen-shake-animation-and-a-brief-slow-motion-effect-on-near-miss-traffic-car-passes-within-a-threshold-distance-without-collision-award-bonus-points-and-briefly-trigger-a-slow-motion-effect",
+      "title": "On collision, trigger: a particle explosion effect at the crash point, a screen shake animation, and a brief slow-motion effect. On near-miss (traffic car passes within a threshold distance without collision), award bonus points and briefly trigger a slow-motion effect.",
       "reqIds": [
         "REQ-5"
       ],
       "version": 1
     },
     {
-      "id": "feature-integrate-the-global-mute-unmute-toggle-button-into-all-game-pages-and-the-home-page-header-navbar-area-styled-consistently-with-the-dark-neon-theme-e-g-a-speaker-icon-with-neon-glow",
-      "title": "Integrate the global mute/unmute toggle button into all game pages and the Home page header/navbar area, styled consistently with the dark neon theme (e.g., a speaker icon with neon glow).",
+      "id": "feature-display-a-hud-overlay-with-current-score-distance-based-incrementing-per-frame-high-score-persisted-in-localstorage-current-speed-meter-and-coin-count-score-and-high-score-must-be-updated-at-game-over-with-the-high-score-saved-to-localstorage-key-highwayrush-highscore",
+      "title": "Display a HUD overlay with: current score (distance-based, incrementing per frame), high score (persisted in localStorage), current speed meter, and coin count. Score and high score must be updated at game over, with the high score saved to localStorage key 'highwayRush_highScore'.",
       "reqIds": [
         "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-spawn-collectible-coins-on-the-highway-that-the-player-can-collect-by-driving-over-them-implement-a-car-skins-system-with-at-least-3-skins-unlockable-by-spending-accumulated-coins-the-currently-selected-skin-must-persist-in-localstorage",
+      "title": "Spawn collectible coins on the highway that the player can collect by driving over them. Implement a car skins system with at least 3 skins unlockable by spending accumulated coins. The currently selected skin must persist in localStorage.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-difficulty-escalation-every-30-seconds-increase-traffic-density-traffic-speed-cap-and-spawn-variety-show-a-brief-on-screen-notification-when-difficulty-increases",
+      "title": "Implement difficulty escalation every 30 seconds: increase traffic density, traffic speed cap, and spawn variety. Show a brief on-screen notification when difficulty increases.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-all-game-screens-main-menu-with-play-car-skins-and-leaderboard-high-score-sections-in-game-pause-overlay-with-resume-and-restart-buttons-and-game-over-screen-showing-final-score-high-score-coins-collected-and-restart-main-menu-buttons-include-a-rewarded-ad-placeholder-on-the-game-over-screen-for-extra-life-and-an-interstitial-ad-placeholder-zone-after-dismissing-game-over",
+      "title": "Implement all game screens: Main Menu (with Play, Car Skins, and Leaderboard/High Score sections), in-game Pause overlay (with Resume and Restart buttons), and Game Over screen (showing final score, high score, coins collected, and Restart/Main Menu buttons). Include a rewarded-ad placeholder on the Game Over screen for 'Extra Life' and an interstitial-ad placeholder zone after dismissing game over.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-all-audio-using-the-web-audio-api-procedural-synthesis-no-external-files-looping-engine-sound-that-pitches-up-with-speed-crash-explosion-sound-on-collision-looping-background-music-and-button-click-sounds-include-a-mute-toggle-button-in-the-hud-with-mute-state-persisted-in-localstorage",
+      "title": "Implement all audio using the Web Audio API (procedural synthesis, no external files): looping engine sound that pitches up with speed, crash/explosion sound on collision, looping background music, and button click sounds. Include a mute toggle button in the HUD, with mute state persisted in localStorage.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-register-the-highway-rush-game-on-the-home-page-frontend-src-pages-home-tsx-as-a-new-game-card-with-an-appropriate-icon-and-description-linking-to-the-highway-rush-route-add-the-route-to-the-tanstack-router-setup-in-frontend-src-app-tsx",
+      "title": "Register the Highway Rush game on the Home page (frontend/src/pages/Home.tsx) as a new game card with an appropriate icon and description, linking to the /highway-rush route. Add the route to the TanStack Router setup in frontend/src/App.tsx.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-integrate-highway-rush-with-the-existing-player-profile-and-xp-system-frontend-src-utils-playerprofile-ts-award-xp-based-on-distance-score-at-game-over-and-record-win-play-stats-award-an-achievement-for-reaching-milestone-scores-e-g-1000-5000-10000-points",
+      "title": "Integrate Highway Rush with the existing player profile and XP system (frontend/src/utils/playerProfile.ts): award XP based on distance score at game over, and record win/play stats. Award an achievement for reaching milestone scores (e.g., 1000, 5000, 10000 points).",
+      "reqIds": [
+        "REQ-12"
       ],
       "version": 1
     }
@@ -61,37 +109,67 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add HTML5 sound effects (click, win, game over, scoring, special events) with global mute/unmute toggle across all games",
+      "summary": "Third-person camera with lane switching via keyboard (Arrow/A&D) and touch controls",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Add difficulty selector screen (Easy/Medium/Hard) before each game, styled in dark neon theme",
+      "summary": "Endless highway with realistic road, lane markings, and random traffic patterns",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Tic Tac Toe difficulty levels: Easy (random AI), Medium (mixed strategy), Hard (Minimax AI)",
+      "summary": "Day/night cycle, motion blur at high speed, crash particles and explosion animation, screen shake",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-4",
-      "summary": "Snake difficulty levels: Easy (slow speed), Medium (normal speed), Hard (fast speed)",
+      "summary": "Score system based on distance, high score saved in localStorage, speed meter UI",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-5",
-      "summary": "Traffic Car difficulty levels: Easy (slow traffic), Medium (normal), Hard (fast + more cars)",
+      "summary": "Coin collection system and unlockable car skins",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Difficulty increases every 30 seconds, near-miss bonus points, slow motion on close calls",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Main menu, pause, and restart screens",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Engine sound, crash sound, background music loop, button click sounds",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Ad placement zones: banner ad space, rewarded ad for extra life, interstitial after game over",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Responsive design for desktop and mobile, optimized for smooth 60 FPS",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "gameProjectType": "2d",
-  "projectName": "Ultimate Gaming Arena",
+  "gameProjectType": "3d",
+  "projectName": "Highway Rush",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

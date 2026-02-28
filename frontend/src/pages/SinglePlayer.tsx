@@ -8,6 +8,8 @@ import { useGameLogic } from '../hooks/useGameLogic';
 import { useScoreboard } from '../hooks/useScoreboard';
 import { useSoundManager } from '../hooks/useSoundManager';
 import { getBestMove, getRandomMove } from '../utils/minimax';
+import { recordWin, recordGameStart } from '../utils/achievements';
+import { awardXP, incrementGamesPlayed, incrementWins } from '../utils/playerProfile';
 
 const HUMAN = 'X';
 const AI = 'O';
@@ -26,7 +28,7 @@ const SinglePlayer: React.FC = () => {
   const { playClick, playWin, playGameOver, playScore } = useSoundManager();
 
   const scoreUpdatedRef = useRef(false);
-  const prevStatusRef = useRef(gameState.status);
+  const prevStatusRef = useRef<string>(gameState.status);
   const aiThinkingRef = useRef(false);
 
   // Sound & score effects on game outcome
@@ -39,12 +41,19 @@ const SinglePlayer: React.FC = () => {
       if (gameState.winner) incrementScore(gameState.winner);
       if (gameState.winner === HUMAN) {
         playWin();
+        recordWin('tictactoe');
+        awardXP(20);
+        incrementWins();
       } else {
         playGameOver();
+        awardXP(5);
       }
+      incrementGamesPlayed();
     } else if (gameState.status === 'draw' && !scoreUpdatedRef.current) {
       scoreUpdatedRef.current = true;
       playScore();
+      awardXP(5);
+      incrementGamesPlayed();
     }
   }, [gameState.status, gameState.winner, incrementScore, playWin, playGameOver, playScore]);
 
@@ -56,19 +65,25 @@ const SinglePlayer: React.FC = () => {
     if (aiThinkingRef.current) return;
 
     aiThinkingRef.current = true;
+
     const timer = setTimeout(() => {
       const boardCopy = [...gameState.board] as (string | null)[];
+      const available = getAvailableCells(gameState.board);
+
+      if (available.length === 0) {
+        aiThinkingRef.current = false;
+        return;
+      }
+
       let move = -1;
 
       if (difficulty === 'easy') {
-        const available = getAvailableCells(gameState.board);
-        move = available[Math.floor(Math.random() * available.length)];
+        move = getRandomMove(boardCopy);
       } else if (difficulty === 'medium') {
         if (Math.random() < 0.5) {
           move = getBestMove(boardCopy, AI, HUMAN);
         } else {
-          const available = getAvailableCells(gameState.board);
-          move = available[Math.floor(Math.random() * available.length)];
+          move = getRandomMove(boardCopy);
         }
       } else {
         move = getBestMove(boardCopy, AI, HUMAN);
@@ -78,7 +93,7 @@ const SinglePlayer: React.FC = () => {
         makeMove(move);
       }
       aiThinkingRef.current = false;
-    }, 600);
+    }, 500);
 
     return () => {
       clearTimeout(timer);
@@ -110,13 +125,14 @@ const SinglePlayer: React.FC = () => {
 
   const handleSelectDifficulty = (d: Difficulty) => {
     playClick();
-    setDifficulty(d);
     scoreUpdatedRef.current = false;
     prevStatusRef.current = 'playing';
+    aiThinkingRef.current = false;
+    setDifficulty(d);
     resetGame();
+    recordGameStart('tictactoe');
   };
 
-  // Build status message and type for GameBoard
   const getStatusInfo = () => {
     if (gameState.status === 'won') {
       if (gameState.winner === HUMAN) {
@@ -179,7 +195,9 @@ const SinglePlayer: React.FC = () => {
         <div className="flex items-center gap-3">
           <h1 className="font-orbitron text-white text-sm tracking-widest">TIC TAC TOE</h1>
           {difficulty && (
-            <span className={`font-orbitron text-xs font-bold px-2 py-0.5 rounded border border-current/30 bg-current/10 ${difficultyLabels[difficulty].color}`}>
+            <span
+              className={`font-orbitron text-xs font-bold px-2 py-0.5 rounded border border-current/30 bg-current/10 ${difficultyLabels[difficulty].color}`}
+            >
               {difficultyLabels[difficulty].label}
             </span>
           )}
@@ -189,13 +207,15 @@ const SinglePlayer: React.FC = () => {
 
       {/* Main content */}
       <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4">
-        <Scoreboard
-          scores={scores}
-          playerXLabel="You (X)"
-          playerOLabel="Computer"
-          currentPlayer={gameState.status === 'playing' ? gameState.currentPlayer : undefined}
-          gameOver={gameState.status !== 'playing'}
-        />
+        <div className="w-full max-w-sm">
+          <Scoreboard
+            scores={scores}
+            playerXLabel="You (X)"
+            playerOLabel="Computer"
+            currentPlayer={gameState.status === 'playing' ? gameState.currentPlayer : undefined}
+            gameOver={gameState.status !== 'playing'}
+          />
+        </div>
         <GameBoard
           board={gameState.board}
           winningCells={gameState.winningCells}

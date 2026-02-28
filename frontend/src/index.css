@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,45 +6,52 @@
 
 @layer base {
   :root {
+    --background: oklch(0.08 0.02 260);
+    --foreground: oklch(0.95 0.01 260);
+    --card: oklch(0.12 0.02 260);
+    --card-foreground: oklch(0.95 0.01 260);
+    --popover: oklch(0.10 0.02 260);
+    --popover-foreground: oklch(0.95 0.01 260);
+    --primary: oklch(0.72 0.20 200);
+    --primary-foreground: oklch(0.08 0.02 260);
+    --secondary: oklch(0.18 0.03 260);
+    --secondary-foreground: oklch(0.90 0.01 260);
+    --muted: oklch(0.15 0.02 260);
+    --muted-foreground: oklch(0.55 0.03 260);
+    --accent: oklch(0.65 0.22 290);
+    --accent-foreground: oklch(0.08 0.02 260);
+    --destructive: oklch(0.55 0.22 25);
+    --destructive-foreground: oklch(0.95 0.01 260);
+    --border: oklch(0.22 0.03 260);
+    --input: oklch(0.18 0.03 260);
+    --ring: oklch(0.72 0.20 200);
     --radius: 0.5rem;
-    --background: 0.1 0.01 265;
-    --foreground: 0.95 0.02 265;
-    --card: 0.14 0.02 265;
-    --card-foreground: 0.95 0.02 265;
-    --popover: 0.14 0.02 265;
-    --popover-foreground: 0.95 0.02 265;
-    --primary: 0.72 0.22 200;
-    --primary-foreground: 0.08 0.01 265;
-    --secondary: 0.65 0.28 295;
-    --secondary-foreground: 0.95 0.02 265;
-    --muted: 0.18 0.02 265;
-    --muted-foreground: 0.6 0.05 265;
-    --accent: 0.65 0.28 295;
-    --accent-foreground: 0.95 0.02 265;
-    --destructive: 0.65 0.25 25;
-    --destructive-foreground: 0.95 0.02 265;
-    --border: 0.25 0.04 265;
-    --input: 0.2 0.03 265;
-    --ring: 0.72 0.22 200;
-    --chart-1: 0.72 0.22 200;
-    --chart-2: 0.65 0.28 295;
-    --chart-3: 0.75 0.18 160;
-    --chart-4: 0.7 0.2 50;
-    --chart-5: 0.65 0.25 25;
-    --sidebar: 0.12 0.02 265;
-    --sidebar-foreground: 0.95 0.02 265;
-    --sidebar-primary: 0.72 0.22 200;
-    --sidebar-primary-foreground: 0.08 0.01 265;
-    --sidebar-accent: 0.18 0.02 265;
-    --sidebar-accent-foreground: 0.95 0.02 265;
-    --sidebar-border: 0.25 0.04 265;
-    --sidebar-ring: 0.72 0.22 200;
+    --success: oklch(0.65 0.20 145);
+    --warning: oklch(0.75 0.18 75);
+  }
 
-    /* Neon colors */
-    --neon-blue: oklch(0.72 0.22 200);
-    --neon-purple: oklch(0.65 0.28 295);
-    --neon-blue-glow: 0 0 10px oklch(0.72 0.22 200 / 0.8), 0 0 30px oklch(0.72 0.22 200 / 0.4), 0 0 60px oklch(0.72 0.22 200 / 0.2);
-    --neon-purple-glow: 0 0 10px oklch(0.65 0.28 295 / 0.8), 0 0 30px oklch(0.65 0.28 295 / 0.4), 0 0 60px oklch(0.65 0.28 295 / 0.2);
+  .dark {
+    --background: oklch(0.08 0.02 260);
+    --foreground: oklch(0.95 0.01 260);
+    --card: oklch(0.12 0.02 260);
+    --card-foreground: oklch(0.95 0.01 260);
+    --popover: oklch(0.10 0.02 260);
+    --popover-foreground: oklch(0.95 0.01 260);
+    --primary: oklch(0.72 0.20 200);
+    --primary-foreground: oklch(0.08 0.02 260);
+    --secondary: oklch(0.18 0.03 260);
+    --secondary-foreground: oklch(0.90 0.01 260);
+    --muted: oklch(0.15 0.02 260);
+    --muted-foreground: oklch(0.55 0.03 260);
+    --accent: oklch(0.65 0.22 290);
+    --accent-foreground: oklch(0.08 0.02 260);
+    --destructive: oklch(0.55 0.22 25);
+    --destructive-foreground: oklch(0.95 0.01 260);
+    --border: oklch(0.22 0.03 260);
+    --input: oklch(0.18 0.03 260);
+    --ring: oklch(0.72 0.20 200);
+    --success: oklch(0.65 0.20 145);
+    --warning: oklch(0.75 0.18 75);
   }
 
   * {
@@ -54,80 +61,127 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Rajdhani', sans-serif;
-    min-height: 100vh;
-    background: oklch(0.08 0.015 265);
-    overflow-x: hidden;
-  }
-
-  html {
-    scroll-behavior: smooth;
   }
 }
 
-@layer components {
+@layer utilities {
+  .font-orbitron {
+    font-family: 'Orbitron', monospace;
+  }
+
+  .font-rajdhani {
+    font-family: 'Rajdhani', sans-serif;
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 20px rgba(0, 212, 255, 0.3), 0 0 40px rgba(0, 212, 255, 0.1);
+  }
+
+  .neon-glow-purple {
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(168, 85, 247, 0.3), 0 0 40px rgba(168, 85, 247, 0.1);
+  }
+
+  .neon-text {
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.8), 0 0 20px rgba(0, 212, 255, 0.5);
+  }
+
+  /* Neon text colors */
   .neon-text-blue {
-    color: oklch(0.85 0.22 200);
-    text-shadow: 0 0 10px oklch(0.72 0.22 200 / 0.9), 0 0 30px oklch(0.72 0.22 200 / 0.5), 0 0 60px oklch(0.72 0.22 200 / 0.3);
+    color: oklch(0.72 0.22 200);
+    text-shadow: 0 0 8px oklch(0.72 0.22 200 / 0.8), 0 0 20px oklch(0.72 0.22 200 / 0.4);
   }
 
   .neon-text-purple {
-    color: oklch(0.8 0.28 295);
-    text-shadow: 0 0 10px oklch(0.65 0.28 295 / 0.9), 0 0 30px oklch(0.65 0.28 295 / 0.5), 0 0 60px oklch(0.65 0.28 295 / 0.3);
+    color: oklch(0.65 0.28 295);
+    text-shadow: 0 0 8px oklch(0.65 0.28 295 / 0.8), 0 0 20px oklch(0.65 0.28 295 / 0.4);
   }
 
-  .neon-border-blue {
-    border-color: oklch(0.72 0.22 200);
-    box-shadow: 0 0 8px oklch(0.72 0.22 200 / 0.6), inset 0 0 8px oklch(0.72 0.22 200 / 0.1);
-  }
-
-  .neon-border-purple {
-    border-color: oklch(0.65 0.28 295);
-    box-shadow: 0 0 8px oklch(0.65 0.28 295 / 0.6), inset 0 0 8px oklch(0.65 0.28 295 / 0.1);
-  }
-
+  /* Neon buttons */
   .neon-btn-blue {
     background: transparent;
-    border: 2px solid oklch(0.72 0.22 200);
-    color: oklch(0.85 0.22 200);
-    text-shadow: 0 0 8px oklch(0.72 0.22 200 / 0.8);
-    box-shadow: 0 0 10px oklch(0.72 0.22 200 / 0.3), inset 0 0 10px oklch(0.72 0.22 200 / 0.05);
-    transition: all 0.3s ease;
+    color: oklch(0.72 0.22 200);
+    border: 1px solid oklch(0.72 0.22 200 / 0.6);
+    box-shadow: 0 0 8px oklch(0.72 0.22 200 / 0.3), inset 0 0 8px oklch(0.72 0.22 200 / 0.05);
+    transition: all 0.2s ease;
+    cursor: pointer;
   }
 
   .neon-btn-blue:hover {
-    background: oklch(0.72 0.22 200 / 0.15);
-    box-shadow: 0 0 20px oklch(0.72 0.22 200 / 0.6), 0 0 40px oklch(0.72 0.22 200 / 0.3), inset 0 0 20px oklch(0.72 0.22 200 / 0.1);
-    transform: translateY(-2px);
+    background: oklch(0.72 0.22 200 / 0.1);
+    border-color: oklch(0.72 0.22 200);
+    box-shadow: 0 0 16px oklch(0.72 0.22 200 / 0.6), inset 0 0 12px oklch(0.72 0.22 200 / 0.1);
+    color: oklch(0.85 0.22 200);
   }
 
-  .neon-btn-purple {
-    background: transparent;
-    border: 2px solid oklch(0.65 0.28 295);
-    color: oklch(0.8 0.28 295);
-    text-shadow: 0 0 8px oklch(0.65 0.28 295 / 0.8);
-    box-shadow: 0 0 10px oklch(0.65 0.28 295 / 0.3), inset 0 0 10px oklch(0.65 0.28 295 / 0.05);
+  /* Score card */
+  .score-card {
+    background: oklch(0.12 0.02 260);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    text-align: center;
+  }
+
+  /* Status banner */
+  .status-banner {
+    background: oklch(0.12 0.02 260);
+    border: 1px solid oklch(0.22 0.03 260);
+    border-radius: 0.5rem;
+    padding: 0.625rem 1rem;
+    text-align: center;
+    color: oklch(0.75 0.03 260);
     transition: all 0.3s ease;
   }
 
-  .neon-btn-purple:hover {
-    background: oklch(0.65 0.28 295 / 0.15);
-    box-shadow: 0 0 20px oklch(0.65 0.28 295 / 0.6), 0 0 40px oklch(0.65 0.28 295 / 0.3), inset 0 0 20px oklch(0.65 0.28 295 / 0.1);
-    transform: translateY(-2px);
+  .status-banner.winner-x {
+    border-color: oklch(0.72 0.22 200 / 0.6);
+    box-shadow: 0 0 12px oklch(0.72 0.22 200 / 0.3);
   }
 
+  .status-banner.winner-o {
+    border-color: oklch(0.65 0.28 295 / 0.6);
+    box-shadow: 0 0 12px oklch(0.65 0.28 295 / 0.3);
+  }
+
+  .status-banner.draw {
+    border-color: oklch(0.75 0.18 75 / 0.6);
+    box-shadow: 0 0 12px oklch(0.75 0.18 75 / 0.3);
+  }
+
+  /* Tic Tac Toe grid */
+  .ttt-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 6px;
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 1 / 1;
+  }
+
+  /* Game cell */
   .game-cell {
-    background: oklch(0.12 0.02 265);
-    border: 1px solid oklch(0.25 0.04 265);
-    transition: all 0.2s ease;
+    background: oklch(0.13 0.025 260);
+    border: 1px solid oklch(0.28 0.04 260);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    position: relative;
-    overflow: hidden;
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    width: 100%;
+    height: 100%;
+    min-height: 80px;
+    min-width: 80px;
   }
 
-  .game-cell:hover:not(.occupied) {
-    background: oklch(0.16 0.03 265);
-    border-color: oklch(0.72 0.22 200 / 0.5);
-    box-shadow: 0 0 15px oklch(0.72 0.22 200 / 0.2), inset 0 0 15px oklch(0.72 0.22 200 / 0.05);
+  .game-cell:hover:not(:disabled):not(.occupied) {
+    background: oklch(0.17 0.03 260);
+    border-color: oklch(0.72 0.22 200 / 0.4);
+    box-shadow: inset 0 0 12px oklch(0.72 0.22 200 / 0.08);
+  }
+
+  .game-cell:disabled {
+    cursor: default;
   }
 
   .game-cell.occupied {
@@ -135,308 +189,141 @@
   }
 
   .game-cell.winning {
-    background: oklch(0.15 0.04 265);
-    animation: winPulse 1s ease-in-out infinite alternate;
+    background: oklch(0.15 0.04 260);
+    border-color: oklch(0.72 0.22 200 / 0.8);
+    box-shadow: 0 0 16px oklch(0.72 0.22 200 / 0.5), inset 0 0 16px oklch(0.72 0.22 200 / 0.1);
+    animation: winCellPulse 1s ease-in-out infinite alternate;
   }
 
+  /* Cell mark animations */
   .cell-x {
-    color: oklch(0.85 0.22 200);
-    text-shadow: 0 0 15px oklch(0.72 0.22 200 / 0.9), 0 0 30px oklch(0.72 0.22 200 / 0.5);
-    animation: markAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: oklch(0.72 0.22 200);
+    text-shadow: 0 0 10px oklch(0.72 0.22 200 / 0.8), 0 0 24px oklch(0.72 0.22 200 / 0.5);
+    animation: cellAppear 0.2s ease-out;
   }
 
   .cell-o {
-    color: oklch(0.8 0.28 295);
-    text-shadow: 0 0 15px oklch(0.65 0.28 295 / 0.9), 0 0 30px oklch(0.65 0.28 295 / 0.5);
-    animation: markAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: oklch(0.65 0.28 295);
+    text-shadow: 0 0 10px oklch(0.65 0.28 295 / 0.8), 0 0 24px oklch(0.65 0.28 295 / 0.5);
+    animation: cellAppear 0.2s ease-out;
   }
 
-  .winning .cell-x {
-    text-shadow: 0 0 20px oklch(0.72 0.22 200), 0 0 40px oklch(0.72 0.22 200 / 0.8), 0 0 80px oklch(0.72 0.22 200 / 0.4);
+  /* Snake and Ladder animation classes */
+  .animate-snake-bite {
+    animation: snakeBite 0.6s ease-in-out;
   }
 
-  .winning .cell-o {
-    text-shadow: 0 0 20px oklch(0.65 0.28 295), 0 0 40px oklch(0.65 0.28 295 / 0.8), 0 0 80px oklch(0.65 0.28 295 / 0.4);
+  .animate-ladder-climb {
+    animation: ladderClimb 0.6s ease-in-out;
   }
 
-  .grid-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    padding: 8px;
-    background: oklch(0.1 0.015 265);
-    border-radius: 12px;
-    border: 1px solid oklch(0.25 0.04 265);
-    box-shadow: 0 0 30px oklch(0.72 0.22 200 / 0.1), 0 0 60px oklch(0.65 0.28 295 / 0.05);
+  .animate-token-move {
+    animation: tokenMove 0.3s ease-out;
   }
 
-  .status-banner {
-    background: oklch(0.12 0.02 265);
-    border: 1px solid oklch(0.25 0.04 265);
-    border-radius: 8px;
-    padding: 12px 24px;
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-
-  .status-banner.winner-x {
-    border-color: oklch(0.72 0.22 200 / 0.8);
-    box-shadow: 0 0 20px oklch(0.72 0.22 200 / 0.3);
-    animation: statusPulse 0.5s ease-out;
-  }
-
-  .status-banner.winner-o {
-    border-color: oklch(0.65 0.28 295 / 0.8);
-    box-shadow: 0 0 20px oklch(0.65 0.28 295 / 0.3);
-    animation: statusPulse 0.5s ease-out;
-  }
-
-  .status-banner.draw {
-    border-color: oklch(0.7 0.15 60 / 0.8);
-    box-shadow: 0 0 20px oklch(0.7 0.15 60 / 0.3);
-    animation: statusPulse 0.5s ease-out;
-  }
-
-  .score-card {
-    background: oklch(0.12 0.02 265);
-    border-radius: 10px;
-    padding: 16px 24px;
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-
-  .score-card.active {
-    box-shadow: 0 0 15px oklch(0.72 0.22 200 / 0.3);
-    border-color: oklch(0.72 0.22 200 / 0.5);
-  }
-
-  .bg-grid-pattern {
-    background-image: 
-      linear-gradient(oklch(0.72 0.22 200 / 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, oklch(0.72 0.22 200 / 0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-
-  /* Traffic Car Game - Score pop animation */
-  .score-pop {
-    animation: scorePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-
-  /* Traffic Car Game - Screen shake */
-  .traffic-shake {
-    animation: trafficShake 0.55s ease-out forwards;
-  }
-
-  /* Traffic Car Game - Explosion burst */
-  .traffic-explosion {
-    border-radius: 50%;
-    background: radial-gradient(circle, #fff 0%, #ffcc00 20%, #ff8800 45%, #ff4444 70%, transparent 100%);
-    animation: trafficExplosion 0.65s ease-out forwards;
-    pointer-events: none;
-  }
-
-  /* =============================================
-     RPS - Hand shake animation
-  ============================================= */
-  .rps-hand-shake {
-    animation: rpsHandShake 1s ease-in-out;
-    display: inline-block;
-  }
-
-  .rps-hand-shake-delay {
-    animation-delay: 0.08s;
-  }
-
-  /* =============================================
-     RPS - Dramatic reveal animation
-  ============================================= */
-  .rps-reveal {
-    animation: rpsReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    display: inline-block;
-  }
-
-  /* =============================================
-     RPS - Result text reveal (staggered)
-  ============================================= */
-  .rps-result-reveal {
-    animation: rpsResultReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-
-  /* =============================================
-     RPS - Score bounce
-  ============================================= */
-  .rps-score-bounce {
-    animation: rpsScoreBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-
-  /* =============================================
-     RPS - Win background pulse
-  ============================================= */
-  .rps-win-pulse {
-    animation: rpsWinPulse 1.2s ease-out forwards;
-  }
-
-  /* =============================================
-     RPS - Burst particle
-  ============================================= */
-  .rps-burst-particle {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: oklch(0.85 0.22 155);
-    box-shadow: 0 0 8px oklch(0.75 0.22 155), 0 0 16px oklch(0.75 0.22 155 / 0.6);
-    top: 50%;
-    left: 50%;
-    pointer-events: none;
-    animation: rpsBurstParticle 0.9s ease-out forwards;
-    animation-delay: 0s;
-    transform-origin: center center;
-    --angle: 0deg;
+  .animate-dice-spin {
+    animation: diceSpin 0.7s ease-in-out;
   }
 }
 
-/* =============================================
-   RPS Keyframes
-============================================= */
+/* Tic Tac Toe keyframes */
+@keyframes cellAppear {
+  0% { transform: scale(0.4) rotate(-10deg); opacity: 0; }
+  70% { transform: scale(1.15) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
 
+@keyframes winCellPulse {
+  0% { box-shadow: 0 0 10px oklch(0.72 0.22 200 / 0.4), inset 0 0 10px oklch(0.72 0.22 200 / 0.08); }
+  100% { box-shadow: 0 0 24px oklch(0.72 0.22 200 / 0.8), inset 0 0 20px oklch(0.72 0.22 200 / 0.15); }
+}
+
+/* Traffic Car Game Keyframes */
+@keyframes carMove {
+  from { transform: translateY(-100px); }
+  to { transform: translateY(110vh); }
+}
+
+@keyframes roadScroll {
+  from { background-position: 0 0; }
+  to { background-position: 0 100px; }
+}
+
+/* RPS Keyframes */
 @keyframes rpsHandShake {
-  0%   { transform: translateY(0px) rotate(0deg); }
-  10%  { transform: translateY(-14px) rotate(-8deg); }
-  20%  { transform: translateY(10px) rotate(6deg); }
-  30%  { transform: translateY(-12px) rotate(-6deg); }
-  40%  { transform: translateY(10px) rotate(5deg); }
-  50%  { transform: translateY(-10px) rotate(-5deg); }
-  60%  { transform: translateY(8px) rotate(4deg); }
-  70%  { transform: translateY(-8px) rotate(-3deg); }
-  80%  { transform: translateY(5px) rotate(2deg); }
-  90%  { transform: translateY(-3px) rotate(-1deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-8px); }
+  75% { transform: translateY(8px); }
 }
 
 @keyframes rpsReveal {
-  0%   { transform: scale(0.2) rotate(-15deg); opacity: 0; }
-  60%  { transform: scale(1.15) rotate(5deg); opacity: 1; }
-  80%  { transform: scale(0.95) rotate(-2deg); opacity: 1; }
+  0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
 @keyframes rpsResultReveal {
-  0%   { transform: scale(0.3) translateY(10px); opacity: 0; }
-  60%  { transform: scale(1.12) translateY(-3px); opacity: 1; }
-  80%  { transform: scale(0.97) translateY(1px); opacity: 1; }
-  100% { transform: scale(1) translateY(0); opacity: 1; }
-}
-
-@keyframes rpsScoreBounce {
-  0%   { transform: scale(1); }
-  30%  { transform: scale(1.45); }
-  55%  { transform: scale(0.9); }
-  75%  { transform: scale(1.15); }
-  90%  { transform: scale(0.97); }
-  100% { transform: scale(1); }
-}
-
-@keyframes rpsWinPulse {
-  0%   { box-shadow: inset 0 0 0px oklch(0.75 0.22 155 / 0); }
-  20%  { box-shadow: inset 0 0 80px oklch(0.75 0.22 155 / 0.25), 0 0 60px oklch(0.75 0.22 155 / 0.15); }
-  50%  { box-shadow: inset 0 0 120px oklch(0.75 0.22 155 / 0.18), 0 0 80px oklch(0.75 0.22 155 / 0.1); }
-  100% { box-shadow: inset 0 0 0px oklch(0.75 0.22 155 / 0); }
-}
-
-@keyframes rpsBurstParticle {
-  0% {
-    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0px) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(70px) scale(0.2);
-    opacity: 0;
-  }
-}
-
-/* =============================================
-   Existing keyframes (unchanged)
-============================================= */
-
-@keyframes markAppear {
-  0% { transform: scale(0) rotate(-10deg); opacity: 0; }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-
-@keyframes winPulse {
-  0% { background: oklch(0.15 0.04 265); }
-  100% { background: oklch(0.18 0.06 265); }
-}
-
-@keyframes statusPulse {
-  0% { transform: scale(0.95); opacity: 0; }
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.1); }
   100% { transform: scale(1); opacity: 1; }
 }
 
-@keyframes floatUp {
-  0% { transform: translateY(20px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+@keyframes rpsScoreBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
 }
 
-@keyframes glowPulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+@keyframes rpsWinPulse {
+  0%, 100% { box-shadow: inset 0 0 0 2px rgba(0, 255, 136, 0); }
+  50% { box-shadow: inset 0 0 0 2px rgba(0, 255, 136, 0.6); }
 }
 
-@keyframes titleGlow {
-  0%, 100% {
-    text-shadow: 0 0 10px oklch(0.72 0.22 200 / 0.8), 0 0 30px oklch(0.72 0.22 200 / 0.4), 0 0 60px oklch(0.72 0.22 200 / 0.2);
-  }
-  50% {
-    text-shadow: 0 0 20px oklch(0.72 0.22 200), 0 0 50px oklch(0.72 0.22 200 / 0.7), 0 0 100px oklch(0.72 0.22 200 / 0.4), 0 0 10px oklch(0.65 0.28 295 / 0.5);
-  }
+@keyframes rpsBurstParticle {
+  0% { transform: rotate(var(--angle)) translateX(0); opacity: 1; }
+  100% { transform: rotate(var(--angle)) translateX(60px); opacity: 0; }
 }
 
-/* Traffic Car Game keyframes */
-@keyframes scorePop {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.45); }
-  100% { transform: scale(1); }
+/* Achievement notification animation */
+@keyframes achievementSlideIn {
+  0% { transform: translateX(120%); opacity: 0; }
+  60% { transform: translateX(-8px); opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
 }
 
-@keyframes trafficShake {
-  0%   { transform: translate(0, 0) rotate(0deg); }
-  10%  { transform: translate(-6px, -4px) rotate(-1deg); }
-  20%  { transform: translate(6px, 4px) rotate(1deg); }
-  30%  { transform: translate(-5px, 3px) rotate(-0.8deg); }
-  40%  { transform: translate(5px, -3px) rotate(0.8deg); }
-  50%  { transform: translate(-4px, 2px) rotate(-0.5deg); }
-  60%  { transform: translate(4px, -2px) rotate(0.5deg); }
-  70%  { transform: translate(-2px, 1px) rotate(-0.3deg); }
-  80%  { transform: translate(2px, -1px) rotate(0.3deg); }
-  90%  { transform: translate(-1px, 0px) rotate(0deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
+@keyframes achievementSlideOut {
+  0% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
 }
 
-@keyframes trafficExplosion {
-  0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
-  40%  { transform: translate(-50%, -50%) scale(1.6); opacity: 0.9; }
-  70%  { transform: translate(-50%, -50%) scale(2.2); opacity: 0.5; }
-  100% { transform: translate(-50%, -50%) scale(2.8); opacity: 0; }
+/* Snake & Ladder specific animations */
+@keyframes snakeBite {
+  0% { transform: scale(1) translateY(0); }
+  15% { transform: scale(1.3) translateY(-4px); }
+  30% { transform: scale(0.9) translateY(2px) rotate(-5deg); }
+  50% { transform: scale(1.1) translateY(-3px) rotate(5deg); }
+  70% { transform: scale(0.95) translateY(1px) rotate(-3deg); }
+  85% { transform: scale(1.05) translateY(-1px); }
+  100% { transform: scale(1) translateY(0) rotate(0deg); }
 }
 
-.animate-float-up {
-  animation: floatUp 0.6s ease-out forwards;
+@keyframes ladderClimb {
+  0% { transform: translateY(0) scale(1); }
+  20% { transform: translateY(-6px) scale(1.15) rotate(-3deg); }
+  40% { transform: translateY(-3px) scale(1.1) rotate(3deg); }
+  60% { transform: translateY(-8px) scale(1.2) rotate(-2deg); }
+  80% { transform: translateY(-4px) scale(1.1) rotate(1deg); }
+  100% { transform: translateY(0) scale(1) rotate(0deg); }
 }
 
-.animate-glow-pulse {
-  animation: glowPulse 2s ease-in-out infinite;
+@keyframes tokenMove {
+  0% { transform: scale(0.8) translateY(4px); opacity: 0.6; }
+  60% { transform: scale(1.2) translateY(-2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 
-.animate-title-glow {
-  animation: titleGlow 3s ease-in-out infinite;
-}
-
-.font-orbitron {
-  font-family: 'Orbitron', sans-serif;
-}
-
-.font-rajdhani {
-  font-family: 'Rajdhani', sans-serif;
+@keyframes diceSpin {
+  0% { transform: rotateY(0deg) rotateX(0deg) scale(1); }
+  25% { transform: rotateY(180deg) rotateX(90deg) scale(1.1); }
+  50% { transform: rotateY(360deg) rotateX(180deg) scale(0.95); }
+  75% { transform: rotateY(540deg) rotateX(270deg) scale(1.05); }
+  100% { transform: rotateY(720deg) rotateX(360deg) scale(1); }
 }

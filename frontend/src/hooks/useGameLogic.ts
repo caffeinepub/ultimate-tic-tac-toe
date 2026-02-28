@@ -37,30 +37,38 @@ function checkDraw(board: Board): boolean {
   return board.every((cell) => cell !== null);
 }
 
-const initialState: GameState = {
-  board: Array(9).fill(null),
-  currentPlayer: 'X',
-  status: 'playing',
-  winner: null,
-  winningCells: [],
-};
+function createInitialState(): GameState {
+  return {
+    board: Array(9).fill(null) as CellValue[],
+    currentPlayer: 'X',
+    status: 'playing',
+    winner: null,
+    winningCells: [],
+  };
+}
 
 export function useGameLogic() {
-  const [gameState, setGameState] = useState<GameState>(initialState);
+  const [gameState, setGameState] = useState<GameState>(createInitialState);
 
   const makeMove = useCallback((index: number): boolean => {
-    setGameState((prev) => {
-      if (prev.board[index] !== null || prev.status !== 'playing') return prev;
+    let moveMade = false;
 
-      const newBoard = [...prev.board];
+    setGameState((prev) => {
+      // Validate: cell must be empty and game must be in progress
+      if (prev.board[index] !== null || prev.status !== 'playing') {
+        return prev;
+      }
+
+      const newBoard = [...prev.board] as CellValue[];
       newBoard[index] = prev.currentPlayer;
 
       const { winner, winningCells } = checkWinner(newBoard);
 
       if (winner) {
+        moveMade = true;
         return {
-          ...prev,
           board: newBoard,
+          currentPlayer: prev.currentPlayer,
           status: 'won',
           winner,
           winningCells,
@@ -68,27 +76,31 @@ export function useGameLogic() {
       }
 
       if (checkDraw(newBoard)) {
+        moveMade = true;
         return {
-          ...prev,
           board: newBoard,
+          currentPlayer: prev.currentPlayer,
           status: 'draw',
           winner: null,
           winningCells: [],
         };
       }
 
+      moveMade = true;
       return {
-        ...prev,
         board: newBoard,
         currentPlayer: prev.currentPlayer === 'X' ? 'O' : 'X',
+        status: 'playing',
+        winner: null,
+        winningCells: [],
       };
     });
 
-    return true;
+    return moveMade;
   }, []);
 
   const resetGame = useCallback(() => {
-    setGameState(initialState);
+    setGameState(createInitialState());
   }, []);
 
   const getAvailableCells = useCallback((board: Board): number[] => {

@@ -1,35 +1,50 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-27T03:12:44.267Z",
-  "summary": "The diff implements nearly all six requirements. REQ-1 through REQ-6 are all addressed: a sound manager hook is created, a DifficultySelector component is added, SinglePlayer Tic Tac Toe gains Minimax AI with difficulty modes, SnakeGame gains speed-based difficulty, TrafficCarGame gains difficulty configs, and SoundToggle is added to all game pages and the Home header. One notable constraint violation exists: the sound manager uses Web Audio API oscillators rather than the HTML5 Audio API as required by the build constraint.",
+  "generatedAt": "2026-02-28T05:04:39.809Z",
+  "summary": "The diff adds HighwayRushGame.tsx, useHighwayRushSound.ts, registers the route in App.tsx, adds the game card to Home.tsx, and extends achievements.ts. Most core requirements appear implemented, but several specific acceptance criteria have gaps: React Three Fiber is not used (raw Three.js imperative code is used instead), motion blur post-processing is absent, and some ad placeholder UI elements cannot be confirmed from the truncated diff.",
   "missing_requirements": [
     {
-      "id": "REQ-1",
-      "requirement": "Sound effects must use HTML5 Audio API — no Web Audio API oscillators for these new effects.",
-      "reason": "The useSoundManager.ts implementation uses Web Audio API oscillators (AudioContext, OscillatorNode) to generate sounds programmatically, which explicitly violates the build constraint requiring HTML5 Audio API for new sound effects.",
+      "requirement": "Use React Three Fiber for 3D rendering — the implementation uses raw Three.js imperatively with no Canvas, useFrame, or R3F components",
+      "reason": "The build constraint explicitly requires React Three Fiber for 3D rendering. The diff imports only 'three' and uses imperative Three.js scene/renderer setup, with no @react-three/fiber imports or JSX-based scene graph visible.",
       "evidence": [
-        "frontend/src/hooks/useSoundManager.ts"
+        "frontend/src/pages/HighwayRushGame.tsx"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "At high speeds, apply a motion blur post-processing effect to the scene",
+      "reason": "No @react-three/postprocessing or EffectComposer/MotionBlur setup is visible in the diff. The file only imports React and Three.js.",
+      "evidence": [
+        "frontend/src/pages/HighwayRushGame.tsx"
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "requirement": "Interstitial ad placeholder zone shown after game over dismissal",
+      "reason": "While GamePhase type includes 'interstitial', the actual render of the interstitial ad placeholder UI cannot be confirmed from the visible truncated diff.",
+      "evidence": [
+        "frontend/src/pages/HighwayRushGame.tsx"
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "requirement": "Banner ad placeholder visible at the bottom of the main menu and game over screens",
+      "reason": "No banner ad placeholder UI element is visible in the truncated portion of HighwayRushGame.tsx.",
+      "evidence": [
+        "frontend/src/pages/HighwayRushGame.tsx"
       ]
     }
   ],
   "hallucinated_features": [],
-  "confidence": 0.87,
+  "confidence": 0.62,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/src/App.tsx",
-    "frontend/src/components/DifficultySelector.tsx",
-    "frontend/src/components/SoundToggle.tsx",
-    "frontend/src/hooks/useSoundManager.ts",
+    "frontend/src/hooks/useHighwayRushSound.ts",
+    "frontend/src/pages/HighwayRushGame.tsx",
     "frontend/src/pages/Home.tsx",
-    "frontend/src/pages/MemoryCardMatch.tsx",
-    "frontend/src/pages/RockPaperScissors.tsx",
-    "frontend/src/pages/SinglePlayer.tsx",
-    "frontend/src/pages/SnakeAndLadder.tsx",
-    "frontend/src/pages/SnakeGame.tsx",
-    "frontend/src/pages/TrafficCarGame.tsx",
-    "frontend/src/pages/TwoPlayer.tsx",
-    "frontend/src/utils/minimax.ts",
+    "frontend/src/utils/achievements.ts",
     "project_state.json"
   ]
 }

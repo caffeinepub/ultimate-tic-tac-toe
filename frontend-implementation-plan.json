@@ -1,155 +1,225 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Ultimate Gaming Arena — Sound Effects, Difficulty Levels & Selector Screens",
+  "title": "Highway Rush — 3D Endless Traffic Driving Game",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Create a global sound manager module that plays distinct sound effects for click/button press, win, game over, score increment, and special events using HTML5 Audio API with a persistent mute/unmute toggle",
+      "summary": "Create the core Highway Rush game page component with React Three Fiber scene featuring endless scrolling highway, lane markings, and third-person camera",
       "acceptanceCriteria": [
-        "Distinct sounds play for click, win, game over, score, and special events across all games.",
-        "A mute/unmute toggle button is visible and functional in all game pages.",
-        "Mute state persists across page refreshes via localStorage.",
-        "No sound plays when muted."
+        "Highway scrolls endlessly without visible seams or stuttering",
+        "Camera follows player car from a third-person perspective",
+        "Road displays lane markings (white dashed center lines, solid side lines)",
+        "Scene renders at smooth 60 FPS on desktop"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useSoundManager.ts",
+          "path": "frontend/src/pages/HighwayRushGame.tsx",
           "operation": "create",
-          "description": "Create a global sound manager hook using HTML5 Audio API to manage five distinct sound effects (click, win, game over, score, special event). Implement mute/unmute state persisted in localStorage and expose play functions for each sound type plus a toggle function."
+          "description": "Create the main Highway Rush game component using React Three Fiber and Three.js. Implement the 3D scene with Canvas wrapper, endless highway mesh with realistic road texture and lane markings, third-person camera controller positioned behind and above the player car, and basic scene lighting (ambient and directional). Set up the game loop using useFrame hook for continuous highway scrolling and camera following. Include state management for game phase (menu, playing, paused, gameOver)."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Create a reusable DifficultySelector component styled in the dark neon theme that presents Easy/Medium/Hard options and appears before Tic Tac Toe (SinglePlayer), Snake, and Traffic Car games start",
+      "summary": "Implement player car controls with keyboard (Arrow/WASD) for desktop and touch buttons for mobile, supporting smooth lane switching across at least 3 lanes",
       "acceptanceCriteria": [
-        "A full-screen or overlay difficulty selector appears when navigating to Tic Tac Toe (SinglePlayer), Snake, and Traffic Car pages before gameplay begins.",
-        "Selector shows Easy, Medium, and Hard options with neon styling consistent with the rest of the app.",
-        "Selecting a difficulty dismisses the selector and starts the game at the chosen difficulty.",
-        "Returning to the selector (e.g., restart) re-shows the difficulty screen."
+        "Arrow Left/Right and A/D keys switch lanes",
+        "Touch buttons visible and functional on mobile viewports",
+        "Lane switch is animated (smooth lateral movement)",
+        "Player car cannot move beyond the outermost lanes"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/DifficultySelector.tsx",
-          "operation": "create",
-          "description": "Create a reusable DifficultySelector component that renders a full-screen overlay with game title and three neon-styled buttons (Easy, Medium, Hard). Accept onSelect callback prop that receives the chosen difficulty string. Use neon-btn and neon-text classes from index.css for consistent dark neon theme styling."
+          "path": "frontend/src/pages/HighwayRushGame.tsx",
+          "operation": "modify",
+          "description": "Add player car component as a 3D mesh with distinct color/shape. Implement lane-switching logic with keyboard event listeners for ArrowLeft/ArrowRight and A/D keys. Define at least 3 lane positions and smooth lateral interpolation between lanes using lerp or animation. Add lane boundary constraints to prevent moving beyond outermost lanes. Implement on-screen left/right touch buttons using HTML overlay elements positioned at bottom corners, visible only on mobile viewports (detected via window.innerWidth or media query). Wire touch button click handlers to the same lane-switching logic."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Upgrade SinglePlayer Tic Tac Toe with three AI difficulty modes (Easy: random moves, Medium: mixed random/optimal, Hard: Minimax algorithm) controlled by the DifficultySelector screen",
+      "summary": "Spawn randomized oncoming traffic cars with collision detection, increasing spawn rate and speed over time, triggering game over on collision",
       "acceptanceCriteria": [
-        "Easy AI makes fully random valid moves.",
-        "Medium AI alternates or randomly mixes random and Minimax moves.",
-        "Hard AI uses Minimax and never loses.",
-        "Difficulty label is shown during gameplay (e.g., badge or subtitle).",
-        "Win/lose/draw sound effects play on respective outcomes."
+        "Traffic cars spawn in random lanes at random intervals",
+        "Traffic speed and spawn frequency increase over time",
+        "Collision between player and any traffic car triggers game-over state",
+        "No two traffic cars occupy the same lane at the same position simultaneously"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/SinglePlayer.tsx",
+          "path": "frontend/src/pages/HighwayRushGame.tsx",
           "operation": "modify",
-          "description": "Integrate DifficultySelector component to show before game starts. Add state to track selected difficulty. Implement three AI strategies: Easy (random moves), Medium (50/50 mix of random and Minimax), and Hard (pure Minimax). Display difficulty badge during gameplay. Integrate useSoundManager hook to play win/lose/draw sound effects on game outcomes and click sounds on moves."
-        },
-        {
-          "path": "frontend/src/utils/minimax.ts",
-          "operation": "create",
-          "description": "Create a utility module implementing the Minimax algorithm for unbeatable Tic Tac Toe AI. Export a function that takes the current board state and returns the optimal move coordinates."
+          "description": "Implement traffic car spawning system that generates cars at random lanes and intervals ahead of the player. Use an array to track active traffic cars with position, lane, and color properties. Each traffic car is rendered as a simple geometric mesh (box or cylinder) with randomized colors. Implement collision detection by comparing player car bounding box with each traffic car's bounding box in the game loop. On collision, set game state to 'gameOver'. Progressively increase traffic speed and spawn frequency based on elapsed game time. Add logic to prevent overlapping traffic cars in the same lane by checking existing car positions before spawning."
         }
       ]
     },
     {
       "id": "REQ-4",
-      "summary": "Upgrade Snake game with three speed-based difficulty modes (Easy: ~200ms tick, Medium: ~130ms tick, Hard: ~70ms tick) controlled by the DifficultySelector screen",
+      "summary": "Implement day/night cycle with transitioning sky, lighting, and road appearance, plus motion blur post-processing at high speeds",
       "acceptanceCriteria": [
-        "Easy mode runs at a visibly slow snake speed.",
-        "Medium mode runs at the current default speed.",
-        "Hard mode runs noticeably faster than Medium.",
-        "Difficulty label is displayed during gameplay.",
-        "Sound effects play on food eaten (score), game over, and new high score."
+        "Sky and lighting smoothly transition between day and night states",
+        "Motion blur effect activates and intensifies as speed increases",
+        "Day/night cycle repeats on a set interval during gameplay"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/SnakeGame.tsx",
+          "path": "frontend/src/pages/HighwayRushGame.tsx",
           "operation": "modify",
-          "description": "Integrate DifficultySelector component to show before game starts. Add state to track selected difficulty and map it to tick intervals (Easy: 200ms, Medium: 130ms, Hard: 70ms). Update game loop to use difficulty-based interval. Display difficulty badge during gameplay. Integrate useSoundManager hook to play score sound on food eaten, game over sound on collision, and special event sound on new high score."
+          "description": "Add day/night cycle system that interpolates sky color (background) and ambient light intensity over a fixed time interval (e.g., 60 seconds). Use a time counter in the game loop to calculate cycle phase (0-1) and apply smooth color transitions. Update directional light color and intensity to reflect day (bright) vs night (dim) states. Apply React Three Fiber EffectComposer with UnrealBloomPass and a custom motion blur pass that activates and intensifies when speed exceeds a threshold. Store current cycle phase in state and ensure it loops continuously during gameplay."
         }
       ]
     },
     {
       "id": "REQ-5",
-      "summary": "Upgrade Traffic Car game with three difficulty modes (Easy: slow/sparse traffic, Medium: normal, Hard: fast/dense traffic) controlled by the DifficultySelector screen",
+      "summary": "Trigger particle explosion, screen shake, and slow-motion effects on collision; award bonus points and slow-motion on near-misses",
       "acceptanceCriteria": [
-        "Easy mode has visibly slower and sparser traffic.",
-        "Medium mode matches current default behavior.",
-        "Hard mode has faster and denser traffic from the start.",
-        "Difficulty label is displayed during gameplay.",
-        "Sound effects play on collision (game over), scoring milestones, and special events."
+        "Crash triggers particle burst and screen shake",
+        "Slow-motion effect activates on crash and on near-misses",
+        "Near-miss bonus points are added to the score and displayed briefly",
+        "Effects do not permanently alter game state"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/TrafficCarGame.tsx",
+          "path": "frontend/src/pages/HighwayRushGame.tsx",
           "operation": "modify",
-          "description": "Integrate DifficultySelector component to show before game starts. Add state to track selected difficulty and map it to traffic parameters (Easy: slow speed + fewer cars, Medium: current defaults, Hard: fast speed + more simultaneous cars). Adjust car spawn rate and speed based on difficulty. Display difficulty badge during gameplay. Integrate useSoundManager hook to play game over sound on collision, score sound on milestones, and special event sound for achievements (keep existing Web Audio engine sound)."
+          "description": "Implement particle system for crash effects by spawning multiple small meshes at collision point with random velocities, fading them out over time. Add screen shake by temporarily offsetting camera position with random jitter, decaying over a short duration. Implement slow-motion by temporarily reducing game speed multiplier (e.g., to 0.3x) for 1-2 seconds on crash or near-miss. Define near-miss threshold distance and check each frame if any traffic car passes within that distance without colliding; if so, award bonus points (e.g., +50) and display a temporary 'NEAR MISS!' message overlay. Ensure effects reset after their duration without permanently altering game state."
         }
       ]
     },
     {
       "id": "REQ-6",
-      "summary": "Integrate the global mute/unmute toggle button into all game pages and the Home page, styled consistently with the dark neon theme",
+      "summary": "Display HUD overlay with live score, high score, speed meter, and coin count; persist high score to localStorage on game over",
       "acceptanceCriteria": [
-        "Mute/unmute button is visible on all game pages.",
-        "Button shows a clear muted vs. unmuted visual state.",
-        "Button uses neon styling consistent with the app theme.",
-        "Toggling mute immediately silences or restores all game sounds."
+        "HUD shows live score, high score, speed, and coin count",
+        "High score is loaded from and saved to localStorage on game over",
+        "Speed meter reflects current in-game speed value",
+        "HUD is readable and non-intrusive over the 3D scene"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/SoundToggle.tsx",
+          "path": "frontend/src/pages/HighwayRushGame.tsx",
+          "operation": "modify",
+          "description": "Add HUD overlay component rendered as HTML div positioned absolutely over the 3D canvas. Display current score (incremented each frame based on distance traveled), high score (loaded from localStorage key 'highwayRush_highScore' on mount), current speed value, and coin count. Style HUD with neon-themed text and semi-transparent background for readability. On game over, compare current score with high score and update localStorage if new high score is achieved. Ensure HUD updates reactively via state changes."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Spawn collectible coins on the highway and implement a car skins system with at least 3 unlockable skins persisted in localStorage",
+      "acceptanceCriteria": [
+        "Coins spawn on the road and are collected on overlap with player car",
+        "Coin count persists across sessions via localStorage",
+        "At least 3 car skins available, each with a distinct color/style",
+        "Skins can be unlocked and selected from the main menu or a skins screen",
+        "Selected skin is applied to the player car in-game"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HighwayRushGame.tsx",
+          "operation": "modify",
+          "description": "Add coin spawning system that places collectible coin meshes (golden cylinders or toruses) at random lane positions ahead of the player. Check for overlap between player car and coins each frame; on collection, increment coin count and remove coin from scene. Persist coin count to localStorage key 'highwayRush_coins'. Define at least 3 car skins (e.g., default blue, red racer, neon green) with distinct colors or materials. In the main menu screen, add a Car Skins section that displays available skins with unlock prices. Allow player to purchase skins by spending coins and save purchased/selected skin to localStorage key 'highwayRush_selectedSkin'. On game start, load selected skin from localStorage and apply its material/color to the player car mesh."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Escalate difficulty every 30 seconds by increasing traffic density, speed cap, and spawn variety, with on-screen notification",
+      "acceptanceCriteria": [
+        "Difficulty level increments every 30 seconds of gameplay",
+        "Each difficulty increment increases traffic density and max speed",
+        "An on-screen notification briefly appears on difficulty increase"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HighwayRushGame.tsx",
+          "operation": "modify",
+          "description": "Implement difficulty scaling system that increments difficulty level every 30 seconds of active gameplay (tracked via elapsed time counter). On each difficulty increase, raise traffic spawn frequency multiplier, increase max traffic speed cap, and optionally increase spawn variety (e.g., faster cars, more lanes occupied). Display a brief notification overlay (e.g., 'DIFFICULTY INCREASED!' in neon text) that fades out after 2 seconds. Store current difficulty level in state and use it to modulate spawn parameters."
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Implement all game screens: Main Menu, Pause overlay, and Game Over screen with ad placeholder zones",
+      "acceptanceCriteria": [
+        "Main menu renders before game start with Play and Skins options",
+        "Pause overlay halts game loop and shows Resume/Restart",
+        "Game over screen shows score, high score, coins, restart and menu buttons",
+        "Rewarded ad placeholder button visible on game over screen",
+        "Interstitial ad placeholder zone shown after game over dismissal",
+        "Banner ad placeholder visible at the bottom of the main menu and game over screens"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HighwayRushGame.tsx",
+          "operation": "modify",
+          "description": "Add Main Menu screen component that renders before game start, displaying game title, Play button, Car Skins button, and Leaderboard/High Score section. Include a banner ad placeholder div at the bottom. Add Pause overlay component that appears when Escape key is pressed during gameplay, pausing the game loop (stop useFrame updates) and showing Resume and Restart buttons. Add Game Over screen component that displays final score, high score, coins collected this run, Restart and Main Menu buttons. Include a rewarded ad placeholder button labeled 'Watch Ad for Extra Life' and a banner ad placeholder at the bottom. On dismissing game over (via Restart or Main Menu), briefly show an interstitial ad placeholder overlay before transitioning. Use conditional rendering based on game state (menu, playing, paused, gameOver)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "summary": "Implement all audio using Web Audio API: engine sound, crash sound, background music, and button click sounds, with mute toggle persisted in localStorage",
+      "acceptanceCriteria": [
+        "Engine sound loops and pitch-shifts based on current speed",
+        "Crash sound plays on collision",
+        "Background music loops throughout gameplay",
+        "Button click sound plays on all interactive buttons",
+        "Mute toggle button in HUD silences all audio",
+        "Mute state persists via localStorage"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useHighwayRushSound.ts",
           "operation": "create",
-          "description": "Create a reusable SoundToggle component that uses useSoundManager hook to display the current mute state and toggle it on click. Render a speaker icon with neon glow styling that changes visual state when muted (e.g., speaker-off icon or slashed speaker). Use neon-btn class for consistent theme styling."
+          "description": "Create a custom React hook that provides procedural audio using Web Audio API. Generate and control: a looping engine sound (oscillator with pitch modulation based on current speed), a crash/explosion sound (noise burst with decay envelope), a looping background music track (synthesized melody using multiple oscillators), and button click sounds (short beep). Expose play/stop functions for each sound and a global mute toggle. Load mute state from localStorage key 'highwayRush_muted' on mount and persist changes. Ensure all audio nodes are properly connected to AudioContext and cleaned up on unmount."
         },
+        {
+          "path": "frontend/src/pages/HighwayRushGame.tsx",
+          "operation": "modify",
+          "description": "Import and use the useHighwayRushSound hook. Start engine sound and background music on game start, stop them on game over. Modulate engine sound pitch in the game loop based on current speed. Trigger crash sound on collision. Trigger button click sound on all button interactions (Play, Restart, Pause, Resume, etc.). Add a mute toggle button to the HUD that calls the hook's mute toggle function and updates localStorage."
+        }
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "summary": "Register Highway Rush on the Home page as a game card and add the /highway-rush route to the router",
+      "acceptanceCriteria": [
+        "Highway Rush appears as a card on the Home page",
+        "Clicking the card navigates to /highway-rush",
+        "The game component loads correctly at that route"
+      ],
+      "file_operations": [
         {
           "path": "frontend/src/pages/Home.tsx",
           "operation": "modify",
-          "description": "Add SoundToggle component to the header/navbar area of the Home page, positioned consistently with the neon theme layout (e.g., top-right corner)."
+          "description": "Add a new game card for Highway Rush in the arcade games section. Use a car/racing icon (e.g., 🏎️ or Car from lucide-react) and description 'Dodge traffic at high speeds in this 3D endless runner'. Set the card's link to navigate to '/highway-rush' using TanStack Router Link component."
         },
         {
-          "path": "frontend/src/pages/SinglePlayer.tsx",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add SoundToggle component to the game page header area for in-game mute control."
+          "description": "Import HighwayRushGame component lazily and add a new route configuration for path '/highway-rush' that renders the HighwayRushGame component. Ensure the route is wrapped in the same Suspense boundary as other game routes."
+        }
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "summary": "Integrate Highway Rush with the existing player profile and XP system, awarding XP based on distance score and recording stats, plus milestone achievements",
+      "acceptanceCriteria": [
+        "XP is awarded at game over proportional to score",
+        "Games played counter increments each run",
+        "Milestone score achievements unlock and notify via existing achievement system"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HighwayRushGame.tsx",
+          "operation": "modify",
+          "description": "Import playerProfile utilities (awardXP, trackWin, trackPlay) and achievements utilities (unlockAchievement). On game over, call trackPlay to increment games played. Award XP proportional to final score (e.g., score / 10). Check if final score reaches milestone thresholds (e.g., 1000, 5000, 10000) and unlock corresponding achievements (define new achievement IDs in achievements.ts if needed, such as 'highway_1000', 'highway_5000', 'highway_10000'). Ensure achievements trigger notifications via the existing achievement system."
         },
         {
-          "path": "frontend/src/pages/TwoPlayer.tsx",
+          "path": "frontend/src/utils/achievements.ts",
           "operation": "modify",
-          "description": "Add SoundToggle component to the game page header area for in-game mute control."
-        },
-        {
-          "path": "frontend/src/pages/SnakeGame.tsx",
-          "operation": "modify",
-          "description": "Add SoundToggle component to the game page header area for in-game mute control."
-        },
-        {
-          "path": "frontend/src/pages/RockPaperScissors.tsx",
-          "operation": "modify",
-          "description": "Add SoundToggle component to the game page header area for in-game mute control."
-        },
-        {
-          "path": "frontend/src/pages/MemoryCardMatch.tsx",
-          "operation": "modify",
-          "description": "Add SoundToggle component to the game page header area for in-game mute control."
-        },
-        {
-          "path": "frontend/src/pages/TrafficCarGame.tsx",
-          "operation": "modify",
-          "description": "Add SoundToggle component to the game page header area for in-game mute control."
-        },
-        {
-          "path": "frontend/src/pages/SnakeAndLadder.tsx",
-          "operation": "modify",
-          "description": "Add SoundToggle component to the game page header area for in-game mute control."
+          "description": "Add new achievement definitions for Highway Rush milestones: 'highway_1000' (Reach 1000 points in Highway Rush), 'highway_5000' (Reach 5000 points), and 'highway_10000' (Reach 10000 points). Assign appropriate categories ('arcade' or new 'highway' category), points, and descriptions."
         }
       ]
     }

@@ -6,6 +6,8 @@ import SoundToggle from '../components/SoundToggle';
 import { useGameLogic } from '../hooks/useGameLogic';
 import { useScoreboard } from '../hooks/useScoreboard';
 import { useSoundManager } from '../hooks/useSoundManager';
+import { recordWin, recordGameStart } from '../utils/achievements';
+import { awardXP, incrementGamesPlayed, incrementWins } from '../utils/playerProfile';
 
 const TwoPlayer: React.FC = () => {
   const navigate = useNavigate();
@@ -14,7 +16,8 @@ const TwoPlayer: React.FC = () => {
   const { playClick, playWin, playScore } = useSoundManager();
 
   const scoreUpdatedRef = useRef(false);
-  const prevStatusRef = useRef(gameState.status);
+  const prevStatusRef = useRef<string>(gameState.status);
+  const gameStartedRef = useRef(false);
 
   useEffect(() => {
     if (gameState.status === prevStatusRef.current) return;
@@ -24,15 +27,25 @@ const TwoPlayer: React.FC = () => {
       scoreUpdatedRef.current = true;
       if (gameState.winner) incrementScore(gameState.winner);
       playWin();
+      recordWin('tictactoe');
+      awardXP(20);
+      incrementWins();
+      incrementGamesPlayed();
     } else if (gameState.status === 'draw' && !scoreUpdatedRef.current) {
       scoreUpdatedRef.current = true;
       playScore();
+      awardXP(5);
+      incrementGamesPlayed();
     }
   }, [gameState.status, gameState.winner, incrementScore, playWin, playScore]);
 
   const handleCellClick = (index: number) => {
     if (gameState.status !== 'playing') return;
     playClick();
+    if (!gameStartedRef.current) {
+      recordGameStart('tictactoe');
+      gameStartedRef.current = true;
+    }
     makeMove(index);
   };
 
@@ -40,6 +53,7 @@ const TwoPlayer: React.FC = () => {
     playClick();
     scoreUpdatedRef.current = false;
     prevStatusRef.current = 'playing';
+    gameStartedRef.current = false;
     resetGame();
   };
 
@@ -95,11 +109,13 @@ const TwoPlayer: React.FC = () => {
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center gap-6 p-4">
-        <Scoreboard
-          scores={scores}
-          currentPlayer={gameState.status === 'playing' ? gameState.currentPlayer : undefined}
-          gameOver={gameState.status !== 'playing'}
-        />
+        <div className="w-full max-w-sm">
+          <Scoreboard
+            scores={scores}
+            currentPlayer={gameState.status === 'playing' ? gameState.currentPlayer : undefined}
+            gameOver={gameState.status !== 'playing'}
+          />
+        </div>
         <GameBoard
           board={gameState.board}
           winningCells={gameState.winningCells}
